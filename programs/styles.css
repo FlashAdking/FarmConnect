@@ -1,0 +1,117 @@
+body {
+
+        background-image: url("images/Background\ Image.jpg");
+        background-color: #cccccc;
+       
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    background: #fff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-links li {
+    display: inline;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.hero {
+    background: url('hero-bg.jpg') no-repeat center center/cover;
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    flex-direction: column;
+}
+
+.btn {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    background-color: #28a745;
+    color: white;
+    border-radius: 5px;
+}
+
+.farmers {
+    text-align: center;
+    padding: 40px;
+}
+
+.farmer-list {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.farmer-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 10px;
+    width: 200px;
+    text-align: center;
+}
+
+.farmer-card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+footer {
+    background: #222;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.footer-section {
+    margin: 10px;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section a {
+    color: white;
+    text-decoration: none;
+}
+
+.footer-section input {
+    padding: 5px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+}

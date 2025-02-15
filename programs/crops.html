@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Vegetables Page</title>
+    <link rel="stylesheet" href="crops.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fa fa-home"></i>
+        </div>
+        <div class="search-bar">
+            <input type="text" placeholder="Hinted search text">
+            <button><i class="fa fa-search"></i></button>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="farmerlogin.html">Farmers</a>
+            <a href="crops.html">Crops</a>
+            <a href="transport.html">Transport</a>
+            <a href="#">About</a>
+            <i class="fa fa-user"></i>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h3>Keywords</h3>
+            <div class="filters">
+                <p><span>Vegetables</span> <span class="remove">x</span></p>
+                <p><span>Nuts</span> <span class="remove">x</span></p>
+                <p><span>Fruits</span> <span class="remove">x</span></p>
+            </div>
+            
+            <h3>Label</h3>
+            <label><input type="checkbox"> Description</label>
+            <label><input type="checkbox"> Description</label>
+
+            <h3>Price</h3>
+            <input type="range" min="0" max="100">
+
+            <h3>Color</h3>
+            <label><input type="checkbox"> Label</label>
+            <label><input type="checkbox"> Label</label>
+
+            <h3>Size</h3>
+            <label><input type="checkbox"> Label</label>
+            <label><input type="checkbox"> Label</label>
+        </aside>
+
+        <!-- Product Listing -->
+        <main>
+            <div class="sort-options">
+                <button class="active">New</button>
+                <button>Price ascending</button>
+                <button>Price descending</button>
+                <button>Rating</button>
+            </div>
+            
+            <div class="products">
+                <div class="product">
+                    <img src="images/Potato.jpg" alt="Potato" height="50">
+                    <p>Potatos</p>
+                </div>
+                <div class="product">
+                    <img src="images/Spinach.jpg" alt="Spinach" height="50">
+                    <p>Spinach</p>
+                </div>
+                <div class="product">
+                    <img src="images/Tomato.png" alt="Tomato" height="50">
+                    <p>Tomato</p>
+                </div>
+                <div class="product">
+                    <img src="images/LadyFinger.jpeg" alt="LadyFinger" height="50">
+                    <p>LadyFinger</p>
+                </div>
+                <div class="product">
+                    <img src="images/EggPlant.jpeg" alt="Eggplant" height="50">
+                    <p>Eggplant</p>
+                </div>
+                <div class="product">
+                    <img src="images/Bitter gourd.jpeg" alt="Bittergourd" height="50">
+                    <p>Bittergourd</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-section">
+            <h3>Exclusive</h3>
+            <p>Subscribe</p>
+            <input type="email" placeholder="Enter your email">
+        </div>
+        <div class="footer-section">
+            <h3>Support</h3>
+            <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
+            <p>exclusive@gmail.com</p>
+            <p>+88015-88888-9999</p>
+        </div>
+        <div class="footer-section">
+            <h3>Account</h3>
+            <p>My Account</p>
+            <p>Login / Register</p>
+            <p>Cart</p>
+            <p>Wishlist</p>
+            <p>Shop</p>
+        </div>
+        <div class="footer-section">
+            <h3>Quick Link</h3>
+            <p>Privacy Policy</p>
+            <p>Terms of Use</p>
+            <p>FAQ</p>
+            <p>Contact</p>
+        </div>
+        <div class="footer-section">
+            <h3>Download App</h3>
+            <p>Save $3 with App New User Only</p>
+            <img src="qr-code.png" alt="QR Code">
+            <div class="app-icons">
+                <i class="fab fa-google-play"></i>
+                <i class="fab fa-apple"></i>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
