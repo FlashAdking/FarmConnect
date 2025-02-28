@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Vegetables Page</title>
+    <link rel="stylesheet" th:href="@{/css/crops.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <i class="fa fa-home"></i>
+        </div>
+        <div class="search-bar">
+            <div class="input-group">
+                <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search"
+                    aria-describedby="search-addon" />
+                <button type="button" class="btn btn-outline-primary" data-mdb-ripple-init>search</button>
+            </div>
+            <script type="module">
+                import { Ripple, initMDB } from "https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.2/mdb.esm.min.js";
+                initMDB({ Ripple });
+            </script>
+        </div>
+        <nav>
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/Farmers}">Farmers</a>
+            <a th:href="@{/crops}">Crops</a>
+            <a th:href="@{/transport}">Transport</a>
+            <a th:href="@{/about}">About</a>
+            <i class="fa fa-user"></i>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+
+        <!-- Sidebar (Filters) -->
+        <aside class="sidebar">
+            <button type="button" onclick="resetFilters()"  style="color: azure; background-color: black; font-size: 15px;">Reset Filters</button>
+            <form id="filter-form">
+                <!-- Category Filters -->
+                <h3>Category</h3>
+                <div class="filters">
+                    <label><input type="checkbox" name="category" value="Vegetable" class="filter-checkbox">
+                        Vegetables</label>
+                    <label><input type="checkbox" name="category" value="Nuts" class="filter-checkbox"> Nuts</label>
+                    <label><input type="checkbox" name="category" value="Fruits" class="filter-checkbox"> Fruits</label>
+                </div>
+
+                <!-- Label Filters -->
+                <h3>Label</h3>
+                <div class="filters">
+                    <label><input type="checkbox" name="label" value="Organic" class="filter-checkbox"> Organic</label>
+                    <label><input type="checkbox" name="label" value="Non-GMO" class="filter-checkbox"> Non-GMO</label>
+                </div>
+
+                <!-- Price Filter -->
+                <h3>Price</h3>
+                <input type="range" min="0" max="1000" step="10" id="price-range" name="maxPrice" value="1000">
+
+                <span id="price-value">₹1000</span>
+
+                <!-- Color Filters -->
+                <h3>Color</h3>
+                <div class="filters">
+                    <label><input type="checkbox" name="color" value="Green" class="filter-checkbox"> Green</label>
+                    <label><input type="checkbox" name="color" value="Red" class="filter-checkbox"> Red</label>
+                </div>
+
+
+                <!-- Quantity Filters -->
+                <h3>Quantity</h3>
+                <div class="filters">
+                    <label><input type="checkbox" name="quantity" value="10+" class="filter-checkbox"> 10+</label>
+                    <label><input type="checkbox" name="quantity" value="30+" class="filter-checkbox"> 30+</label>
+                    <label><input type="checkbox" name="quantity" value="70+" class="filter-checkbox"> 70+</label>
+                    <label><input type="checkbox" name="quantity" value="120+" class="filter-checkbox"> 120+</label>
+                </div>
+
+            </form>
+        </aside>
+        <form id="filter-form" method="get" th:action="@{/crops}">
+            <!-- All sidebar filters go here -->
+        </form>
+
+
+        <!-- Product Listing -->
+        <main>
+            <div class="sort-options">
+                <a th:href="@{/crops(sortBy='new')}">New</a>
+                <a th:href="@{/crops(sortBy='priceAsc')}">Price ascending</a>
+                <a th:href="@{/crops(sortBy='priceDesc')}">Price descending</a>
+                <a th:href="@{/crops(sortBy='rating')}">Rating</a>
+            </div>
+
+            <div class="products-grid">
+                <div class="product-card" th:each="crop : ${crops}" th:data-category="${crop.category}"
+                    th:data-label="${crop.label}" th:data-color="${crop.color}" th:data-quantity="${crop.quantity}"
+                    th:data-price="${crop.price}">
+                    <div class="product-image">
+                        <img th:src="@{/crops/{id}/image(id=${crop.cropId})}" th:alt="${crop.name}">
+                    </div>
+                    <div class="product-info">
+                        <h3 th:text="${crop.name}"></h3>
+                        <p th:text="${crop.description}"></p>
+                        <p class="product-price" th:text="'Price: ₹' + ${crop.price}"></p>
+                        <p class="product-label" th:text="'Label: ' + ${crop.label}"></p>
+                        <p class="product-color" th:text="'Color: ' + ${crop.color}"></p>
+                        <p class="product-quantity" th:text="'Quantity: ' + ${crop.quantity}"></p>
+                    </div>
+                    <div class="product-actions">
+                        <button type="button">Add to Cart</button>
+                        <button type="button">View Details</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-section">
+            <h3>Exclusive</h3>
+            <p>Subscribe</p>
+            <input type="email" placeholder="Enter your email">
+        </div>
+        <div class="footer-section">
+            <h3>Support</h3>
+            <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
+            <p>exclusive@gmail.com</p>
+            <p>+88015-88888-9999</p>
+        </div>
+        <div class="footer-section">
+            <h3>Account</h3>
+            <p>My Account</p>
+            <p>Login / Register</p>
+            <p>Cart</p>
+            <p>Wishlist</p>
+            <p>Shop</p>
+        </div>
+        <div class="footer-section">
+            <h3>Quick Link</h3>
+            <p>Privacy Policy</p>
+            <p>Terms of Use</p>
+            <p>FAQ</p>
+            <p>Contact</p>
+        </div>
+        <div class="footer-section">
+            <h3>Download App</h3>
+            <p>Save $3 with App New User Only</p>
+            <img src="qr-code.png" alt="QR Code">
+            <div class="app-icons">
+                <i class="fab fa-google-play"></i>
+                <i class="fab fa-apple"></i>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const filterForm = document.getElementById("filter-form");
+            const priceRange = document.getElementById("price-range");
+            const priceValue = document.getElementById("price-value");
+            const products = document.querySelectorAll(".product-card"); // Updated selector
+
+            // Update displayed price when range changes
+            priceRange.addEventListener("input", function () {
+                priceValue.textContent = `₹${priceRange.value}`;
+                applyFilters();
+            });
+
+            // Event listener for all filter checkboxes
+            filterForm.addEventListener("change", function (e) {
+                if (e.target.classList.contains("filter-checkbox")) {
+                    applyFilters();
+                }
+            });
+
+            // Function to apply filters
+            function applyFilters() {
+                // Get filter values
+                const selectedCategories = getFilterValues('category');
+                const selectedLabels = getFilterValues('label');
+                const selectedColors = getFilterValues('color');
+                const selectedQuantities = getFilterValues('quantity');
+                const maxPrice = parseInt(priceRange.value);
+
+                // Iterate over all products
+                products.forEach(function (product) {
+                    const productCategory = product.getAttribute('data-category');
+                    const productLabel = product.getAttribute('data-label');
+                    const productColor = product.getAttribute('data-color');
+                    const productQuantity = parseInt(product.getAttribute('data-quantity'));
+                    const productPrice = parseInt(product.getAttribute('data-price'));
+
+                    // Check if product satisfies all selected filters
+                    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(productCategory);
+                    const matchesLabel = selectedLabels.length === 0 || selectedLabels.includes(productLabel);
+                    const matchesColor = selectedColors.length === 0 || selectedColors.includes(productColor);
+                    const matchesQuantity = selectedQuantities.length === 0 || selectedQuantities.some(qtyThreshold => productQuantity >= parseInt(qtyThreshold));
+                    const matchesPrice = productPrice <= maxPrice;
+
+                    if (matchesCategory && matchesLabel && matchesColor && matchesQuantity && matchesPrice) {
+                        product.style.display = "flex"; // Use "flex" to maintain CSS styling
+                    } else {
+                        product.style.display = "none";
+                    }
+                });
+            }
+
+            // Helper function to get selected values for a filter type
+            function getFilterValues(type) {
+                return Array.from(filterForm.querySelectorAll(`input[name='${type}']:checked`)).map(el => el.value);
+            }
+
+            // Function to reset all filters
+            function resetFilters() {
+                // Reset all checkboxes
+                document.querySelectorAll("#filter-form input[type='checkbox']").forEach(function (checkbox) {
+                    checkbox.checked = false;
+                });
+
+                // Reset price range
+                priceRange.value = priceRange.max;
+                priceValue.textContent = `₹${priceRange.value}`;
+
+                // Apply filters
+                applyFilters();
+            }
+
+            // Expose resetFilters function to global scope
+            window.resetFilters = resetFilters;
+
+            // Initial filter application
+            applyFilters();
+        });
+
+    </script>
+</body>
+
+</html>
