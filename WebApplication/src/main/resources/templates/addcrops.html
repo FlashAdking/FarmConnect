@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FarmConnect</title>
-    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <title>Add Crop</title>
+    <link rel="stylesheet" href="@{/css/addcrops.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <style>
-        
-    
     .search-container {
         background-color: white;
         border-radius: 50px;
@@ -62,6 +60,7 @@
     }
 </style>
 <body>
+    <!-- Your existing header here -->
     <header>
         <div class="logo">
             <i class="fa fa-home"></i>
@@ -89,51 +88,65 @@
         </nav>
     </header>
 
-    <section class="hero">
-        <div class="hero-content">
-            <h1>FarmConnect</h1>
-            <p>Empowering farmers, nourishing homes</p>
-            <div class="dropdown">
-                <button style="background-color: black; color: white; padding: 10px 20px; font-size: 16px;" class="btn" onclick="toggleDropdown('loginDropdown')">Login</button>
-                <div class="dropdown-content" id="loginDropdown">
-                    <a th:href="@{/farmerlogin}">Log In as Farmer</a>
-                    <a th:href="@{/wholesalerlogin}">Log In as WholeSaler</a>
-                    <a th:href="@{/transporterlogin}">Log In as Transporter</a>
+    <div class="middle-container">
+        <div class="add-crop-form">
+            <form>
+                <div class="form-group">
+                    <label for="name">Crop Name</label>
+                    <input type="text" id="name" placeholder="Enter crop name">
                 </div>
-            </div>
-            <div class="dropdown">
-                <button style="background-color: black; color: white; padding: 10px 20px; font-size: 16px;"  class="btn" onclick="toggleDropdown('registerDropdown')">Register</button>
-                <div class="dropdown-content" id="registerDropdown">
-                    <a th:href="@{/Signupfarmer}">Sign Up As Farmer</a>
-                    <a th:href="@{/Signupwholesaler}">Sign Up As WholeSaler</a>
-                    <a th:href="@{/Signuptransporter}">Sign Up As Transporter</a>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" placeholder="Enter crop description"></textarea>
                 </div>
-            </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Price</label>
+                        <input type="number" id="price" placeholder="Enter price">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" id="quantity" placeholder="Enter quantity">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category">
+                        <option value="">Select category</option>
+                        <option value="fruits">Fruits</option>
+                        <option value="vegetables">Vegetables</option>
+                        <option value="grains">Grains</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Labels</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="organic">
+                            Organic
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="non-gmo">
+                            Non-GMO
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="color">Color</label>
+                    <input type="text" id="color" placeholder="Enter crop color">
+                </div>
+
+                <button type="submit" class="submit-btn">Add Crop</button>
+            </form>
         </div>
-    </section>
+    </div>
 
-
-
-    <section class="farmers">
-        <h2>Connect Direct Farmers from Various Regions</h2>
-        <div class="farmer-list">
-            <div class="farmer-card">
-                <img th:src="@{/img/farmer1.jpg}" alt="Shenkar Patil">
-                <h3>SHENKAR PATIL - FARMER</h3>
-                <p>KOLHAPUR, MAHARASHTRA</p>
-            </div>
-            <div class="farmer-card">
-                <img th:src="@{/img/farmer2.jpg}" alt="Ajay Bhosale">
-                <h3>AJAY BHOSALE - FARMER</h3>
-                <p>TALNA, MAHARASHTRA</p>
-            </div>
-            <div class="farmer-card">
-                <img th:src="@{/img/farmer3.jpg}" alt="Shenkar Patil">
-                <h3>SHENKAR PATIL - FARMER</h3>
-                <p>BULDHANA, MAHARASHTRA</p>
-            </div>
-        </div>
-    </section>
 
     <footer>
         <div class="footer-section">
@@ -172,31 +185,5 @@
             </div>
         </div>
     </footer>
-
-    <script>
-        function toggleDropdown(id) {
-            var dropdown = document.getElementById(id);
-            if (dropdown.style.display === "block") {
-                dropdown.style.display = "none";
-            } else {
-                dropdown.style.display = "block";
-            }
-        }
-
-        // Close the dropdown if the user clicks outside of it
-        window.onclick = function (event) {
-            if (!event.target.matches('.btn')) {
-                var dropdowns = document.getElementsByClassName("dropdown-content");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.style.display === "block") {
-                        openDropdown.style.display = "none";
-                    }
-                }
-            }
-        }
-    </script>
-
 </body>
-
 </html>

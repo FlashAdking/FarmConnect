@@ -5,6 +5,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/FarmConnect/WebApplication/pom.xml" />
+        <option value="$PROJECT_DIR$/WebApplication/pom.xml" />
       </list>
     </option>
   </component>

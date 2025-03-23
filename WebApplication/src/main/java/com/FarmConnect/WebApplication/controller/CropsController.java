@@ -19,7 +19,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
-@CrossOrigin
 public class CropsController {
 
     @Autowired
@@ -87,8 +86,6 @@ public class CropsController {
 
 
 
-
-    //Post
 
     @PostMapping("/")
     public ResponseEntity<String> addCrops(@RequestBody List<Crops> crops) {

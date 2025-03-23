@@ -5,22 +5,32 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.persistence.Lob;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document (collection = "farmer")
+@Document (collection = "farmers")
 public class Farmer {
     @Id
-    private int uniqueId;
+    private String uniqueId;
     private String fullName;
-    private String email;
+
+    @Indexed(unique = true)
+    private String emailOrPhone;
+
+    private String password;
     private String address;
-    private long contact;
     private String state;
+
+    @Lob
+    private byte[] farmerImage;
+    private String imageName;
+    private String imageType;
 
     private List<ConfirmedDeals> confirmedDeals;
 }

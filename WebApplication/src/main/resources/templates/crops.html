@@ -7,7 +7,61 @@
     <title>E-Commerce Vegetables Page</title>
     <link rel="stylesheet" th:href="@{/css/crops.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<style>
+        
+    
+    .search-container {
+        background-color: white;
+        border-radius: 50px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        max-width: 500px;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .search-container:hover {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-control.search-input {
+        border: none;
+        background: transparent;
+        padding-left: 20px;
+        font-size: 1rem;
+        height: 50px;
+    }
+
+    .form-control.search-input:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    .btn-search {
+        background-color: black;
+        color: white;
+        border-radius: 50px;
+        padding: 10px 20px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-search:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+    .search-icon {
+        color: #6c757d;
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+</style>
+
 
 <body>
 
@@ -16,16 +70,18 @@
         <div class="logo">
             <i class="fa fa-home"></i>
         </div>
-        <div class="search-bar">
-            <div class="input-group">
-                <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search"
-                    aria-describedby="search-addon" />
-                <button type="button" class="btn btn-outline-primary" data-mdb-ripple-init>search</button>
-            </div>
-            <script type="module">
-                import { Ripple, initMDB } from "https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.2/mdb.esm.min.js";
-                initMDB({ Ripple });
-            </script>
+        <div class="search-container position-relative">
+            <form class="d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="search-icon feather feather-search">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input class="form-control search-input ps-5" type="search"
+                       placeholder="Search anything..." aria-label="Search">
+                <button class="btn btn-search ms-2" type="submit">Search</button>
+            </form>
         </div>
         <nav>
             <a th:href="@{/}">Home</a>

@@ -1,10 +1,14 @@
 package com.FarmConnect.WebApplication.controller;
 
 
+import com.FarmConnect.WebApplication.model.Farmer;
+import com.FarmConnect.WebApplication.service.FarmerService;
 import com.FarmConnect.WebApplication.service.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @CrossOrigin
@@ -13,6 +17,9 @@ public class HomeController {
 
     @Autowired
     HomeService service;
+
+    @Autowired
+    FarmerService farmerService;
 
     @GetMapping("/")
     public String greet(){
@@ -26,23 +33,23 @@ public class HomeController {
 
 
 
-    @GetMapping("/Signupfarmer")
-    public String getFarmerLogin(){
-        return "signupfarmer";
-    }
-
     @GetMapping("/register")
     public String getSignUp(){
         return "Sign Up page";
     }
 
-    @GetMapping("/farmers")
+    @GetMapping("/Farmers")
     public String getFarmers(){
-        return "List of Farmers";
+        return "Farmers";
+    }
+
+    @GetMapping("/Signupfarmer")
+    public String getFarmerSignUp(){
+        return "signupfarmer";
     }
 
     @GetMapping("/transport")
-    public String getTrabsport(){
+    public String getTransport(){
         return "List of Transporters";
     }
 

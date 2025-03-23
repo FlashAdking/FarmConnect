@@ -22,15 +22,6 @@ public interface CropsRepo extends MongoRepository<Crops, String>{
 
     Optional<Crops> findById(String cropId);
 
-//    @Query("{ "
-//            + "'$and': ["
-//            + "  { 'label': { '$in': ?0 } },"
-//            + "  { 'price': { '$lte': ?1 } },"
-//            + "  { 'color': { '$in': ?2 } },"
-//            + "  { 'size': { '$in': ?3 } }"
-//            + "]"
-//            + "}")
-//    List<Crops> findCropsByFilters(List<String> labels, Integer maxPrice, List<String> colors, List<String> sizes, Sort sort);
 
     List<Crops> findByLabelAndPriceLessThanEqual(String label, Integer price);
 
