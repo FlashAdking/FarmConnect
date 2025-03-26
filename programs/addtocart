@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuz_ucJG-JFbTmghyA8HGw4W0uyUkx1Nwckw&s') no-repeat center center/cover;
+        }
+        
+       header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+}
+
+.logo i {
+    font-size: 24px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    background: none;
+    padding: 5px;
+}
+
+nav a {
+    text-decoration: none;
+    color: black;
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+nav i {
+    font-size: 18px;
+}
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .remove-btn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .confirm-btn {
+            width: 100%;
+            background: green;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        footer {
+    background-color: black;
+    color: white;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.footer-section {
+    width: 5cm;
+}
+
+.footer-section h4 {
+    margin-bottom: 10px;
+}
+
+.footer-section p, .footer-section a {
+    color: white;
+    text-decoration: none;
+    margin: 5px 0;
+}
+    </style>
+</head>
+<body>
+  <header>
+        <div class="logo">
+            <i class="fa fa-home"></i>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search for products..." onkeyup="searchProduct()">
+            <i class="fa fa-search"></i>
+        </div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="farmerlogin.html">Farmers</a>
+            <a href="crops.html">Crops</a>
+            <a href="transport.html">Transport</a>
+            <a href="#">About</a>
+            <i class="fa fa-user"></i>
+        </nav>
+    </header>
+    <h2>Your Cart</h2>
+    <div id="cart"></div>
+    <button class="confirm-btn" onclick="confirmOrder()">Confirm Order</button>
+    
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Exclusive</h4>
+                <p>Subscribe</p>
+                <p>Get 10% off your first order</p>
+                <input type="email" placeholder="Enter your email">
+            </div>
+
+            <div class="footer-section">
+                <h4>Support</h4>
+                <p>111 Bijoy sarani, Dhaka, DH 1515, Bangladesh.</p>
+                <p>Email: exclusive@gmail.com</p>
+                <p>Phone: +88015-88888-9999</p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Account</h4>
+                <p><a href="#">My Account</a></p>
+                <p><a href="#">Login / Register</a></p>
+                <p><a href="#">Cart</a></p>
+                <p><a href="#">Wishlist</a></p>
+                <p><a href="#">Shop</a></p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Quick Link</h4>
+                <p><a href="#">Privacy Policy</a></p>
+                <p><a href="#">Terms Of Use</a></p>
+                <p><a href="#">FAQ</a></p>
+                <p><a href="#">Contact</a></p>
+            </div>
+
+            <div class="footer-section">
+                <h4>Download App</h4>
+                <p>Save $3 with App New User Only</p>
+                <img src="qr-code.png" alt="QR Code">
+                <div class="app-links">
+                    <img src="google-play.png" alt="Google Play">
+                    <img src="app-store.png" alt="App Store">
+                </div>
+            </div>
+        </div>
+        <p class="copyright">© Copyright Rimel 2022. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+
+        function displayCart() {
+            const cartDiv = document.getElementById("cart");
+            cartDiv.innerHTML = "";
+            
+            if (cartItems.length === 0) {
+                cartDiv.innerHTML = "<p>Your cart is empty.</p>";
+                return;
+            }
+            
+            cartItems.forEach((item, index) => {
+                const itemDiv = document.createElement("div");
+                itemDiv.classList.add("cart-item");
+                itemDiv.innerHTML = `
+                    <span>${item.name} - $${item.price}</span>
+                    <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
+                `;
+                cartDiv.appendChild(itemDiv);
+            });
+        }
+
+        function removeFromCart(index) {
+            cartItems.splice(index, 1);
+            localStorage.setItem("cart", JSON.stringify(cartItems));
+            displayCart();
+        }
+
+        function confirmOrder() {
+            if (cartItems.length === 0) {
+                document.getElementById("popup").style.display = "block";
+                return;
+            }
+            alert("Order Confirmed! Your items will be processed.");
+            cartItems = [];
+            localStorage.removeItem("cart");
+            displayCart();
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+
+        displayCart();
+
+    </script>
+</body>
+</html>
