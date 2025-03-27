@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" th:href="@{/css/addcart.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        .search-container {
+            background-color: white;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            max-width: 500px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .search-container:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-control.search-input {
+            border: none;
+            background: transparent;
+            padding-left: 20px;
+            font-size: 1rem;
+            height: 50px;
+        }
+
+        .form-control.search-input:focus {
+            box-shadow: none;
+            outline: none;
+        }
+
+        .btn-search {
+            background-color: black;
+            color: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-search:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .search-icon {
+            color: #6c757d;
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-container">
+                <div class="logo">
+                    <i class="fa fa-home"></i>
+                </div>
+
+                <div class="search-container">
+                    <form id="searchForm" th:action="@{/search}" method="GET">
+                        <i class="fa fa-search search-icon"></i>
+                        <input type="text" name="query" class="search-input" placeholder="Search anything..."
+                            th:value="${param.query}" />
+                        <button type="submit" class="btn-search">Search</button>
+                    </form>
+                </div>
+
+                <nav>
+                    <div class="nav-links">
+                        <a th:href="@{/}">Home</a>
+                        <a th:href="@{/farmers}">Farmers</a>
+                        <a th:href="@{/crops}">Crops</a>
+                        <a th:href="@{/transport}">Transport</a>
+                        <a th:href="@{/about}">About</a>
+                    </div>
+
+                    <div class="dropdown-user">
+                        <i class="fa fa-user"></i>
+                        <div class="dropdown-user-menu">
+                            <a th:href="@{/profile}">
+                                <i class="fas fa-user"></i>My Profile
+                            </a>
+                            <form th:action="@{/logout}" method="POST" style="margin: 0;">
+                                <button type="submit" class="logout-btn">
+                                    <i class="fas fa-sign-out-alt"></i>Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <h2>Your Cart</h2>
+            <!-- This container will be populated with cart items by JavaScript -->
+            <div id="cart"></div>
+            <!-- A container to show an "empty cart" message when no items are available -->
+            <div id="emptyCartMessage" class="empty-cart" style="display: none;">
+                <p>Your cart is empty.</p>
+            </div>
+            <!-- Confirm Order button that will be shown only if there are items -->
+            <button type="button" id="confirmOrder" class="confirm-btn" style="display: none;">
+                Confirm Order
+            </button>
+        </main>
+
+        <!-- Include the shared cart module that handles cart logic -->
+        <!-- <script src="@{/js/addcart.js}"></script> -->
+
+        <!-- Script to display cart and wire up the confirm order functionality -->
+
+        <footer>
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h3>Exclusive</h3>
+                    <p>Subscribe</p>
+                    <form th:action="@{/subscribe}" method="POST">
+                        <input type="email" name="email" placeholder="Enter your email" required>
+                        <button type="submit" class="subscribe-btn">Subscribe</button>
+                    </form>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
+                    <p>exclusive@gmail.com</p>
+                    <p>+88015-88888-9999</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <p><a th:href="@{/profile}">My Account</a></p>
+                    <p><a th:href="@{/login}">Login / Register</a></p>
+                    <p><a th:href="@{/cart}">Cart</a></p>
+                    <p><a th:href="@{/wishlist}">Wishlist</a></p>
+                    <p><a th:href="@{/shop}">Shop</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Link</h3>
+                    <p><a th:href="@{/privacy}">Privacy Policy</a></p>
+                    <p><a th:href="@{/terms}">Terms of Use</a></p>
+                    <p><a th:href="@{/faq}">FAQ</a></p>
+                    <p><a th:href="@{/contact}">Contact</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Download App</h3>
+                    <p>Save $3 with App New User Only</p>
+                    <div class="app-icons">
+                        <a href="#" class="app-store"><i class="fab fa-google-play"></i></a>
+                        <a href="#" class="play-store"><i class="fab fa-apple"></i></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Flash messages -->
+    <main>
+        <h2>Your Cart</h2>
+        <!-- This container will be populated with cart items by JavaScript -->
+        <div id="cart"></div>
+        
+        <!-- A container to show an "empty cart" message when no items are available -->
+        <div id="emptyCartMessage" class="empty-cart" style="display: none;">
+          <p>Your cart is empty.</p>
+        </div>
+        
+        <!-- Confirm Order button that will be shown only if there are items -->
+        <button type="button" id="confirmOrder" class="confirm-btn" style="display: none;">
+          Confirm Order
+        </button>
+      </main>
+
+    <!-- Include the shared cart module -->
+    <!-- <script src="@{/js/cart.js}"></script> -->
+
+    <!-- Add-to-Cart Event Delegation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          // Retrieve cart items from localStorage
+          const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+      
+          // Select elements
+          const cartContainer = document.getElementById('cart');
+          const emptyCartMessage = document.getElementById('emptyCartMessage');
+          const confirmOrderButton = document.getElementById('confirmOrder');
+      
+          // Function to render cart items
+          function renderCartItems() {
+            // Clear existing items in the cart container
+            cartContainer.innerHTML = '';
+      
+            if (cartItems.length === 0) {
+              // Show "empty cart" message and hide confirm order button
+              emptyCartMessage.style.display = 'block';
+              confirmOrderButton.style.display = 'none';
+            } else {
+              // Hide "empty cart" message and show confirm order button
+              emptyCartMessage.style.display = 'none';
+              confirmOrderButton.style.display = 'block';
+      
+              // Render each cart item
+              cartItems.forEach(function (item) {
+                const itemEl = document.createElement('div');
+                itemEl.classList.add('cart-item');
+                itemEl.innerHTML = `
+                  <h3>${item.name}</h3>
+                  <p>Price: ₹${item.price}</p>
+                  <p>Quantity: ${item.quantity}</p>
+                `;
+                cartContainer.appendChild(itemEl);
+              });
+      
+              // Add a "Total" summary
+              const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+              const totalEl = document.createElement('p');
+              totalEl.classList.add('cart-total');
+              totalEl.textContent = `Total Price: ₹${total}`;
+              cartContainer.appendChild(totalEl);
+            }
+          }
+      
+          // Initialize the cart rendering
+          renderCartItems();
+      
+          // Optional: Add an event listener for the "Confirm Order" button
+          confirmOrderButton.addEventListener('click', function () {
+            alert('Order confirmed! Thank you for your purchase.');
+            // Clear the cart after confirmation
+            localStorage.removeItem("cartItems");
+            location.reload(); // Refresh the page to update the cart display
+          });
+        });
+      </script>
+
+</body>
+
+</html>
