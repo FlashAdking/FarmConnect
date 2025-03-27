@@ -120,6 +120,10 @@ public class CropsController {
         }
     }
 
+    @GetMapping("crops/addcart")
+    public String getAddCartPage(){
+        return "addcart";
+    }
 
 
     //Delete

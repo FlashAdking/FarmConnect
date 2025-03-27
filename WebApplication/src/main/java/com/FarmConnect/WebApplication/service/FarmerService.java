@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,6 +19,7 @@ public class FarmerService {
 
     @Autowired
     FarmersRepo farmRepo;
+
 
     @GetMapping("/Farmers/{uniquId}/image")
     public ResponseEntity<byte[]> getCropImage(@PathVariable String uniqueId) {
@@ -37,4 +39,24 @@ public class FarmerService {
     }
 
 
+    public List<Farmer> getAllFarmers() {
+        return farmRepo.findAll();
+    }
+
+    public Farmer getFarmerById(String id) {
+        return farmRepo.getByUniqueId(id);
+    }
+
+    public void updateFarmer(Farmer farmer) {
+        farmRepo.save(farmer);
+    }
+
+
+    public void RegisterFarmer(Farmer farmer) {
+        Optional<Farmer> existingFarmer = farmRepo.findByEmailOrPhone(farmer.getEmailOrPhone());
+        if (existingFarmer.isPresent()) {
+            throw new IllegalArgumentException("User with the given email or phone already exists.");
+        }
+        farmRepo.save(farmer);
+    }
 }

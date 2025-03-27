@@ -91,22 +91,88 @@
 
     <!-- Middle Content Start -->
 
+    <!-- Example Farmers.html snippet with container -->
     <div class="container">
         <div class="farmers-grid">
-
-            <div class="farmer-card">
-                <img src="@{/img/farmer2.jpg}" alt="Farmer John">
-                <h2>John Smith</h2>
-                <div class="tags">
-                    <span class="tag organic">Organic</span>
-                    <span class="tag fruits">Fruits</span>
-                </div>
-                <p class="location">Nashik, Maharashtra</p>
-                <button class="crops-btn">Crops Uploaded</button>
-            </div>
-
+          <!-- Farmer cards will be dynamically injected here -->
         </div>
-    </div>
+      </div>
+      
+      <script>
+        // Run the code when the document is fully loaded
+        document.addEventListener("DOMContentLoaded", () => {
+          fetchFarmers();
+        });
+      
+        // Function to fetch farmers from the API endpoint
+        async function fetchFarmers() {
+          try {
+            const response = await fetch('/api/farmers');
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const farmers = await response.json();
+            renderFarmers(farmers);
+          } catch (error) {
+            console.error('Error fetching farmers:', error);
+            displayError("Failed to load farmers. Please try again later.");
+          }
+        }
+      
+        // Function to display an error message in the UI
+        function displayError(message) {
+          const farmerGrid = document.querySelector('.farmers-grid');
+          farmerGrid.innerHTML = `<div class="error">${message}</div>`;
+        }
+      
+        // Function to render the farmer details
+        function renderFarmers(farmers) {
+          const farmerGrid = document.querySelector('.farmers-grid');
+          // Clear any existing content
+          farmerGrid.innerHTML = "";
+      
+          // Handle case when no farmers are returned
+          if (farmers.length === 0) {
+            farmerGrid.innerHTML = '<div class="no-data">No farmers found.</div>';
+            return;
+          }
+      
+          // Iterate over each farmer in the array
+          farmers.forEach(farmer => {
+            // If an image exists, convert the byte array to a Base64 URL; otherwise, use a default image.
+            let imgSrc = (farmer.farmerImage && farmer.imageType)
+              ? `data:${farmer.imageType};base64,${farmer.farmerImage}`
+              : '/img/default-farmer.jpg';
+      
+            // Render tags from the response, if available; otherwise, use default tags.
+            let tagsHtml = "";
+            if (Array.isArray(farmer.tags) && farmer.tags.length > 0) {
+              tagsHtml = farmer.tags
+                .map(tag => `<span class="tag ${tag.toLowerCase()}">${tag}</span>`)
+                .join('');
+            } else {
+              tagsHtml = `<span class="tag organic">Organic</span>
+                          <span class="tag fruits">Fruits</span>`;
+            }
+      
+            // Create a new div element for the farmer card
+            const card = document.createElement('div');
+            card.classList.add("farmer-card");
+            card.innerHTML = `
+              <img src="${imgSrc}" alt="Farmer ${farmer.fullName}"
+                   onerror="this.onerror=null;this.src='/img/default-farmer.jpg';">
+              <h2>${farmer.fullName}</h2>
+              <div class="tags">${tagsHtml}</div>
+              <p class="location">${farmer.state}</p>
+              <p class="contact">${farmer.emailOrPhone}</p>
+              <button class="crops-btn">Crops Uploaded</button>
+            `;
+      
+            // Append the card to the grid container
+            farmerGrid.appendChild(card);
+          });
+        }
+      </script>
 
   <!-- Middle Content End -->
   

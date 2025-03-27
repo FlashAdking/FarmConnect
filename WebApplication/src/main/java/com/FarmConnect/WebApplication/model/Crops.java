@@ -43,6 +43,9 @@ public class Crops {
     @Lob
     private byte[] imageData;
 
+
+//    relationship between farmer and crops
+private String farmerId;
 }
 
 

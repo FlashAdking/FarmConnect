@@ -12,6 +12,8 @@ public interface FarmersRepo extends MongoRepository<Farmer , String> {
 
     Optional<Farmer> findByUniqueId(String uniqueId);
 
+    Farmer getByUniqueId(String uniqueId);
+
     @Query( "{'emailOrPhone' : ?0 }" )
     Optional<Farmer> findByEmailOrPhone(String emailOrPhone);
 }

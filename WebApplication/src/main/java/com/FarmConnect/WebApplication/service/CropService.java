@@ -128,6 +128,18 @@ public class CropService {
         return objCrop.findByLabel(label);
     }
 
+    public void assignCropToFarmer(String cropId, String farmerId) {
+        Optional<Crops> cropOpt = objCrop.findById(cropId);
+        if (cropOpt.isPresent()){
+            Crops crop = cropOpt.get();
+            crop.setFarmerId(farmerId);
+            objCrop.save(crop);
+        } else {
+            throw new IllegalArgumentException("Crop not found for id: " + cropId);
+        }
+    }
+
+
     public List<Crops> findByPriceLessThanEqual(Integer maxPrice) {
         return objCrop.findByPriceLessThanEqual(maxPrice);
     }

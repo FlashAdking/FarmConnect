@@ -29,4 +29,6 @@ public interface CropsRepo extends MongoRepository<Crops, String>{
 
     List<Crops> findByPriceLessThanEqual(Integer price);
 
+    List<Crops> findByFarmerId(String farmerId);
+
 }

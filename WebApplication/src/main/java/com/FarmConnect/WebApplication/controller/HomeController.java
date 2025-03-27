@@ -38,26 +38,25 @@ public class HomeController {
         return "Sign Up page";
     }
 
-    @GetMapping("/Farmers")
-    public String getFarmers(){
-        return "Farmers";
-    }
-
     @GetMapping("/Signupfarmer")
     public String getFarmerSignUp(){
         return "signupfarmer";
     }
 
-    @GetMapping("/transport")
-    public String getTransport(){
-        return "List of Transporters";
-    }
+//    @GetMapping("/transport")
+//    public String getTransport(){
+//        return "List of Transporters";
+//    }
 
     @GetMapping("/about")
     public String getAbout(){
         return "our about page";
     }
 
+    @GetMapping("/transport")
+    public String getTransportPage(){
+        return "transport";
+    }
 
 
 
