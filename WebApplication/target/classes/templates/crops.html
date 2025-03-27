@@ -147,12 +147,50 @@
 
         <!-- Product Listing -->
         <main>
-            <div class="sort-options">
+            <!-- <div class="sort-options">
                 <a th:href="@{/crops(sortBy='new')}">New</a>
                 <a th:href="@{/crops(sortBy='priceAsc')}">Price ascending</a>
                 <a th:href="@{/crops(sortBy='priceDesc')}">Price descending</a>
                 <a th:href="@{/crops(sortBy='rating')}">Rating</a>
+            </div> -->
+            <div class="sort-options">
+                <div class="sort-container">
+                    <div class="sort-links">
+                        <a th:href="@{/crops(sortBy='new')}">New</a>
+                        <a th:href="@{/crops(sortBy='priceAsc')}">Price ascending</a>
+                        <a th:href="@{/crops(sortBy='priceDesc')}">Price descending</a>
+                        <a th:href="@{/crops(sortBy='rating')}">Rating</a>
+                    </div>
+                    <div class="cart-icon">
+                        <a th:href="@{/crops/addcart}" class="cart-link">
+                            <i class="fa fa-shopping-cart"></i>
+                            <span class="cart-count">0</span>
+                        </a>
+                    </div>
+                </div>
             </div>
+
+            <!-- dynamix count for the cart logo -->
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                  updateCartCount();
+                });
+              
+                function updateCartCount() {
+                  // Retrieve the cart items from localStorage; if none, default to an empty array.
+                  let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+                  
+                  // Instead of summing the quantities, we simply count the number of crop items.
+                  let numberOfCrops = cartItems.length;
+              
+                  // Find the cart count element and update its text.
+                  const cartCountElem = document.querySelector('.cart-count');
+                  if (cartCountElem) {
+                    cartCountElem.textContent = numberOfCrops;
+                  }
+                }
+              </script>
+              
 
             <div class="products-grid">
                 <div class="product-card" th:each="crop : ${crops}" th:data-category="${crop.category}"
@@ -298,148 +336,156 @@
             // Initial filter application
             applyFilters();
         });
+        
+        
 
-        // <script>
-  // This function will be invoked when the "Add to Cart" button is clicked
-  function addCropToCart(button) {
-    console.log("addCropToCart called!");
-    // Find the nearest parent product card
-    const productCard = button.closest('.product-card');
-    if (!productCard) return;
+        // This function will be invoked when the "Add to Cart" button is clicked
+        function addCropToCart(button) {
+            console.log("addCropToCart called!");
+            // Find the nearest parent product card
+            const productCard = button.closest('.product-card');
+            if (!productCard) return;
 
-    // Extract crop details from the product card attributes and inner text
-    const cropName = productCard.querySelector('.product-info h3').innerText.trim();
-    const cropPrice = parseFloat(productCard.getAttribute('data-price'));
-    const cropCategory = productCard.getAttribute('data-category');
-    const cropLabel = productCard.getAttribute('data-label');
-    const cropColor = productCard.getAttribute('data-color');
-    const cropQuantity = productCard.getAttribute('data-quantity') || 1; // provide a default in case it's missing
+            const imgElement = productCard.querySelector('.product-image img');
+            const cropImageURL = imgElement ? imgElement.getAttribute('src') : '';
 
-    // Create a crop object
-    const cropItem = {
-      name: cropName,
-      price: cropPrice,
-      category: cropCategory,
-      label: cropLabel,
-      color: cropColor,
-      quantity: cropQuantity,
-    };
 
-    // Check if your global Cart module with an 'addItem' function is available
-    if (window.Cart && typeof Cart.addItem === 'function') {
-      Cart.addItem(cropItem);
-      console.log(`${cropName} added to the cart`);
-      alert(`${cropName} has been added to your cart.`);
-    } else {
-      console.error("Cart module is not available or does not support addItem.");
-    }
-  }
+            // Extract crop details from the product card attributes and inner text
+            const cropName = productCard.querySelector('.product-info h3').innerText.trim();
+            const cropPrice = parseFloat(productCard.getAttribute('data-price'));
+            const cropCategory = productCard.getAttribute('data-category');
+            const cropLabel = productCard.getAttribute('data-label');
+            const cropColor = productCard.getAttribute('data-color');
+            const cropQuantity = productCard.getAttribute('data-quantity') || 1; // provide a default in case it's missing
 
-  // For persistence across pages, the Cart module is defined on the global window object.
-  window.Cart = (function () {
-    // Retrieve existing cart items from localStorage or initialize an empty array
-    let items = JSON.parse(localStorage.getItem("cartItems") || "[]");
+            // Create a crop object
+            const cropItem = {
+                name: cropName,
+                price: cropPrice,
+                category: cropCategory,
+                label: cropLabel,
+                color: cropColor,
+                quantity: cropQuantity,
+                image: cropImageURL
+            };
 
-    // Utility: Save the current cart items to localStorage
-    function saveCart() {
-      localStorage.setItem("cartItems", JSON.stringify(items));
-    }
+            // Check if your global Cart module with an 'addItem' function is available
+            if (window.Cart && typeof Cart.addItem === 'function') {
+                Cart.addItem(cropItem);
+                console.log(`${cropName} added to the cart`);
+                alert(`${cropName} has been added to your cart.`);
 
-    // Utility: Find an item by a unique identifier.
-    // This example uses `name` as the unique key. Change this if your items have a unique ID.
-    function findItemIndex(itemName) {
-      return items.findIndex(item => item.name === itemName);
-    }
-
-    return {
-      /**
-       * Adds an item to the cart.
-       * If an item with the same unique identifier (name) exists,
-       * it updates the quantity accordingly.
-       *
-       * @param {Object} item - An object representing the product.
-       */
-      addItem: function (item) {
-        const idx = findItemIndex(item.name);
-        if (idx !== -1) {
-          // Update quantity: Sum existing and new quantity.
-          items[idx].quantity = parseInt(items[idx].quantity, 10) + parseInt(item.quantity, 10);
-        } else {
-          items.push(item);
+                window.location.reload();
+            } else {
+                console.error("Cart module is not available or does not support addItem.");
+            }
         }
-        saveCart();
-      },
 
-      /**
-       * Retrieves all items in the cart.
-       *
-       * @returns {Array} The array of cart items.
-       */
-      getItems: function () {
-        return items;
-      },
+        // For persistence across pages, the Cart module is defined on the global window object.
+        window.Cart = (function () {
+            // Retrieve existing cart items from localStorage or initialize an empty array
+            let items = JSON.parse(localStorage.getItem("cartItems") || "[]");
 
-      /**
-       * Removes an item from the cart by its unique identifier (here, name).
-       *
-       * @param {String} itemName - The unique name of the item to remove.
-       */
-      removeItem: function (itemName) {
-        const idx = findItemIndex(itemName);
-        if (idx !== -1) {
-          items.splice(idx, 1);
-          saveCart();
-        }
-      },
+            // Utility: Save the current cart items to localStorage
+            function saveCart() {
+                localStorage.setItem("cartItems", JSON.stringify(items));
+            }
 
-      /**
-       * Updates the quantity for a specific item.
-       *
-       * @param {String} itemName - The unique name of the item.
-       * @param {Number} quantity - The new quantity to set.
-       */
-      updateItemQuantity: function (itemName, quantity) {
-        const idx = findItemIndex(itemName);
-        if (idx !== -1) {
-          items[idx].quantity = quantity;
-          saveCart();
-        }
-      },
+            // Utility: Find an item by a unique identifier.
+            // This example uses `name` as the unique key. Change this if your items have a unique ID.
+            function findItemIndex(itemName) {
+                return items.findIndex(item => item.name === itemName);
+            }
 
-      /**
-       * Clears all items from the cart.
-       */
-      clearCart: function () {
-        items = [];
-        saveCart();
-      },
+            return {
+                /**
+                 * Adds an item to the cart.
+                 * If an item with the same unique identifier (name) exists,
+                 * it updates the quantity accordingly.
+                 *
+                 * @param {Object} item - An object representing the product.
+                 */
+                addItem: function (item) {
+                    const idx = findItemIndex(item.name);
+                    if (idx !== -1) {
+                        // Update quantity: Sum existing and new quantity.
+                        items[idx].quantity = parseInt(items[idx].quantity, 10) + parseInt(item.quantity, 10);
+                    } else {
+                        items.push(item);
+                    }
+                    saveCart();
+                },
 
-      /**
-       * Calculates the total cost of the items in the cart.
-       *
-       * @returns {Number} The total price.
-       */
-      getTotal: function () {
-        return items.reduce((total, item) => {
-          return total + (parseFloat(item.price) * parseInt(item.quantity, 10));
-        }, 0);
-      },
+                /**
+                 * Retrieves all items in the cart.
+                 *
+                 * @returns {Array} The array of cart items.
+                 */
+                getItems: function () {
+                    return items;
+                },
 
-      /**
-       * Calculates the total number of items in the cart.
-       *
-       * @returns {Number} The sum of all item quantities.
-       */
-      getItemCount: function () {
-        return items.reduce((total, item) => {
-          return total + parseInt(item.quantity, 10);
-        }, 0);
-      }
-    };
-  })();
-</script>
-    // <!-- <script src="@{/static/js/addcart.js}"></script> -->
+                /**
+                 * Removes an item from the cart by its unique identifier (here, name).
+                 *
+                 * @param {String} itemName - The unique name of the item to remove.
+                 */
+                removeItem: function (itemName) {
+                    const idx = findItemIndex(itemName);
+                    if (idx !== -1) {
+                        items.splice(idx, 1);
+                        saveCart();
+                    }
+                },
 
+                /**
+                 * Updates the quantity for a specific item.
+                 *
+                 * @param {String} itemName - The unique name of the item.
+                 * @param {Number} quantity - The new quantity to set.
+                 */
+                updateItemQuantity: function (itemName, quantity) {
+                    const idx = findItemIndex(itemName);
+                    if (idx !== -1) {
+                        items[idx].quantity = quantity;
+                        saveCart();
+                    }
+                },
+
+                /**
+                 * Clears all items from the cart.
+                 */
+                clearCart: function () {
+                    items = [];
+                    saveCart();
+                },
+
+                /**
+                 * Calculates the total cost of the items in the cart.
+                 *
+                 * @returns {Number} The total price.
+                 */
+                getTotal: function () {
+                    return items.reduce((total, item) => {
+                        return total + (parseFloat(item.price) * parseInt(item.quantity, 10));
+                    }, 0);
+                },
+
+                /**
+                 * Calculates the total number of items in the cart.
+                 *
+                 * @returns {Number} The sum of all item quantities.
+                 */
+                getItemCount: function () {
+                    return items.reduce((total, item) => {
+                        return total + parseInt(item.quantity, 10);
+                    }, 0);
+                }
+            };
+        })();
+
+
+    </script>
 </body>
 
 </html>

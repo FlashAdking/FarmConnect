@@ -10,8 +10,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <style>
-        
-    
     .search-container {
         background-color: white;
         border-radius: 50px;
@@ -60,24 +58,37 @@
         top: 50%;
         transform: translateY(-50%);
     }
+
+    /* logo */
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logo i {
+        font-size: 24px;
+        color: black;
+        /* A green color to represent farming */
+        margin-right: 8px;
+    }
+
+    .logo-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: black;
+        /* A deeper green for contrast */
+        font-family: 'Inter', sans-serif;
+        /* Assuming you're using Inter font from previous CSS */
+        letter-spacing: -0.5px;
+    }
 </style>
+
 <body>
     <header>
         <div class="logo">
             <i class="fa fa-home"></i>
-        </div>
-        <div class="search-container position-relative">
-            <form class="d-flex align-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="search-icon feather feather-search">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input class="form-control search-input ps-5" type="search"
-                       placeholder="Search anything..." aria-label="Search">
-                <button class="btn btn-search ms-2" type="submit">Search</button>
-            </form>
+            <span class="logo-text">FarmConnect</span>
         </div>
         <nav>
             <a th:href="@{/}">Home</a>
@@ -94,21 +105,65 @@
             <h1>FarmConnect</h1>
             <p>Empowering farmers, nourishing homes</p>
             <div class="dropdown">
-                <button style="background-color: black; color: white; padding: 10px 20px; font-size: 16px;" class="btn" onclick="toggleDropdown('loginDropdown')">Login</button>
+                <button style="background-color: black; color: white; padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer;" 
+                        class="btn" 
+                        onclick="toggleDropdown('loginDropdown')">
+                    Login
+                </button>
                 <div class="dropdown-content" id="loginDropdown">
-                    <a th:href="@{/farmerlogin}">Log In as Farmer</a>
-                    <a th:href="@{/wholesalerlogin}">Log In as WholeSaler</a>
-                    <a th:href="@{/transporterlogin}">Log In as Transporter</a>
+                    <a th:href="@{/farmerlogin}">
+                        <i class="fa fa-tractor"></i>
+                        <span>Log In as Farmer</span>
+                    </a>
+                    <a th:href="@{/wholesalerlogin}">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span>Log In as WholeSaler</span>
+                    </a>
+                    <a th:href="@{/transporterlogin}">
+                        <i class="fa fa-truck"></i>
+                        <span>Log In as Transporter</span>
+                    </a>
                 </div>
             </div>
             <div class="dropdown">
-                <button style="background-color: black; color: white; padding: 10px 20px; font-size: 16px;"  class="btn" onclick="toggleDropdown('registerDropdown')">Register</button>
+                <button
+                    style="background-color: black; color: white; padding: 10px 20px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer;"
+                    class="btn" onclick="toggleDropdown('registerDropdown')">
+                    Register
+                </button>
                 <div class="dropdown-content" id="registerDropdown">
-                    <a th:href="@{/Signupfarmer}">Sign Up As Farmer</a>
-                    <a th:href="@{/Signupwholesaler}">Sign Up As WholeSaler</a>
-                    <a th:href="@{/Signuptransporter}">Sign Up As Transporter</a>
+                    <a th:href="@{/Signupfarmer}">
+                        <i class="fa fa-tractor"></i>
+                        <span>Sign Up As Farmer</span>
+                    </a>
+                    <a th:href="@{/Signupwholesaler}">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span>Sign Up As WholeSaler</span>
+                    </a>
+                    <a th:href="@{/Signuptransporter}">
+                        <i class="fa fa-truck"></i>
+                        <span>Sign Up As Transporter</span>
+                    </a>
                 </div>
             </div>
+
+            <script>
+                function toggleDropdown(dropdownId) {
+                    const dropdown = document.getElementById(dropdownId).closest('.dropdown');
+                    dropdown.classList.toggle('active');
+
+                    // Close dropdown when clicking outside
+                    function closeDropdown(e) {
+                        if (!dropdown.contains(e.target)) {
+                            dropdown.classList.remove('active');
+                            document.removeEventListener('click', closeDropdown);
+                        }
+                    }
+
+                    // Add event listener to close dropdown when clicking outside
+                    document.addEventListener('click', closeDropdown);
+                }
+            </script>
         </div>
     </section>
 
