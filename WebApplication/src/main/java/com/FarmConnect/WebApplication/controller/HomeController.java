@@ -38,25 +38,23 @@ public class HomeController {
         return "Sign Up page";
     }
 
+
+    @GetMapping({"/transport","/about","/login"})
+    public String getDedaultPage(){
+        return "underdev";
+    }
+
     @GetMapping("/Signupfarmer")
     public String getFarmerSignUp(){
         return "signupfarmer";
     }
 
+
+
 //    @GetMapping("/transport")
-//    public String getTransport(){
-//        return "List of Transporters";
+//    public String getTransportPage(){
+//        return "transport";
 //    }
-
-    @GetMapping("/about")
-    public String getAbout(){
-        return "our about page";
-    }
-
-    @GetMapping("/transport")
-    public String getTransportPage(){
-        return "transport";
-    }
 
 
 

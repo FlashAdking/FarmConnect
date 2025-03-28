@@ -98,19 +98,71 @@
         <div class="form-container">
             <h2>Sign up as Farmer</h2>
             <p>Enter your details below</p>
-            <form>
-                <input type="text" placeholder="Name" required>
-                <input type="email" placeholder="Email or Phone Number" required>
-                <input type="password" placeholder="Password" required>
-                <input type="password" placeholder="Confirm Password" required>
-                <button type="submit" style="background-color: black; color: white; padding: 10px 20px; font-size: 16px;" class="btn">Create Account</button>
-                <button class="google-btn" style="background-color: black; color: white; padding: 10px 20px; font-size: 16px;">
-                    <i class="fa-brands fa-google"></i> Sign up with Google
-                </button>
-                <p>Already have an account? <a th:href="@{/login}">Log in</a></p>
+            <form id="signupForm">
+              <input type="text" id="fullName" placeholder="Name" required>
+              <input type="email" id="emailOrPhone" placeholder="Email or Phone Number" required>
+              <input type="password" id="password" placeholder="Password" required>
+              <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
+              <button type="submit" style="background-color: black; color: white; padding: 10px 20px; font-size: 16px;" class="btn">
+                Create Account
+              </button>
+              <button type="button" class="google-btn" style="background-color: black; color: white; padding: 10px 20px; font-size: 16px;">
+                <i class="fa-brands fa-google"></i> Sign up with Google
+              </button>
+              <p>Already have an account? <a href="/login">Log in</a></p>
             </form>
-        </div>
+          </div>
+          
     </section>
+
+    <script>
+        // Listen for the form submission
+        document.getElementById("signupForm").addEventListener("submit", function (e) {
+          e.preventDefault(); // Prevent the default form submission
+      
+          // Validate form fields (example: check that password and confirm password match)
+          const password = document.getElementById("password").value;
+          const confirmPassword = document.getElementById("confirmPassword").value;
+          if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+          }
+      
+          // Build the JSON object from the form data
+          const farmer = {
+            fullName: document.getElementById("fullName").value.trim(),
+            emailOrPhone: document.getElementById("emailOrPhone").value.trim(),
+            password: password
+            // Additional fields can be added here as required
+          };
+      
+          // Send the JSON object to the server via fetch API
+          fetch("/Signupfarmer", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json" // This tells the server to treat it as JSON
+            },
+            body: JSON.stringify(farmer)
+          })
+            .then(response => {
+              if (response.ok) {
+                // Successfully created account
+                alert("Account created successfully!");
+                // Optionally, redirect to another page
+                window.location.href = "/login";
+              } else {
+                // Extract error details
+                return response.text().then(text => { throw new Error(text); });
+              }
+            })
+            .catch(error => {
+              console.error("Error creating account:", error.message);
+              alert("Error creating account: " + error.message);
+            });
+        });
+      </script>
+      
+      
 
     <!-- Footer -->
     <footer>
