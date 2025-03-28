@@ -4,12 +4,11 @@ package com.FarmConnect.WebApplication.controller;
 import com.FarmConnect.WebApplication.model.Farmer;
 import com.FarmConnect.WebApplication.service.FarmerService;
 import com.FarmConnect.WebApplication.service.HomeService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-
 
 @CrossOrigin
 @Controller
@@ -39,7 +38,8 @@ public class HomeController {
     }
 
 
-    @GetMapping({"/transport","/about","/login"})
+    @GetMapping({"/transport","/about","/login","/farmerlogin","/wholesalerlogin",
+            "/transporterlogin","/Signupwholesaler","/Signuptransporter"})
     public String getDedaultPage(){
         return "underdev";
     }
@@ -48,16 +48,6 @@ public class HomeController {
     public String getFarmerSignUp(){
         return "signupfarmer";
     }
-
-
-
-//    @GetMapping("/transport")
-//    public String getTransportPage(){
-//        return "transport";
-//    }
-
-
-
 
 
 
