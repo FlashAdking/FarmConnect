@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Commerce Vegetables Page</title>
+    <title>FarmConnect Crops</title>
     <link rel="stylesheet" th:href="@{/css/crops.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
@@ -58,6 +58,30 @@
         top: 50%;
         transform: translateY(-50%);
     }
+
+    /* farmconnect logo */
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logo i {
+        font-size: 24px;
+        color: black;
+        /* A green color to represent farming */
+        margin-right: 8px;
+    }
+
+    .logo-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: black;
+        /* A deeper green for contrast */
+        font-family: 'Inter', sans-serif;
+        /* Assuming you're using Inter font from previous CSS */
+        letter-spacing: -0.5px;
+    }
 </style>
 
 
@@ -67,6 +91,7 @@
     <header>
         <div class="logo">
             <i class="fa fa-home"></i>
+            <span class="logo-text">FarmConnect</span>
         </div>
         <div class="search-container position-relative">
             <form class="d-flex align-items-center">
@@ -172,25 +197,25 @@
 
             <!-- dynamix count for the cart logo -->
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                  updateCartCount();
+                document.addEventListener('DOMContentLoaded', function () {
+                    updateCartCount();
                 });
-              
+
                 function updateCartCount() {
-                  // Retrieve the cart items from localStorage; if none, default to an empty array.
-                  let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-                  
-                  // Instead of summing the quantities, we simply count the number of crop items.
-                  let numberOfCrops = cartItems.length;
-              
-                  // Find the cart count element and update its text.
-                  const cartCountElem = document.querySelector('.cart-count');
-                  if (cartCountElem) {
-                    cartCountElem.textContent = numberOfCrops;
-                  }
+                    // Retrieve the cart items from localStorage; if none, default to an empty array.
+                    let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+                    // Instead of summing the quantities, we simply count the number of crop items.
+                    let numberOfCrops = cartItems.length;
+
+                    // Find the cart count element and update its text.
+                    const cartCountElem = document.querySelector('.cart-count');
+                    if (cartCountElem) {
+                        cartCountElem.textContent = numberOfCrops;
+                    }
                 }
-              </script>
-              
+            </script>
+
 
             <div class="products-grid">
                 <div class="product-card" th:each="crop : ${crops}" th:data-category="${crop.category}"
@@ -336,8 +361,8 @@
             // Initial filter application
             applyFilters();
         });
-        
-        
+
+
 
         // This function will be invoked when the "Add to Cart" button is clicked
         function addCropToCart(button) {

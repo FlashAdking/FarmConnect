@@ -1,164 +1,190 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" th:href="@{/css/farmers.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        
-    
-        .search-container {
-            background-color: white;
-            border-radius: 50px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            padding: 10px;
-            max-width: 500px;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-    
-        .search-container:hover {
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
-    
-        .form-control.search-input {
-            border: none;
-            background: transparent;
-            padding-left: 20px;
-            font-size: 1rem;
-            height: 50px;
-        }
-    
-        .form-control.search-input:focus {
-            box-shadow: none;
-            outline: none;
-        }
-    
-        .btn-search {
-            background-color: black;
-            color: white;
-            border-radius: 50px;
-            padding: 10px 20px;
-            border: none;
-            transition: all 0.3s ease;
-        }
-    
-        .btn-search:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-    
-        .search-icon {
-            color: #6c757d;
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-    </style>
-    <title>Farmers Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/farmers.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .search-container {
+      background-color: white;
+      border-radius: 50px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      max-width: 500px;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .search-container:hover {
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-control.search-input {
+      border: none;
+      background: transparent;
+      padding-left: 20px;
+      font-size: 1rem;
+      height: 50px;
+    }
+
+    .form-control.search-input:focus {
+      box-shadow: none;
+      outline: none;
+    }
+
+    .btn-search {
+      background-color: black;
+      color: white;
+      border-radius: 50px;
+      padding: 10px 20px;
+      border: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-search:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    .search-icon {
+      color: #6c757d;
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+
+    /* farmconnect logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo i {
+      font-size: 24px;
+      color: black;
+      /* A green color to represent farming */
+      margin-right: 8px;
+    }
+
+    .logo-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: black;
+      /* A deeper green for contrast */
+      font-family: 'Inter', sans-serif;
+      /* Assuming you're using Inter font from previous CSS */
+      letter-spacing: -0.5px;
+    }
+  </style>
+  <title>Farmers Page</title>
 </head>
+
 <body>
-    <header>
-        <div class="logo">
-            <i class="fa fa-home"></i>
-        </div>
-        <div class="search-container position-relative">
-            <form class="d-flex align-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="search-icon feather feather-search">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input class="form-control search-input ps-5" type="search"
-                       placeholder="Search anything..." aria-label="Search">
-                <button class="btn btn-search ms-2" type="submit">Search</button>
-            </form>
-        </div>
-        <nav>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/Farmers}">Farmers</a>
-            <a th:href="@{/crops}">Crops</a>
-            <a th:href="@{/transport}">Transport</a>
-            <a th:href="@{/about}">About</a>
-            <i class="fa fa-user"></i>
-        </nav>
-    </header>
+  <header>
+    <div class="logo">
+      <i class="fa fa-home"></i>
+      <span class="logo-text">FarmConnect</span>
+    </div>
+    <div class="search-container position-relative">
+      <form class="d-flex align-items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+          class="search-icon feather feather-search">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input class="form-control search-input ps-5" type="search" placeholder="Search anything..."
+          aria-label="Search">
+        <button class="btn btn-search ms-2" type="submit">Search</button>
+      </form>
+    </div>
+    <nav>
+      <a th:href="@{/}">Home</a>
+      <a th:href="@{/Farmers}">Farmers</a>
+      <a th:href="@{/crops}">Crops</a>
+      <a th:href="@{/transport}">Transport</a>
+      <a th:href="@{/about}">About</a>
+      <i class="fa fa-user"></i>
+    </nav>
+  </header>
 
 
-    <!-- Middle Content Start -->
+  <!-- Middle Content Start -->
 
-    <!-- Example Farmers.html snippet with container -->
-    <div class="container">
-        <div class="farmers-grid">
-          <!-- Farmer cards will be dynamically injected here -->
-        </div>
-      </div>
-      
-      <script>
-        // Run the code when the document is fully loaded
-        document.addEventListener("DOMContentLoaded", () => {
-          fetchFarmers();
-        });
-      
-        // Function to fetch farmers from the API endpoint
-        async function fetchFarmers() {
-          try {
-            const response = await fetch('/api/farmers');
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            const farmers = await response.json();
-            renderFarmers(farmers);
-          } catch (error) {
-            console.error('Error fetching farmers:', error);
-            displayError("Failed to load farmers. Please try again later.");
-          }
+  <!-- Example Farmers.html snippet with container -->
+  <div class="container">
+    <div class="farmers-grid">
+      <!-- Farmer cards will be dynamically injected here -->
+    </div>
+  </div>
+
+  <script>
+    // Run the code when the document is fully loaded
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchFarmers();
+    });
+
+    // Function to fetch farmers from the API endpoint
+    async function fetchFarmers() {
+      try {
+        const response = await fetch('/api/farmers');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
-      
-        // Function to display an error message in the UI
-        function displayError(message) {
-          const farmerGrid = document.querySelector('.farmers-grid');
-          farmerGrid.innerHTML = `<div class="error">${message}</div>`;
-        }
-      
-        // Function to render the farmer details
-        function renderFarmers(farmers) {
-          const farmerGrid = document.querySelector('.farmers-grid');
-          // Clear any existing content
-          farmerGrid.innerHTML = "";
-      
-          // Handle case when no farmers are returned
-          if (farmers.length === 0) {
-            farmerGrid.innerHTML = '<div class="no-data">No farmers found.</div>';
-            return;
-          }
-      
-          // Iterate over each farmer in the array
-          farmers.forEach(farmer => {
-            // If an image exists, convert the byte array to a Base64 URL; otherwise, use a default image.
-            let imgSrc = (farmer.farmerImage && farmer.imageType)
-              ? `data:${farmer.imageType};base64,${farmer.farmerImage}`
-              : '/img/default-farmer.jpg';
-      
-            // Render tags from the response, if available; otherwise, use default tags.
-            let tagsHtml = "";
-            if (Array.isArray(farmer.tags) && farmer.tags.length > 0) {
-              tagsHtml = farmer.tags
-                .map(tag => `<span class="tag ${tag.toLowerCase()}">${tag}</span>`)
-                .join('');
-            } else {
-              tagsHtml = `<span class="tag organic">Organic</span>
+        const farmers = await response.json();
+        renderFarmers(farmers);
+      } catch (error) {
+        console.error('Error fetching farmers:', error);
+        displayError("Failed to load farmers. Please try again later.");
+      }
+    }
+
+    // Function to display an error message in the UI
+    function displayError(message) {
+      const farmerGrid = document.querySelector('.farmers-grid');
+      farmerGrid.innerHTML = `<div class="error">${message}</div>`;
+    }
+
+    // Function to render the farmer details
+    function renderFarmers(farmers) {
+      const farmerGrid = document.querySelector('.farmers-grid');
+      // Clear any existing content
+      farmerGrid.innerHTML = "";
+
+      // Handle case when no farmers are returned
+      if (farmers.length === 0) {
+        farmerGrid.innerHTML = '<div class="no-data">No farmers found.</div>';
+        return;
+      }
+
+      // Iterate over each farmer in the array
+      farmers.forEach(farmer => {
+        // If an image exists, convert the byte array to a Base64 URL; otherwise, use a default image.
+        let imgSrc = (farmer.farmerImage && farmer.imageType)
+          ? `data:${farmer.imageType};base64,${farmer.farmerImage}`
+          : '/img/default-farmer.jpg';
+
+        // Render tags from the response, if available; otherwise, use default tags.
+        let tagsHtml = "";
+        if (Array.isArray(farmer.tags) && farmer.tags.length > 0) {
+          tagsHtml = farmer.tags
+            .map(tag => `<span class="tag ${tag.toLowerCase()}">${tag}</span>`)
+            .join('');
+        } else {
+          tagsHtml = `<span class="tag organic">Organic</span>
                           <span class="tag fruits">Fruits</span>`;
-            }
-      
-            // Create a new div element for the farmer card
-            const card = document.createElement('div');
-            card.classList.add("farmer-card");
-            card.innerHTML = `
+        }
+
+        // Create a new div element for the farmer card
+        const card = document.createElement('div');
+        card.classList.add("farmer-card");
+        card.innerHTML = `
               <img src="${imgSrc}" alt="Farmer ${farmer.fullName}"
                    onerror="this.onerror=null;this.src='/img/default-farmer.jpg';">
               <h2>${farmer.fullName}</h2>
@@ -167,57 +193,58 @@
               <p class="contact">${farmer.emailOrPhone}</p>
               <button class="crops-btn">Crops Uploaded</button>
             `;
-      
-            // Append the card to the grid container
-            farmerGrid.appendChild(card);
-          });
-        }
-      </script>
+
+        // Append the card to the grid container
+        farmerGrid.appendChild(card);
+      });
+    }
+  </script>
 
   <!-- Middle Content End -->
-  
 
 
 
 
 
-    <footer>
-        <div class="footer-section">
-            <h3>Exclusive</h3>
-            <p>Subscribe</p>
-            <input type="email" placeholder="Enter your email">
-        </div>
-        <div class="footer-section">
-            <h3>Support</h3>
-            <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
-            <p>exclusive@gmail.com</p>
-            <p>+88015-88888-9999</p>
-        </div>
-        <div class="footer-section">
-            <h3>Account</h3>
-            <p>My Account</p>
-            <p>Login / Register</p>
-            <p>Cart</p>
-            <p>Wishlist</p>
-            <p>Shop</p>
-        </div>
-        <div class="footer-section">
-            <h3>Quick Link</h3>
-            <p>Privacy Policy</p>
-            <p>Terms of Use</p>
-            <p>FAQ</p>
-            <p>Contact</p>
-        </div>
-        <div class="footer-section">
-            <h3>Download App</h3>
-            <p>Save $3 with App New User Only</p>
-            <img src="qr-code.png" alt="QR Code">
-            <div class="app-icons">
-                <i class="fab fa-google-play"></i>
-                <i class="fab fa-apple"></i>
-            </div>
-        </div>
-    </footer>
+
+  <footer>
+    <div class="footer-section">
+      <h3>Exclusive</h3>
+      <p>Subscribe</p>
+      <input type="email" placeholder="Enter your email">
+    </div>
+    <div class="footer-section">
+      <h3>Support</h3>
+      <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
+      <p>exclusive@gmail.com</p>
+      <p>+88015-88888-9999</p>
+    </div>
+    <div class="footer-section">
+      <h3>Account</h3>
+      <p>My Account</p>
+      <p>Login / Register</p>
+      <p>Cart</p>
+      <p>Wishlist</p>
+      <p>Shop</p>
+    </div>
+    <div class="footer-section">
+      <h3>Quick Link</h3>
+      <p>Privacy Policy</p>
+      <p>Terms of Use</p>
+      <p>FAQ</p>
+      <p>Contact</p>
+    </div>
+    <div class="footer-section">
+      <h3>Download App</h3>
+      <p>Save $3 with App New User Only</p>
+      <img src="qr-code.png" alt="QR Code">
+      <div class="app-icons">
+        <i class="fab fa-google-play"></i>
+        <i class="fab fa-apple"></i>
+      </div>
+    </div>
+  </footer>
 
 </body>
+
 </html>

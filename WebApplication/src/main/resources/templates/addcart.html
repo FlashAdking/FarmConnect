@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart</title>
+    <title>FarmConnect Shopping Cart</title>
     <link rel="stylesheet" th:href="@{/css/addcart.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
@@ -56,6 +56,31 @@
             top: 50%;
             transform: translateY(-50%);
         }
+
+
+        /* farmconnect logo */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 24px;
+            color: black;
+            /* A green color to represent farming */
+            margin-right: 8px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: black;
+            /* A deeper green for contrast */
+            font-family: 'Inter', sans-serif;
+            /* Assuming you're using Inter font from previous CSS */
+            letter-spacing: -0.5px;
+        }
     </style>
 </head>
 
@@ -65,6 +90,7 @@
             <div class="header-container">
                 <div class="logo">
                     <i class="fa fa-home"></i>
+                    <span class="logo-text">FarmConnect</span>
                 </div>
 
                 <div class="search-container">
@@ -79,7 +105,7 @@
                 <nav>
                     <div class="nav-links">
                         <a th:href="@{/}">Home</a>
-                        <a th:href="@{/farmers}">Farmers</a>
+                        <a th:href="@{/Farmers}">Farmers</a>
                         <a th:href="@{/crops}">Crops</a>
                         <a th:href="@{/transport}">Transport</a>
                         <a th:href="@{/about}">About</a>

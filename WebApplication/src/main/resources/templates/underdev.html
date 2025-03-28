@@ -9,118 +9,142 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 20px;
-    background-color: #f8f9fa;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-.logo {
-    display: flex;
-    align-items: center;
-}
+        .logo {
+            display: flex;
+            align-items: center;
+        }
 
-.logo i {
-    font-size: 24px;
-    color: #333;
-}
+        .logo i {
+            font-size: 24px;
+            color: #333;
+        }
 
-.search-container {
-    position: relative;
-    background-color: white;
-    border-radius: 50px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    max-width: 500px;
-    width: 100%;
-    transition: all 0.3s ease;
-}
+        .search-container {
+            position: relative;
+            background-color: white;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            max-width: 500px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
 
-.search-container:hover {
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-}
+        .search-container:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
 
-.search-container form {
-    display: flex;
-    align-items: center;
-    width: 100%;
-}
+        .search-container form {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
 
-.search-input {
-    flex-grow: 1;
-    border: none;
-    background: transparent;
-    padding-left: 40px;
-    font-size: 1rem;
-    height: 50px;
-}
+        .search-input {
+            flex-grow: 1;
+            border: none;
+            background: transparent;
+            padding-left: 40px;
+            font-size: 1rem;
+            height: 50px;
+        }
 
-.search-input:focus {
-    outline: none;
-    box-shadow: none;
-}
+        .search-input:focus {
+            outline: none;
+            box-shadow: none;
+        }
 
-.search-icon {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6c757d;
-}
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
 
-.btn-search {
-    background-color: black;
-    color: white;
-    border-radius: 50px;
-    padding: 10px 20px;
-    border: none;
-    margin-left: 10px;
-    transition: all 0.3s ease;
-}
+        .btn-search {
+            background-color: black;
+            color: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            border: none;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
 
-.btn-search:hover {
-    background-color: #333;
-    transform: scale(1.05);
-}
+        .btn-search:hover {
+            background-color: #333;
+            transform: scale(1.05);
+        }
 
-nav {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
 
-nav a {
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
 
-nav a:hover {
-    color: #007bff;
-}
+        nav a:hover {
+            color: #007bff;
+        }
 
-nav .fa-user {
-    font-size: 20px;
-    color: #333;
-    margin-left: 10px;
-}
+        nav .fa-user {
+            font-size: 20px;
+            color: #333;
+            margin-left: 10px;
+        }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        gap: 15px;
-    }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
 
-    .search-container {
-        width: 100%;
-        max-width: 100%;
-    }
-}
+            .search-container {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        /* farmconnect logo */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 24px;
+            color: black;
+            /* A green color to represent farming */
+            margin-right: 8px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: black;
+            /* A deeper green for contrast */
+            font-family: 'Inter', sans-serif;
+            /* Assuming you're using Inter font from previous CSS */
+            letter-spacing: -0.5px;
+        }
     </style>
     <title>Under Development</title>
 </head>
@@ -129,6 +153,7 @@ nav .fa-user {
     <header>
         <div class="logo">
             <i class="fa fa-home"></i>
+            <span class="logo-text">FarmConnect</span>
         </div>
         <div class="search-container position-relative">
             <form class="d-flex align-items-center">
