@@ -112,8 +112,40 @@
             <a th:href="@{/crops}">Crops</a>
             <a th:href="@{/transport}">Transport</a>
             <a th:href="@{/about}">About</a>
-            <i class="fa fa-user"></i>
         </nav>
+
+        <div class="dropdown-user" id="dropdownUser">
+            <i class="fa fa-user"></i>
+            <div class="dropdown-user-menu">
+                <a th:href="@{/profile}">
+                    <i class="fas fa-user"></i>My Profile
+                </a>
+                <form th:action="@{/logout}" method="POST" style="margin: 0;">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+
+
+        <script>
+            // JavaScript to toggle the dropdown menu on click
+            document.getElementById('dropdownUser').addEventListener('click', function (event) {
+                // Prevent the click from bubbling up (so that clicking’s confined to this element)
+                event.stopPropagation();
+                this.classList.toggle('active');
+            });
+
+            // Hide the dropdown when clicking outside
+            document.addEventListener('click', function (event) {
+                var dropdown = document.getElementById('dropdownUser');
+                if (!dropdown.contains(event.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+
+        </script>
     </header>
 
     <!-- Main Content -->

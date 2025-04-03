@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>farmer login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+        }
+
+        /* Header Navigation */
+        header {
+            background-color: #fff;
+            padding: 15px 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 24px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #eee;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .search-bar input {
+            border: none;
+            padding: 8px;
+            width: 250px;
+            outline: none;
+            background: none;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+        }
+
+        nav i {
+            font-size: 20px;
+        }
+
+        /* Signup Section */
+        .signup-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            padding: 50px;
+        }
+
+        /* Increased Image Size */
+        .image-container img {
+            width: 550px;
+            /* Increased from default */
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        /* Form Styling */
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 350px;
+        }
+
+        .form-container h2 {
+            margin-bottom: 10px;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .btn {
+            width: 100%;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .btn:hover {
+            background-color: #c9302c;
+        }
+
+        .google-btn {
+            width: 100%;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .google-btn:hover {
+            background-color: #f1f1f1;
+        }
+
+        .form-container p {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .form-container a {
+            color: #d9534f;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #222;
+            color: white;
+            padding: 40px 20px;
+            margin-top: 50px;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .footer-column {
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            margin-bottom: 10px;
+        }
+
+        .footer-column a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            margin: 5px 0;
+        }
+
+        .footer-column img {
+            width: 120px;
+            margin-top: 10px;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #bbb;
+        }
+    </style>
+
+</head>
+
+<body><!--navbar-->
+    <header>
+        <div class="nav-container">
+
+            <div class="logo">
+                <i class="fa fa-home"></i>
+            </div>
+            <nav>
+                <a th:href="@{/}">Home</a>
+                <a th:href="@{/Farmers}">Farmers</a>
+                <a th:href="@{/crops}">Crops</a>
+                <a th:href="@{/transport}">Transport</a>
+                <a th:href="@{/about}">About</a>
+                <i class="fa fa-user"></i>
+            </nav>
+        </div>
+    </header>
+    <!--main section-->
+    <section class="signup-section">
+        <div class="image-container">
+            <img th:src="@{/img/Pride Farmer.jpeg}" alt="Farmer">
+        </div>
+        <div class="form-container">
+            <form id="loginForm" action="#" method="post">
+                <input type="text" placeholder="Email or Phone Number" required>
+                <input type="password" placeholder="Password" required>
+                <p>Forgot password?</p>
+                <button type="submit" class="btn">Log in</button>
+                
+                <p>Or login using social accounts:</p>
+                <div class="social-login">
+                    <a href="/oauth2/authorization/google" class="btn oauth-btn google-btn">
+                        Login with Google
+                    </a>
+                    <a href="/oauth2/authorization/github" class="btn oauth-btn github-btn">
+                        Login with GitHub
+                    </a>
+                </div>
+                
+                <p>Do not have an account? <a href="#">Signup</a></p>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        // Ensure the DOM is loaded before attaching event listeners
+        document.addEventListener("DOMContentLoaded", function () {
+            // Select the form element by its ID
+            const loginForm = document.getElementById("loginForm");
+
+            // Listen for the form's submit event
+            loginForm.addEventListener("submit", function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Gather input values
+                const email = loginForm.querySelector("input[type='text']").value;
+                const password = loginForm.querySelector("input[type='password']").value;
+
+                // Create an object to send to the server
+                const formData = {
+                    email: email,
+                    password: password
+                };
+
+                console.log("Form data to be sent:", formData); // Debug log
+
+                // Supply the Thymeleaf or server endpoint URL
+                fetch('/farmerlogin', { // Replace with your actual Thymeleaf URL, e.g., [[@{/login}]] if needed
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData) // Convert to JSON string
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log("Data successfully sent to the server!");
+                            return response.json(); // Optional: process any JSON response from the server
+                        } else {
+                            console.error("Error sending data to the server.");
+                        }
+                    })
+                    .then(data => {
+                        // Process returned data if necessary
+                        console.log("Server response:", data);
+                    })
+                    .catch(error => {
+                        console.error("Network error:", error);
+                    });
+            });
+        });
+    </script>
+
+
+
+
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-column">
+                <h3>Exclusive</h3>
+                <p>Get 10% off your first order</p>
+                <input type="email" placeholder="Enter your email">
+            </div>
+            <div class="footer-column">
+                <h3>Support</h3>
+                <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
+                <p>exclusive@gmail.com</p>
+                <p>+88015-88888-9999</p>
+            </div>
+            <div class="footer-column">
+                <h3>Account</h3>
+                <a href="#">My Account</a>
+                <a href="#">Login / Register</a>
+                <a href="#">Cart</a>
+                <a href="#">Wishlist</a>
+                <a href="#">Shop</a>
+            </div>
+            <div class="footer-column">
+                <h3>Quick Link</h3>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">FAQ</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-column">
+                <h3>Download App</h3>
+                <p>Save $3 with App New User Only</p>
+                <img src="qrcode.png" alt="QR Code">
+                <div class="app-links">
+                    <img src="playstore.png" alt="Google Play">
+                    <img src="appstore.png" alt="App Store">
+                </div>
+            </div>
+        </div>
+        <p class="copyright">© Copyright Rimel 2022. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>

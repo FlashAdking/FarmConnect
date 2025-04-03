@@ -31,17 +31,15 @@ public class HomeController {
     }
 
 
+//    @GetMapping({"/transport","/about","/login","/farmerlogin","/wholesalerlogin",
+//            "/transporterlogin","/Signupwholesaler","/Signuptransporter"})
+//    public String getDedaultPage(){
+//        return "underdev";
+//    }
 
-    @GetMapping("/register")
-    public String getSignUp(){
-        return "Sign Up page";
-    }
-
-
-    @GetMapping({"/transport","/about","/login","/farmerlogin","/wholesalerlogin",
-            "/transporterlogin","/Signupwholesaler","/Signuptransporter"})
-    public String getDedaultPage(){
-        return "underdev";
+    @GetMapping("/farmerlogin")
+    public String getFarmerLogin(){
+        return "farmerlogin";
     }
 
     @GetMapping("/Signupfarmer")
@@ -49,6 +47,20 @@ public class HomeController {
         return "signupfarmer";
     }
 
+    @GetMapping("/Signuptransporter")
+    public String getTransportSignUp(){
+        return "transportsignup";
+    }
+
+//    @GetMapping("/Signupwholesaler")
+//    public String getsignUpWholesaler(){
+//        return "";
+//    }
+
+    @GetMapping("/profile")
+    public String getProfilePage(){
+        return "farmerprofile";
+    }
 
 
 }

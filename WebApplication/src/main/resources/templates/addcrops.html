@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,6 +60,7 @@
         transform: translateY(-50%);
     }
 </style>
+
 <body>
     <!-- Your existing header here -->
     <header>
@@ -73,8 +75,8 @@
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-                <input class="form-control search-input ps-5" type="search"
-                       placeholder="Search anything..." aria-label="Search">
+                <input class="form-control search-input ps-5" type="search" placeholder="Search anything..."
+                    aria-label="Search">
                 <button class="btn btn-search ms-2" type="submit">Search</button>
             </form>
         </div>
@@ -84,7 +86,19 @@
             <a th:href="@{/crops}">Crops</a>
             <a th:href="@{/transport}">Transport</a>
             <a th:href="@{/about}">About</a>
-            <i class="fa fa-user"></i>
+            <div class="dropdown-user">
+                <i class="fa fa-user"></i>
+                <div class="dropdown-user-menu">
+                    <a th:href="@{/profile}">
+                        <i class="fas fa-user"></i>My Profile
+                    </a>
+                    <form th:action="@{/logout}" method="POST" style="margin: 0;">
+                        <button type="submit" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
         </nav>
     </header>
 
@@ -186,4 +200,5 @@
         </div>
     </footer>
 </body>
+
 </html>

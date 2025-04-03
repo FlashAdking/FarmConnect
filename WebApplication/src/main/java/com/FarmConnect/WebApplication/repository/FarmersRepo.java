@@ -16,4 +16,6 @@ public interface FarmersRepo extends MongoRepository<Farmer , String> {
 
     @Query( "{'emailOrPhone' : ?0 }" )
     Optional<Farmer> findByEmailOrPhone(String emailOrPhone);
+
+//    Farmer findByEmailOrPhone(String id);
 }

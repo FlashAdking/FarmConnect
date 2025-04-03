@@ -127,8 +127,8 @@ public class CropsController {
 
 
     //Delete
-    @DeleteMapping("/{uniqueID}")
-    public void deleteById(@PathVariable String uniqueID){
-        cropService.deleteByID(uniqueID);
-    }
+//    @DeleteMapping("/{uniqueID}")
+//    public void deleteById(@PathVariable String uniqueID){
+//        cropService.deleteByID(uniqueID);
+//    }
 }

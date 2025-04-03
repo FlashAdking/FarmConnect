@@ -3,6 +3,7 @@ package com.FarmConnect.WebApplication.controller;
 
 import com.FarmConnect.WebApplication.model.Crops;
 import com.FarmConnect.WebApplication.model.Farmer;
+import com.FarmConnect.WebApplication.service.CropService;
 import com.FarmConnect.WebApplication.service.FarmerService;
 import com.FarmConnect.WebApplication.service.RegistrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +33,14 @@ public class RegisterAllController {
 //    public CsrfToken getCsrfToken(HttpServletRequest request){
 //        return (CsrfToken) request.getAttribute("_csrf");
 //    }
+
+    @Autowired
+    CropService cropService;
+
+    @DeleteMapping("/{uniqueID}")
+    public void deleteById(@PathVariable String uniqueID){
+        cropService.deleteByID(uniqueID);
+    }
 
 
 

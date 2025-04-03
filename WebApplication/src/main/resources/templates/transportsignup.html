@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transporter Sign up</title>
-    <link rel="stylesheet" href="../static/css/transport.css">
+    <link rel="stylesheet" th:href="@{/css/transport.css}">
 </head>
 <body>
     <header>
@@ -12,11 +12,11 @@
             <div class="logo">🏠</div>
             <input type="text" placeholder="Hinted search text">
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="farmerlogin.html">Farmers</a></li>
-                <li><a href="crops.html">Crops</a></li>
-                <li><a href="transport.html">Transport</a></li>
-                <li><a href="#">About</a></li>
+                <li><a th:href="@{index.html}">Home</a></li>
+                <li><a th:href="@{farmerlogin.html}">Farmers</a></li>
+                <li><a th:href="@{crops.html}">Crops</a></li>
+                <li><a th:href="@{transport.html}">Transport</a></li>
+                <li><a th:href="@{about}">About</a></li>
             </ul>
             <div class="profile-icon">👤</div>
         </nav>
@@ -36,7 +36,7 @@
                 <p>Already have an account? <a href="#">Log in</a></p>
             </div>
             <div class="image-section">
-                <img src="../static/img/transporter.jpg" alt="Transport Truck" class="transport-image">
+                <img th:src="@{img/transporter.jpg}" alt="Transport Truck" class="transport-image">
             </div>
         </section>
     </main>

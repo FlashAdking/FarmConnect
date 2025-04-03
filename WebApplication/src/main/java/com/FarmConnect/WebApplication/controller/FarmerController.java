@@ -104,4 +104,14 @@ public class FarmerController {
         return farmService.getAllFarmers();
     }
 
+    @PostMapping("/farmerlogin")
+    public String getLoginDetails(@RequestBody Farmer farmer , Model model){
+        System.out.println(farmer);
+
+        return farmService.verify(farmer , model);
+
+
+
+    }
+
 }

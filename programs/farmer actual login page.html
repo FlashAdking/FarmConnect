@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -200,9 +200,9 @@ h3 {
                 <i class="fa fa-search"></i>
             </div>
             <nav>
-                <a href="#">Home</a>
-                <a href="farmerlogin.html">Farmers</a>
-                <a href="crops.html">Crops</a>
+                <a th:href="#">Home</a>
+                <a th:href="@{farmerlogin.html}">Farmers</a>
+                <a th:href="crops.html">Crops</a>
                 <a href="transport.html">Transport</a>
                 <a href="#">About</a>
                 <i class="fa fa-user"></i>
