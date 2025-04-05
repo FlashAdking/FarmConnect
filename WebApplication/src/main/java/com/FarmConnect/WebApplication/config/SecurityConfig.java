@@ -1,5 +1,6 @@
 package com.FarmConnect.WebApplication.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -29,19 +31,40 @@ public class SecurityConfig {
     @Autowired
     private JWTFilter jwtFilter;
 
+
+
     @Bean
     public SecurityFilterChain getSecurityFilterchain(HttpSecurity http) throws Exception {
 
         return http.csrf(customizer -> customizer.disable())
-                .authorizeHttpRequests(request -> request.requestMatchers("/",
-                                "/farmerlogin","/Signupfarmer"
+                .authorizeHttpRequests(request -> request.requestMatchers("/", "/farmerlogin",
+                                "/Home",
+                                "/Signupfarmer", "/css/**", "/js/**", "/img/**"
                                 )
                         .permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(Customizer.withDefaults())
-                .oauth2Login(Customizer.withDefaults()) // github and google
+//                .httpBasic(Customizer.withDefaults())
+//                .oauth2Login(Customizer.withDefaults()) // github and google
+                .oauth2Login(oauth2 -> oauth2.loginPage("/farmerlogin")) // github and google
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception ->
+                    exception.authenticationEntryPoint((request, response, authException) -> {
+                        // Check if it's an AJAX/fetch request
+                        String xRequestedWith = request.getHeader("X-Requested-With");
+                        String accept = request.getHeader("Accept");
+
+                        if ((xRequestedWith != null && xRequestedWith.equals("XMLHttpRequest")) ||
+                            (accept != null && accept.contains("application/json"))) {
+                            // For API requests
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Unauthorized\"}");
+                        } else {
+                            // For HTML page requests
+                            response.sendRedirect("/farmerlogin");
+                        }
+                    }))
                 .addFilterBefore(jwtFilter , UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

@@ -2,6 +2,19 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
+    <script th:src="@{/js/global.js}"></script>
+
+
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            // Check if token exists
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                // No token found, redirect to login
+                window.location.href = /*[[@{/farmerlogin}]]*/ '/farmerlogin';
+            }
+        });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FarmConnect Crops</title>
@@ -204,12 +217,6 @@
 
         <!-- Product Listing -->
         <main>
-            <!-- <div class="sort-options">
-                <a th:href="@{/crops(sortBy='new')}">New</a>
-                <a th:href="@{/crops(sortBy='priceAsc')}">Price ascending</a>
-                <a th:href="@{/crops(sortBy='priceDesc')}">Price descending</a>
-                <a th:href="@{/crops(sortBy='rating')}">Rating</a>
-            </div> -->
             <div class="sort-options">
                 <div class="sort-container">
                     <div class="sort-links">
@@ -251,10 +258,11 @@
 
             <div class="products-grid">
                 <div class="product-card" th:each="crop : ${crops}" th:data-category="${crop.category}"
-                    th:data-label="${crop.label}" th:data-color="${crop.color}" th:data-quantity="${crop.quantity}"
-                    th:data-price="${crop.price}">
+                    th:data-cropid="${crop.cropId}" th:data-label="${crop.label}" th:data-color="${crop.color}"
+                    th:data-quantity="${crop.quantity}" th:data-price="${crop.price}">
                     <div class="product-image">
-                        <img th:src="@{/crops/{id}/image(id=${crop.cropId})}" th:alt="${crop.name}">
+                        <!-- <img th:src="@{/crops/{id}/image(id=${crop.cropId})}" th:alt="${crop.name}"> -->
+                        <img data-src="@{/crops/{id}/image(id=${crop.cropId})}" th:alt="${crop.name}">
                     </div>
                     <div class="product-info">
                         <h3 th:text="${crop.name}"></h3>
@@ -274,6 +282,83 @@
         </main>
 
     </div>
+
+    <!-- image loading -->
+    <script>
+        // Function to get JWT token from global.js (assuming it's available)
+        function getToken() {
+            return window.token || localStorage.getItem('jwt-token');
+        }
+
+        // Function to load images for all crop elements
+        function loadCropImages() {
+            // Get all images with data-src attribute
+            const images = document.querySelectorAll('img[data-src]');
+
+            images.forEach(img => {
+                const dataSrc = img.getAttribute('data-src');
+                // Get the parent product card
+                const productCard = img.closest('.product-card');
+                if (!productCard) return;
+
+                // Get crop ID directly from the product card's data attributes
+                const cropId = productCard.getAttribute('data-cropid');
+                if (!cropId) {
+                    console.error('Could not find crop ID');
+                    return;
+                }
+
+                // Create the actual URL
+                const actualSrc = `/crops/${cropId}/image`;
+
+                // Fetch the image with JWT token
+                fetch(actualSrc, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`,
+                        'Accept': 'image/*'
+                    },
+                    credentials: 'include' // Include cookies if needed
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        // Create object URL from blob
+                        const objectUrl = URL.createObjectURL(blob);
+                        img.src = objectUrl;
+
+                        // Clean up the object URL after the image loads
+                        img.onload = () => {
+                            URL.revokeObjectURL(objectUrl);
+                        };
+
+                        // Remove the data-src attribute once loaded
+                        img.removeAttribute('data-src');
+                    })
+                    .catch(error => {
+                        console.error('Error loading crop image:', error);
+                        // Set a default/error image if needed
+                        img.src = '/static/images/default-crop.jpg';
+                    });
+            });
+        }
+
+        // Run when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCropImages();
+        });
+
+        // Export function for manual reloading if needed
+        window.loadCropImages = loadCropImages;
+
+        // Add event listener for dynamic content loading if needed
+        document.addEventListener('contentLoaded', loadCropImages);
+    </script>
+
 
     <!-- Footer -->
     <footer>

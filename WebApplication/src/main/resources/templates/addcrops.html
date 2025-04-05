@@ -2,6 +2,21 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
+    
+    <script th:src="@{/js/global.js}"></script>
+
+
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            // Check if token exists
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                // No token found, redirect to login
+                window.location.href = /*[[@{/farmerlogin}]]*/ '/farmerlogin';
+            }
+        });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Crop</title>

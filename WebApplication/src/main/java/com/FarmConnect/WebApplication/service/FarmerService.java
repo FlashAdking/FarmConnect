@@ -5,6 +5,7 @@ import com.FarmConnect.WebApplication.model.Crops;
 import com.FarmConnect.WebApplication.model.Farmer;
 import com.FarmConnect.WebApplication.repository.FarmersRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,7 +17,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -32,22 +35,7 @@ public class FarmerService {
     JWTService jwts;
 
 
-    @GetMapping("/Farmers/{uniquId}/image")
-    public ResponseEntity<byte[]> getCropImage(@PathVariable String uniqueId) {
-        System.out.println("Attempting to fetch crop with ID: " + uniqueId);
-        Optional<Farmer> optionalFarmer = farmRepo.findByUniqueId(uniqueId);
 
-        if (optionalFarmer.isPresent()) {
-            Farmer farmer = optionalFarmer.get();
-            System.out.println("Found Farmer: " + farmer.getFullName() + ", Serving image.");
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(farmer.getImageType()))
-                    .body(farmer.getFarmerImage());
-        } else {
-            System.out.println("Farmer not found for ID: " + uniqueId);
-            return ResponseEntity.notFound().build();
-        }
-    }
 
 
     public List<Farmer> getAllFarmers() {
@@ -73,19 +61,26 @@ public class FarmerService {
         farmRepo.save(farmer);
     }
 
-    public String verify(Farmer farmer , Model model) {
+    public ResponseEntity<?> verify(Farmer farmer) {
         Authentication authentication =
                 authmanager.authenticate(new UsernamePasswordAuthenticationToken(farmer.getEmailOrPhone() , farmer.getPassword()));
 
         if(authentication.isAuthenticated()){
             String token = jwts.genrateToken(farmer.getEmailOrPhone());
-            model.addAttribute("token", token );
+            Map<String, String> response = new HashMap<>();
+            response.put("token", token);
             System.out.println(token);
-            return "index";
+            return ResponseEntity.ok(response);
 
         }
 
-       model.addAttribute("error","Invalid Credentials");
-        return "farmerlogin";
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Invalid Credentials");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    public Optional<Farmer> findByUniqueId(String uniqueId) {
+        System.out.println();
+        return farmRepo.findByUniqueId(uniqueId);
     }
 }

@@ -2,9 +2,10 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>farmer login</title>
+    <title>Farmer Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         /* General Reset */
@@ -36,22 +37,6 @@
             font-size: 24px;
         }
 
-        .search-bar {
-            display: flex;
-            align-items: center;
-            background: #eee;
-            padding: 5px;
-            border-radius: 4px;
-        }
-
-        .search-bar input {
-            border: none;
-            padding: 8px;
-            width: 250px;
-            outline: none;
-            background: none;
-        }
-
         nav {
             display: flex;
             align-items: center;
@@ -75,15 +60,16 @@
             justify-content: center;
             gap: 50px;
             padding: 50px;
+            flex-wrap: wrap;
         }
 
-        /* Increased Image Size */
+        /* Image Container */
         .image-container img {
-            width: 550px;
-            /* Increased from default */
+            width: 500px;
             max-width: 100%;
             height: auto;
             border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         /* Form Styling */
@@ -95,56 +81,74 @@
             width: 350px;
         }
 
-        .form-container h2 {
-            margin-bottom: 10px;
-        }
-
         .form-container input {
             width: 100%;
-            padding: 10px;
-            margin: 8px 0;
+            padding: 12px;
+            margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
-        }
-
-        .btn {
-            width: 100%;
-            background-color: #d9534f;
-            color: white;
-            border: none;
-            padding: 10px;
-            margin-top: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .btn:hover {
-            background-color: #c9302c;
-        }
-
-        .google-btn {
-            width: 100%;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-top: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .google-btn:hover {
-            background-color: #f1f1f1;
+            font-size: 14px;
         }
 
         .form-container p {
             text-align: center;
-            margin-top: 10px;
+            margin: 10px 0;
+            color: #666;
         }
 
         .form-container a {
             color: #d9534f;
             text-decoration: none;
             font-weight: bold;
+        }
+
+        .btn {
+            width: 100%;
+            background-color: #000;
+            color: white;
+            border: none;
+            padding: 12px;
+            margin: 15px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #333;
+        }
+
+        .oauth-btn {
+            display: block;
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .oauth-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .google-btn {
+            color: #4285F4;
+        }
+
+        .github-btn {
+            color: #333;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 2px;
+            display: none;
         }
 
         /* Footer */
@@ -159,21 +163,38 @@
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
+            gap: 20px;
         }
 
         .footer-column {
+            flex: 1;
+            min-width: 200px;
             margin-bottom: 20px;
         }
 
-        h3 {
-            margin-bottom: 10px;
+        .footer-column h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
         }
 
         .footer-column a {
             display: block;
-            color: white;
+            color: #ddd;
             text-decoration: none;
-            margin: 5px 0;
+            margin: 8px 0;
+            transition: color 0.3s;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-column input {
+            padding: 8px;
+            width: 100%;
+            margin-top: 8px;
+            border-radius: 4px;
+            border: none;
         }
 
         .footer-column img {
@@ -183,18 +204,106 @@
 
         .copyright {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
             font-size: 14px;
             color: #bbb;
         }
-    </style>
 
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .signup-section {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .image-container img {
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .form-container {
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .footer-container {
+                flex-direction: column;
+            }
+        }
+
+        /* User dropdown styling */
+        .user-dropdown {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-dropdown .fa-user {
+            font-size: 20px;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            width: 180px;
+            display: none;
+            z-index: 1000;
+            margin-top: 10px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .dropdown-item i {
+            margin-right: 10px;
+            color: #666;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 0;
+        }
+
+        /* Show dropdown when parent is hovered */
+        .user-dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        /* Optional: Arrow pointer to dropdown */
+        .dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            right: 15px;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+        }
+    </style>
 </head>
 
-<body><!--navbar-->
+<body>
+    <!--navbar-->
     <header>
         <div class="nav-container">
-
             <div class="logo">
                 <i class="fa fa-home"></i>
             </div>
@@ -204,10 +313,39 @@
                 <a th:href="@{/crops}">Crops</a>
                 <a th:href="@{/transport}">Transport</a>
                 <a th:href="@{/about}">About</a>
-                <i class="fa fa-user"></i>
+                <!-- Add this to your navbar where the user icon is -->
+                <div class="user-dropdown">
+                    <i class="fa fa-user dropdown-toggle"></i>
+                    <div class="dropdown-menu">
+                        <a href="@{/farmerprofile}" class="dropdown-item"><i class="fa fa-id-card"></i> My Profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item"><i class="fa fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+
+                <script>
+                    // Add this to your existing JavaScript
+                    document.addEventListener("DOMContentLoaded", function () {
+                        const dropdownToggle = document.querySelector('.dropdown-toggle');
+                        const dropdownMenu = document.querySelector('.dropdown-menu');
+
+                        dropdownToggle.addEventListener('click', function (e) {
+                            e.stopPropagation();
+                            dropdownMenu.classList.toggle('show');
+                        });
+
+                        // Close dropdown when clicking outside
+                        document.addEventListener('click', function () {
+                            if (dropdownMenu.classList.contains('show')) {
+                                dropdownMenu.classList.remove('show');
+                            }
+                        });
+                    });
+                </script>
             </nav>
         </div>
     </header>
+
     <!--main section-->
     <section class="signup-section">
         <div class="image-container">
@@ -215,78 +353,169 @@
         </div>
         <div class="form-container">
             <form id="loginForm" action="#" method="post">
-                <input type="text" placeholder="Email or Phone Number" required>
-                <input type="password" placeholder="Password" required>
-                <p>Forgot password?</p>
+                <input type="text" id="emailOrPhone" placeholder="Email or Phone Number" required>
+                <div id="emailPhoneError" class="error-message">Please enter a valid email or 10-digit phone number
+                </div>
+
+                <input type="password" id="password" placeholder="Password" required>
+                <div id="passwordError" class="error-message">Password must be at least 6 characters</div>
+
+                <p><a href="#">Forgot password?</a></p>
                 <button type="submit" class="btn">Log in</button>
-                
+
                 <p>Or login using social accounts:</p>
                 <div class="social-login">
-                    <a href="/oauth2/authorization/google" class="btn oauth-btn google-btn">
-                        Login with Google
+                    <a href="/oauth2/authorization/google" class="oauth-btn google-btn">
+                        <i class="fab fa-google"></i> Login with Google
                     </a>
-                    <a href="/oauth2/authorization/github" class="btn oauth-btn github-btn">
-                        Login with GitHub
+                    <a href="/oauth2/authorization/github" class="oauth-btn github-btn">
+                        <i class="fab fa-github"></i> Login with GitHub
                     </a>
                 </div>
-                
-                <p>Do not have an account? <a href="#">Signup</a></p>
+
+                <p>Do not have an account? <a th:href="@{/Signupfarmer}">Signup</a></p>
             </form>
         </div>
     </section>
 
-    <script>
-        // Ensure the DOM is loaded before attaching event listeners
-        document.addEventListener("DOMContentLoaded", function () {
-            // Select the form element by its ID
+
+
+    <!-- Login page specific script -->
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", () => {
             const loginForm = document.getElementById("loginForm");
+            const emailOrPhone = document.getElementById("emailOrPhone");
+            const emailPhoneError = document.getElementById("emailPhoneError");
+            const password = document.getElementById("password");
+            const passwordError = document.getElementById("passwordError");
 
-            // Listen for the form's submit event
-            loginForm.addEventListener("submit", function (event) {
-                event.preventDefault(); // Prevent the default form submission
+            // Create status message element
+            let statusMessage = document.createElement("div");
+            statusMessage.id = "statusMessage";
+            statusMessage.style.display = "none";
+            statusMessage.style.marginTop = "10px";
+            loginForm.appendChild(statusMessage);
 
-                // Gather input values
-                const email = loginForm.querySelector("input[type='text']").value;
-                const password = loginForm.querySelector("input[type='password']").value;
+            // Helper functions for validation
+            const isValidEmail = (value) =>
+                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value);
+            const isValidPhone = (value) =>
+                /^\d{10}$/.test(value);
 
-                // Create an object to send to the server
+            const validateEmailOrPhone = () => {
+                const value = emailOrPhone.value.trim();
+                if (value === "" || isValidEmail(value) || isValidPhone(value)) {
+                    emailPhoneError.style.display = "none";
+                    emailOrPhone.setCustomValidity("");
+                    return true;
+                } else {
+                    emailPhoneError.style.display = "block";
+                    emailOrPhone.setCustomValidity("Invalid email or phone format");
+                    return false;
+                }
+            };
+
+            const validatePassword = () => {
+                const value = password.value;
+                if (value.length > 0 && value.length < 6) {
+                    passwordError.style.display = "block";
+                    password.setCustomValidity("Password must be at least 6 characters");
+                    return false;
+                } else {
+                    passwordError.style.display = "none";
+                    password.setCustomValidity("");
+                    return true;
+                }
+            };
+
+            // Attach real-time validation handlers
+            emailOrPhone.addEventListener("input", validateEmailOrPhone);
+            password.addEventListener("input", validatePassword);
+
+            // Form submission handler
+            loginForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+
+                // Clear any previously stored token
+                localStorage.removeItem('jwtToken');
+
+                // Reset status message
+                statusMessage.style.display = "none";
+                statusMessage.textContent = "";
+
+                const emailPhoneValue = emailOrPhone.value.trim();
+                const passwordValue = password.value;
+
+                // Validate input fields again on submit
+                const validEmailOrPhone = isValidEmail(emailPhoneValue) || isValidPhone(emailPhoneValue);
+                const validPassword = passwordValue.length >= 6;
+
+                if (!validEmailOrPhone) {
+                    emailPhoneError.style.display = "block";
+                    return;
+                }
+                if (!validPassword) {
+                    passwordError.style.display = "block";
+                    return;
+                }
+
                 const formData = {
-                    email: email,
-                    password: password
+                    emailOrPhone: emailPhoneValue,
+                    password: passwordValue
                 };
 
-                console.log("Form data to be sent:", formData); // Debug log
+                // Disable the submit button to avoid duplicate requests
+                const submitBtn = loginForm.querySelector("button[type='submit']");
+                if (submitBtn) submitBtn.disabled = true;
 
-                // Supply the Thymeleaf or server endpoint URL
-                fetch('/farmerlogin', { // Replace with your actual Thymeleaf URL, e.g., [[@{/login}]] if needed
+                fetch('/farmerlogin', {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify(formData) // Convert to JSON string
+                    body: JSON.stringify(formData)
                 })
                     .then(response => {
-                        if (response.ok) {
-                            console.log("Data successfully sent to the server!");
-                            return response.json(); // Optional: process any JSON response from the server
-                        } else {
-                            console.error("Error sending data to the server.");
+                        if (!response.ok) {
+                            throw new Error("Login failed. Please check your credentials.");
                         }
+                        return response.json();
                     })
                     .then(data => {
-                        // Process returned data if necessary
-                        console.log("Server response:", data);
+                        if (!data.token) {
+                            throw new Error("No token received from server");
+                        }
+
+                        // Store the received JWT token
+                        localStorage.setItem('jwtToken', data.token);
+                        console.log("Login successful! JWT token stored.");
+
+                        // Show success message
+                        statusMessage.textContent = "Login successful! Redirecting...";
+                        statusMessage.style.display = "block";
+                        statusMessage.style.color = "green";
+
+                        // Redirect to dashboard
+                        setTimeout(() => {
+                            window.location.href = /*[[@{/}]]*/ '/';// Change this to your actual dashboard URL
+                        }, 1000);
                     })
                     .catch(error => {
-                        console.error("Network error:", error);
+                        console.error("Error during login:", error);
+
+                        // Show error message to user
+                        statusMessage.textContent = error.message || "Login failed. Please try again.";
+                        statusMessage.style.display = "block";
+                        statusMessage.style.color = "red";
+                    })
+                    .finally(() => {
+                        if (submitBtn) submitBtn.disabled = false;
                     });
             });
         });
     </script>
 
-
-
-
+    <!-- <script th:src="@{/js/global.js}"></script> -->
 
     <!-- Footer -->
     <footer>

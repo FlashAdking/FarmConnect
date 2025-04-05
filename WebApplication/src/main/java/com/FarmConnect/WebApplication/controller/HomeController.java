@@ -21,7 +21,7 @@ public class HomeController {
     FarmerService farmerService;
 
     @GetMapping("/")
-    public String greet(){
+    public String landingPage(){
         return "index";
     }
 
@@ -31,11 +31,10 @@ public class HomeController {
     }
 
 
-//    @GetMapping({"/transport","/about","/login","/farmerlogin","/wholesalerlogin",
-//            "/transporterlogin","/Signupwholesaler","/Signuptransporter"})
-//    public String getDedaultPage(){
-//        return "underdev";
-//    }
+    @GetMapping({"/transport","/about"})
+    public String getDedaultPage(){
+        return "underdev";
+    }
 
     @GetMapping("/farmerlogin")
     public String getFarmerLogin(){

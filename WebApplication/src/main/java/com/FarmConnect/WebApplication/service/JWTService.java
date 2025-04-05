@@ -39,15 +39,23 @@ public class JWTService {
 
         Map<String , Object> claims = new HashMap<>();
 
+//        return Jwts.builder()
+//                .claims()
+//                .add(claims)
+//                .subject(emailOrPhone)
+//                .issuedAt(new Date(System.currentTimeMillis()))
+//                .expiration(new Date(System.currentTimeMillis()+ (5 * 60 * 1000) ))
+//                .and()
+//                .signWith( getKey())
+//                .compact() ;
+
         return Jwts.builder()
-                .claims()
-                .add(claims)
-                .subject(emailOrPhone)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+ (5 * 60 * 1000) ))
-                .and()
-                .signWith( getKey())
-                .compact() ;
+                .setClaims(claims)
+                .setSubject(emailOrPhone)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + (5 * 60 * 1000)))
+                .signWith(getKey())
+                .compact();
     }
 
     public SecretKey getKey(){
@@ -55,14 +63,9 @@ public class JWTService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-//    public String extractUserName(String token) {
-//    }
-//
-//    public boolean validateToken(String token, UserDetails userDetails) {
-//    }
+
 
     public String extractUserName(String token) {
-        // extract the username from jwt token
         return extractClaim(token, Claims::getSubject);
     }
 

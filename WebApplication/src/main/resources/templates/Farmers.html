@@ -2,6 +2,20 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
+  <script th:src="@{/js/global.js}"></script>
+
+
+  <script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", () => {
+      // Check if token exists
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        // No token found, redirect to login
+        window.location.href = /*[[@{/farmerlogin}]]*/ '/farmerlogin';
+      }
+    });
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" th:href="@{/css/farmers.css}">
@@ -158,18 +172,26 @@
   </div>
 
   <script>
-    // Run the code when the document is fully loaded
-    document.addEventListener("DOMContentLoaded", () => {
-      fetchFarmers();
-    });
-
+    // Function to get JWT token from global.js
+    function getToken() {
+      return window.token || localStorage.getItem('jwt-token');
+    }
+  
     // Function to fetch farmers from the API endpoint
     async function fetchFarmers() {
       try {
-        const response = await fetch('/api/farmers');
+        const response = await fetch('/api/farmers', {
+          headers: {
+            'Authorization': `Bearer ${getToken()}`,
+            'Accept': 'application/json'
+          },
+          credentials: 'include'
+        });
+  
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
+  
         const farmers = await response.json();
         renderFarmers(farmers);
       } catch (error) {
@@ -177,60 +199,93 @@
         displayError("Failed to load farmers. Please try again later.");
       }
     }
-
+  
+    // Function to load farmer image
+    async function loadFarmerImage(uniqueId) {
+      try {
+        // Note: Fixed the URL to match the Spring Boot controller exactly
+        const response = await fetch(`/Farmers/${uniqueId}/image`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${getToken()}`,
+            'Accept': 'image/*'
+          },
+          credentials: 'include'
+        });
+  
+        if (!response.ok) {
+          console.error(`Failed to load image for farmer ${uniqueId}. Status: ${response.status}`);
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+  
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);
+      } catch (error) {
+        console.error('Error loading farmer image:', error);
+        // Return a fallback default image URL
+        return '/img/default-farmer.jpg';
+      }
+    }
+  
     // Function to display an error message in the UI
     function displayError(message) {
       const farmerGrid = document.querySelector('.farmers-grid');
       farmerGrid.innerHTML = `<div class="error">${message}</div>`;
     }
-
+  
     // Function to render the farmer details
-    function renderFarmers(farmers) {
+    async function renderFarmers(farmers) {
       const farmerGrid = document.querySelector('.farmers-grid');
-      // Clear any existing content
       farmerGrid.innerHTML = "";
-
-      // Handle case when no farmers are returned
+  
       if (farmers.length === 0) {
         farmerGrid.innerHTML = '<div class="no-data">No farmers found.</div>';
         return;
       }
-
-      // Iterate over each farmer in the array
-      farmers.forEach(farmer => {
-        // If an image exists, convert the byte array to a Base64 URL; otherwise, use a default image.
-        let imgSrc = (farmer.farmerImage && farmer.imageType)
-          ? `data:${farmer.imageType};base64,${farmer.farmerImage}`
-          : '/img/default-farmer.jpg';
-
-        // Render tags from the response, if available; otherwise, use default tags.
-        let tagsHtml = "";
-        if (Array.isArray(farmer.tags) && farmer.tags.length > 0) {
-          tagsHtml = farmer.tags
-            .map(tag => `<span class="tag ${tag.toLowerCase()}">${tag}</span>`)
-            .join('');
-        } else {
-          tagsHtml = `<span class="tag organic">Organic</span>
-                          <span class="tag fruits">Fruits</span>`;
-        }
-
-        // Create a new div element for the farmer card
+  
+      // Create and append cards for each farmer
+      for (const farmer of farmers) {
         const card = document.createElement('div');
         card.classList.add("farmer-card");
+  
+        console.log('Farmer uniqueId:', farmer.uniqueId);
+        card.setAttribute('data-uniqueid', farmer.uniqueId);
+  
+        // Render tags
+        const tagsHtml = Array.isArray(farmer.tags) && farmer.tags.length > 0
+          ? farmer.tags.map(tag => `<span class="tag ${tag.toLowerCase()}">${tag}</span>`).join('')
+          : `<span class="tag organic">Organic</span>
+             <span class="tag fruits">Fruits</span>`;
+  
+        // Load image first
+        const imageUrl = await loadFarmerImage(farmer.uniqueId);
+  
         card.innerHTML = `
-              <img src="${imgSrc}" alt="Farmer ${farmer.fullName}"
-                   onerror="this.onerror=null;this.src='/img/default-farmer.jpg';">
-              <h2>${farmer.fullName}</h2>
-              <div class="tags">${tagsHtml}</div>
-              <p class="location">${farmer.state}</p>
-              <p class="contact">${farmer.emailOrPhone}</p>
-              <button class="crops-btn">Crops Uploaded</button>
-            `;
-
-        // Append the card to the grid container
+            <img src="${imageUrl}" alt="Farmer ${farmer.fullName}"
+                 onerror="this.onerror=null;this.src='/img/default-farmer.jpg';">
+            <h2>${farmer.fullName}</h2>
+            <div class="tags">${tagsHtml}</div>
+            <p class="location">${farmer.state}</p>
+            <p class="contact">${farmer.emailOrPhone}</p>
+            <button class="crops-btn">Crops Uploaded</button>
+        `;
+  
+        // Clean up object URL when image loads or errors
+        const img = card.querySelector('img');
+        img.onload = () => URL.revokeObjectURL(imageUrl);
+        img.onerror = () => URL.revokeObjectURL(imageUrl);
+  
         farmerGrid.appendChild(card);
-      });
+      }
     }
+  
+    // Run when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchFarmers();
+    });
+  
+    // Export function for manual reloading if needed
+    window.fetchFarmers = fetchFarmers;
   </script>
 
   <!-- Middle Content End -->

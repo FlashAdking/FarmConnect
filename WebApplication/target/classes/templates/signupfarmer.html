@@ -5,147 +5,347 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Farmer Signup</title>
-  <link rel="stylesheet" th:href="@{/css/farmerlogin.css}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* General Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f9f9f9;
+    }
+
+    /* Header Navigation */
+    header {
+      background-color: #fff;
+      padding: 15px 20px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 24px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: black;
+      font-weight: bold;
+    }
+
+    nav i {
+      font-size: 20px;
+    }
+
+    /* Signup Section */
+    .signup-section {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 50px;
+      padding: 50px;
+      flex-wrap: wrap;
+    }
+
+    /* Image Container */
+    .image-container img {
+      width: 500px;
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Form Styling */
+    .form-container {
+      background-color: #fff;
+      padding: 30px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      width: 350px;
+    }
+
+    .form-container input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .form-container p {
+      text-align: center;
+      margin: 10px 0;
+      color: #666;
+    }
+
+    .form-container a {
+      color: #d9534f;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .btn {
+      width: 100%;
+      background-color: #000;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin: 15px 0;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #333;
+    }
+
+    .oauth-btn {
+      display: block;
+      text-align: center;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      background-color: #fff;
+      color: #333;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    .oauth-btn:hover {
+      background-color: #f5f5f5;
+    }
+
+    .google-btn {
+      color: #4285F4;
+    }
+
+    .github-btn {
+      color: #333;
+    }
+
+    .error-message {
+      color: red;
+      font-size: 12px;
+      margin-top: 2px;
+      display: none;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #222;
+      color: white;
+      padding: 40px 20px;
+      margin-top: 50px;
+    }
+
+    .footer-container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-column {
+      flex: 1;
+      min-width: 200px;
+      margin-bottom: 20px;
+    }
+
+    .footer-column h3 {
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .footer-column a {
+      display: block;
+      color: #ddd;
+      text-decoration: none;
+      margin: 8px 0;
+      transition: color 0.3s;
+    }
+
+    .footer-column a:hover {
+      color: white;
+    }
+
+    .footer-column input {
+      padding: 8px;
+      width: 100%;
+      margin-top: 8px;
+      border-radius: 4px;
+      border: none;
+    }
+
+    .footer-column img {
+      width: 120px;
+      margin-top: 10px;
+    }
+
+    .copyright {
+      text-align: center;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #444;
+      font-size: 14px;
+      color: #bbb;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .signup-section {
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .image-container img {
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .form-container {
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .footer-container {
+        flex-direction: column;
+      }
+    }
+
+    /* User Dropdown Styling */
+    .user-dropdown {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .user-dropdown .fa-user {
+      font-size: 20px;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 5px;
+      width: 180px;
+      display: none;
+      z-index: 1000;
+      margin-top: 10px;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      text-decoration: none;
+      color: #333;
+      transition: background-color 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background-color: #f5f5f5;
+    }
+
+    .dropdown-item i {
+      margin-right: 10px;
+      color: #666;
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background-color: #eee;
+      margin: 0;
+    }
+
+    /* Show dropdown when parent is hovered or active */
+    .user-dropdown:hover .dropdown-menu,
+    .user-dropdown.active .dropdown-menu {
+      display: block;
+    }
+
+    /* Optional: Arrow pointer to dropdown */
+    .dropdown-menu::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      right: 15px;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 8px solid white;
+    }
+  </style>
 </head>
-<style>
-  .search-container {
-    background-color: white;
-    border-radius: 50px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    max-width: 500px;
-    width: 100%;
-    transition: all 0.3s ease;
-  }
-
-  .search-container:hover {
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-  }
-
-  .form-control.search-input {
-    border: none;
-    background: transparent;
-    padding-left: 20px;
-    font-size: 1rem;
-    height: 50px;
-  }
-
-  .form-control.search-input:focus {
-    box-shadow: none;
-    outline: none;
-  }
-
-  .btn-search {
-    background-color: black;
-    color: white;
-    border-radius: 50px;
-    padding: 10px 20px;
-    border: none;
-    transition: all 0.3s ease;
-  }
-
-  .btn-search:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-  }
-
-  .search-icon {
-    color: #6c757d;
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-
-  /* farmconnect logo */
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .logo i {
-    font-size: 24px;
-    color: black;
-    /* A green color to represent farming */
-    margin-right: 8px;
-  }
-
-  .logo-text {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: black;
-    /* A deeper green for contrast */
-    font-family: 'Inter', sans-serif;
-    /* Assuming you're using Inter font from previous CSS */
-    letter-spacing: -0.5px;
-  }
-</style>
 
 <body>
-
   <!-- Header -->
   <header>
-    <div class="logo">
-      <i class="fa fa-home"></i>
-      <span class="logo-text">FarmConnect</span>
-    </div>
-    <div class="search-container position-relative">
-      <form class="d-flex align-items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="search-icon feather feather-search">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input class="form-control search-input ps-5" type="search" placeholder="Search anything..."
-          aria-label="Search">
-        <button class="btn btn-search ms-2" type="submit">Search</button>
-      </form>
-    </div>
-    <nav>
-      <a th:href="@{/}">Home</a>
-      <a th:href="@{/Farmers}">Farmers</a>
-      <a th:href="@{/crops}">Crops</a>
-      <a th:href="@{/transport}">Transport</a>
-      <a th:href="@{/about}">About</a>
-      <!-- <i class="fa fa-user"></i> -->
-    </nav>
 
-    <div class="dropdown-user" id="dropdownUser">
-      <i class="fa fa-user"></i>
-      <div class="dropdown-user-menu">
-        <a th:href="@{/profile}">
-          <i class="fas fa-user"></i>My Profile
-        </a>
-        <form th:action="@{/logout}" method="POST" style="margin: 0;">
-          <button type="submit" class="logout-btn">
-            <i class="fas fa-sign-out-alt"></i>Logout
-          </button>
-        </form>
+
+    <div class="nav-container">
+      <div class="logo">
+        <i class="fa fa-home"></i>
+        <span class="logo-text">FarmConnect</span>
       </div>
+      <nav>
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/Farmers}">Farmers</a>
+        <a th:href="@{/crops}">Crops</a>
+        <a th:href="@{/transport}">Transport</a>
+        <a th:href="@{/about}">About</a>
+        <div class="user-dropdown" id="dropdownUser">
+          <i class="fa fa-user"></i>
+          <div class="dropdown-menu">
+            <a th:href="@{/farmerprofile}" class="dropdown-item">
+              <i class="fas fa-user"></i> My Profile
+            </a>
+            <form action="@{/logout}" method="POST" style="margin: 0;">
+              <button type="submit" class="dropdown-item logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+            </form>
+          </div>
+        </div>
+      </nav>
     </div>
 
 
     <script>
-      // JavaScript to toggle the dropdown menu on click
       document.getElementById('dropdownUser').addEventListener('click', function (event) {
-        // Prevent the click from bubbling up (so that clicking’s confined to this element)
         event.stopPropagation();
         this.classList.toggle('active');
       });
 
-      // Hide the dropdown when clicking outside
       document.addEventListener('click', function (event) {
         var dropdown = document.getElementById('dropdownUser');
         if (!dropdown.contains(event.target)) {
           dropdown.classList.remove('active');
         }
       });
-
     </script>
   </header>
 
@@ -158,60 +358,88 @@
       <h2>Sign up as Farmer</h2>
       <p>Enter your details below</p>
       <form id="signupForm">
-        <input type="text" id="fullName" placeholder="Name" required>
-        <input type="email" id="emailOrPhone" placeholder="Email or Phone Number" required>
+        <input type="text" id="fullName" placeholder="Enter Your FullName" pattern="[A-Za-z ]+"
+          title="Please enter letters only" required>
+        <input type="text" id="emailOrPhone" placeholder="Email or Phone Number" required>
         <input type="password" id="password" placeholder="Password" required>
         <input type="password" id="confirmPassword" placeholder="Confirm Password" required>
-        <button type="submit" style="background-color: black; color: white; padding: 10px 20px; font-size: 16px;" class="btn">
-          Create Account
-        </button>
-        <button type="button" class="google-btn"
-          style="background-color: black; color: white; padding: 10px 20px; font-size: 16px;">
+        <button type="submit" class="btn">Create Account</button>
+
+        <a type="button" class="oauth-btn google-btn" id="googleBtn" href="/oauth2/authorization/google">
           <i class="fa-brands fa-google"></i> Sign up with Google
-        </button>
-        <p>Already have an account? <a href="/login">Log in</a></p>
+        </a>
+        <a type="button" class="oauth-btn github-btn" id="githubBtn" href="/oauth2/authorization/github">
+          <i class="fa-brands fa-github"></i> Sign up with GitHub
+        </a>
+        <p>Already have an account? <a th:href="@{/farmerlogin}">Log in</a></p>
       </form>
     </div>
-
   </section>
 
   <script>
+    // Define regular expressions for validation
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    const phoneRegex = /^\d{10}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
+    const fullNameRegex = /^[A-Za-z ]+$/;
+
     // Listen for the form submission
     document.getElementById("signupForm").addEventListener("submit", function (e) {
-      e.preventDefault(); // Prevent the default form submission
+      e.preventDefault();
 
-      // Validate form fields (example: check that password and confirm password match)
+      // Get form values
+      const fullName = document.getElementById("fullName").value.trim();
+      const emailOrPhone = document.getElementById("emailOrPhone").value.trim();
       const password = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
+
+      // Validate full name (letters and spaces only)
+      if (!fullNameRegex.test(fullName)) {
+        alert("Full name must contain only letters and spaces.");
+        return;
+      }
+
+      // Validate email or phone number
+      if (!emailRegex.test(emailOrPhone)) {
+        const cleanedPhone = emailOrPhone.replace(/\D/g, '');
+        if (cleanedPhone.length !== 10) {
+          alert("Please enter a valid email or exactly 10 digits for phone number.");
+          return;
+        }
+      }
+
+      // Validate password
+      if (!passwordRegex.test(password)) {
+        alert("Password must be at least 8 characters, include uppercase, lowercase, and one special character.");
+        return;
+      }
+
+      // Check if passwords match
       if (password !== confirmPassword) {
         alert("Passwords do not match!");
         return;
       }
 
-      // Build the JSON object from the form data
+      // Build the JSON object
       const farmer = {
-        fullName: document.getElementById("fullName").value.trim(),
-        emailOrPhone: document.getElementById("emailOrPhone").value.trim(),
+        fullName: fullName,
+        emailOrPhone: emailOrPhone,
         password: password
-        // Additional fields can be added here as required
       };
 
-      // Send the JSON object to the server via fetch API
+      // Send data to server
       fetch("/Signupfarmer", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json" // This tells the server to treat it as JSON
+          "Content-Type": "application/json"
         },
         body: JSON.stringify(farmer)
       })
         .then(response => {
           if (response.ok) {
-            // Successfully created account
             alert("Account created successfully!");
-            // Optionally, redirect to another page
             window.location.href = "/login";
           } else {
-            // Extract error details
             return response.text().then(text => { throw new Error(text); });
           }
         })
@@ -220,8 +448,16 @@
           alert("Error creating account: " + error.message);
         });
     });
-  </script>
 
+    // OAuth button handlers
+    document.getElementById("googleBtn").addEventListener("click", function () {
+      window.location.href = "/auth/google";
+    });
+
+    document.getElementById("githubBtn").addEventListener("click", function () {
+      window.location.href = "/auth/github";
+    });
+  </script>
 
 
   <!-- Footer -->
@@ -263,9 +499,8 @@
         </div>
       </div>
     </div>
-    <p class="copyright">© Copyright Rimel 2022. All rights reserved.</p>
+    <p class="copyright">© Copyright FarmConnect 2023. All rights reserved.</p>
   </footer>
-
 </body>
 
 </html>

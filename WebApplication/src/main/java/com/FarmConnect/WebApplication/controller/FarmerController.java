@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class FarmerController {
@@ -88,6 +89,22 @@ public class FarmerController {
         }
     }
 
+    @GetMapping("/Farmers/{uniqueId}/image")
+    public ResponseEntity<byte[]> getCropImage(@PathVariable("uniqueId") String uniqueId) {
+        System.out.println("Attempting to fetch crop with ID: " + uniqueId);
+        Optional<Farmer> optionalFarmer = farmService.findByUniqueId(uniqueId);
+
+        if (optionalFarmer.isPresent()) {
+            Farmer farmer = optionalFarmer.get();
+            System.out.println("Found Farmer: " + farmer.getFullName() + ", Serving image.");
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(farmer.getImageType()))
+                    .body(farmer.getFarmerImage());
+        } else {
+            System.out.println("Farmer not found for ID: " + uniqueId);
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @GetMapping("/Farmers")
     public String getFarmerPage(Model model){
@@ -105,13 +122,9 @@ public class FarmerController {
     }
 
     @PostMapping("/farmerlogin")
-    public String getLoginDetails(@RequestBody Farmer farmer , Model model){
-        System.out.println(farmer);
-
-        return farmService.verify(farmer , model);
-
-
-
+    public ResponseEntity<?> getLoginDetails(@RequestBody Farmer farmer) {
+        System.out.println("Received login request for: " + farmer);
+        return farmService.verify(farmer);
     }
 
 }
