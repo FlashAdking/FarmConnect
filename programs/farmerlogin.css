@@ -27,22 +27,6 @@ header {
     font-size: 24px;
 }
 
-.search-bar {
-    display: flex;
-    align-items: center;
-    background: #eee;
-    padding: 5px;
-    border-radius: 4px;
-}
-
-.search-bar input {
-    border: none;
-    padding: 8px;
-    width: 250px;
-    outline: none;
-    background: none;
-}
-
 nav {
     display: flex;
     align-items: center;
@@ -137,7 +121,6 @@ nav i {
     font-weight: bold;
 }
 
-/* Footer */
 footer {
     background-color: #222;
     color: white;
@@ -151,7 +134,7 @@ footer {
     flex-wrap: wrap;
 }
 
-.footer-column {
+.footer-container div {
     margin-bottom: 20px;
 }
 
@@ -159,19 +142,20 @@ h3 {
     margin-bottom: 10px;
 }
 
-.footer-column a {
-    display: block;
-    color: white;
-    text-decoration: none;
+ul {
+    list-style: none;
+}
+
+ul li {
     margin: 5px 0;
 }
 
-.footer-column img {
+.download-app img {
     width: 120px;
-    margin-top: 10px;
+    margin-right: 10px;
 }
 
-.copyright {
+footer p {
     text-align: center;
     margin-top: 20px;
     font-size: 14px;

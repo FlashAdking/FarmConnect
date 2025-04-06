@@ -97,6 +97,12 @@ public class FarmerController {
         model.addAttribute("farmers",farmer);
         return "Farmers";
     }
+    @GetMapping("/farmerlogin")
+    public String showFarmerLoginPage() {
+        return "farmerlogin";  // Loads farmerlogin.html from templates folder
+    }
+
+
 
     @GetMapping("/api/farmers")
     @ResponseBody
@@ -105,3 +111,4 @@ public class FarmerController {
     }
 
 }
+
