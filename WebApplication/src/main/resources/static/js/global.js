@@ -212,12 +212,14 @@ document.addEventListener("DOMContentLoaded", () => {
             addTokenToLinks();
             addTokenToForms();
             handleInvalidSignature();
+            injectLogoutButton(); 
             
             // Re-process when DOM changes (for dynamically added elements)
             const observer = new MutationObserver(() => {
                 if (isTokenValid()) {
                     addTokenToLinks();
                     addTokenToForms();
+                    injectLogoutButton();
                 }
             });
             observer.observe(document.body, { childList: true, subtree: true });
@@ -225,8 +227,29 @@ document.addEventListener("DOMContentLoaded", () => {
             // If token is invalid or expired, redirect to login
             // Only redirect if on a protected page
             if (!['/', '/Home'].includes(window.location.pathname)) {
-                window.location.href = '/farmerlogin';
+                window.location.href = '/';
             }
         }
     }
 });
+
+function injectLogoutButton() {
+    if (!document.getElementById("logout-btn")) {
+        const logoutButton = document.createElement("button");
+        logoutButton.id = "logout-btn";
+        logoutButton.className = "logout-btn";
+        logoutButton.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+
+        // Style or position it depending on your layout
+        const target = document.querySelector("#logout-placeholder") || document.body;
+        target.appendChild(logoutButton);
+
+        // Attach the logout logic
+        logoutButton.addEventListener("click", () => {
+            localStorage.removeItem("jwtToken");
+            window.location.href = "/";
+        });
+    }
+}
+
+

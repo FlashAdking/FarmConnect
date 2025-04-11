@@ -1,5 +1,6 @@
 package com.FarmConnect.WebApplication.config;
 
+import com.FarmConnect.WebApplication.service.CustomOAuth2UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +32,8 @@ public class SecurityConfig {
     @Autowired
     private JWTFilter jwtFilter;
 
+    @Autowired
+    private CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
 
 
     @Bean
@@ -38,14 +41,19 @@ public class SecurityConfig {
 
         return http.csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(request -> request.requestMatchers("/", "/farmerlogin",
-                                "/Home",
+                                "/Home","/wholesalerlogin","/Signupwholesaler", "/oauth-redirect",
                                 "/Signupfarmer", "/css/**", "/js/**", "/img/**"
                                 )
                         .permitAll()
                         .anyRequest().authenticated())
 //                .httpBasic(Customizer.withDefaults())
 //                .oauth2Login(Customizer.withDefaults()) // github and google
-                .oauth2Login(oauth2 -> oauth2.loginPage("/farmerlogin")) // github and google
+                .oauth2Login(
+                        oauth2 -> oauth2.loginPage("/farmerlogin")
+                        .successHandler(customOAuth2SuccessHandler)
+                        .userInfoEndpoint(userInfo -> userInfo.userService(new CustomOAuth2UserService()))
+                )
+                // github and google
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception ->
@@ -62,7 +70,7 @@ public class SecurityConfig {
                             response.getWriter().write("{\"error\":\"Unauthorized\"}");
                         } else {
                             // For HTML page requests
-                            response.sendRedirect("/farmerlogin");
+                            response.sendRedirect("/");
                         }
                     }))
                 .addFilterBefore(jwtFilter , UsernamePasswordAuthenticationFilter.class)

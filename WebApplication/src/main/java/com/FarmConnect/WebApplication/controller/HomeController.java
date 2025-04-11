@@ -51,14 +51,29 @@ public class HomeController {
         return "transportsignup";
     }
 
-//    @GetMapping("/Signupwholesaler")
-//    public String getsignUpWholesaler(){
-//        return "";
-//    }
-
     @GetMapping("/profile")
     public String getProfilePage(){
         return "farmerprofile";
+    }
+
+    @GetMapping("/wholesalerlogin")
+    public String getLoginforWholesaler(){
+        return "WholeSalerLogin";
+    }
+
+    @GetMapping("/Signupwholesaler")
+    public String getSignUpforWholesaler(){
+        return "WholeSalerSignUp";
+    }
+
+
+    @Controller
+    public class RedirectController {
+
+        @GetMapping("/oauth-redirect")
+        public String oauthRedirectPage() {
+            return "oauth-redirect"; // Thymeleaf will render templates/oauth-redirect.html
+        }
     }
 
 

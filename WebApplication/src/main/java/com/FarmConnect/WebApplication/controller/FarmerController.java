@@ -16,9 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class FarmerController {
@@ -65,7 +63,7 @@ public class FarmerController {
             // Retrieve the existing farmer by unique ID
             Farmer farmer = farmService.getFarmerById(id);
             if (farmer == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Farmer not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Farmer not found here");
             }
 
             // Validate that an image file is provided
@@ -123,8 +121,15 @@ public class FarmerController {
 
     @PostMapping("/farmerlogin")
     public ResponseEntity<?> getLoginDetails(@RequestBody Farmer farmer) {
-        System.out.println("Received login request for: " + farmer);
-        return farmService.verify(farmer);
+        try {
+            System.out.println("Received login request for: " + farmer);
+            return farmService.verify(farmer);
+        } catch (Exception e) {
+            // Catch any unexpected exceptions
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Login failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
     }
 
 }

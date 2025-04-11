@@ -319,7 +319,7 @@
                     <div class="dropdown-menu">
                         <a href="@{/farmerprofile}" class="dropdown-item"><i class="fa fa-id-card"></i> My Profile</a>
                         <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item"><i class="fa fa-sign-out-alt"></i> Logout</a>
+                        <div id="logout-placeholder"></div>
                     </div>
                 </div>
 
@@ -476,9 +476,19 @@
                     body: JSON.stringify(formData)
                 })
                     .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Login failed. Please check your credentials.");
+                        // First check the response status
+                        if (response.status === 401) {
+                            // Handle unauthorized (wrong credentials) specifically
+                            return response.json().then(data => {
+                                throw new Error(data.error || "Wrong username or password");
+                            });
                         }
+
+                        if (!response.ok) {
+                            throw new Error("Login failed. Please try again.");
+                        }
+
+                        // For successful responses, try to parse as JSON
                         return response.json();
                     })
                     .then(data => {

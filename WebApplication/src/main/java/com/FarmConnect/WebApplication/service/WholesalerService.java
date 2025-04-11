@@ -1,12 +1,10 @@
 package com.FarmConnect.WebApplication.service;
 
-
-import com.FarmConnect.WebApplication.model.Crops;
 import com.FarmConnect.WebApplication.model.Farmer;
-import com.FarmConnect.WebApplication.repository.FarmersRepo;
+import com.FarmConnect.WebApplication.model.Wholesaler;
+import com.FarmConnect.WebApplication.repository.WholeSalerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,62 +13,43 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @Service
-public class FarmerService {
+public class WholesalerService {
 
     @Autowired
-    FarmersRepo farmRepo;
-
-    @Autowired
-    AuthenticationManager authmanager;
+    WholeSalerRepo wholeRepo;
 
     @Autowired
     JWTService jwts;
 
-
-
-
-
-    public List<Farmer> getAllFarmers() {
-        return farmRepo.findAll();
-    }
-
-    public Farmer getFarmerById(String id) {
-        return farmRepo.getByUniqueId(id);
-    }
-
-    public void updateFarmer(Farmer farmer) {
-        farmRepo.save(farmer);
-    }
+    @Autowired
+    AuthenticationManager authmanager;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    public void RegisterFarmer(Farmer farmer) {
-        Optional<Farmer> existingFarmer = farmRepo.findByEmailOrPhone(farmer.getEmailOrPhone());
-        if (existingFarmer.isPresent()) {
-            throw new IllegalArgumentException("User with the given email or phone already exists.");
+    public void RegisterWholesaler(Wholesaler wholesaler) {
+        Optional<Wholesaler> existingWholesaler = wholeRepo.findByEmail(wholesaler.getEmail());
+        if (existingWholesaler.isPresent()) {
+            throw new IllegalArgumentException("Wholsaler with the given email already exists.");
         }
-        farmer.setPassword(encoder.encode(farmer.getPassword()) );
-        farmRepo.save(farmer);
+        wholesaler.setPassword(encoder.encode(wholesaler.getPassword()));
+
+        wholeRepo.save(wholesaler);
+
     }
 
-
-    public ResponseEntity<?> verify(Farmer farmer) {
+    public ResponseEntity<?> Check(Wholesaler wholesaler) {
         try {
             Authentication authentication =
-                    authmanager.authenticate(new UsernamePasswordAuthenticationToken(farmer.getEmailOrPhone(), farmer.getPassword()));
+                    authmanager.authenticate(new UsernamePasswordAuthenticationToken(wholesaler.getEmail(), wholesaler.getPassword()));
 
 
-            String token = jwts.genrateToken(farmer.getEmailOrPhone());
+            String token = jwts.genrateToken(wholesaler.getEmail());
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
             System.out.println(token);
@@ -87,10 +66,5 @@ public class FarmerService {
             errorResponse.put("error", "Authentication failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
-    }
-
-    public Optional<Farmer> findByUniqueId(String uniqueId) {
-        System.out.println();
-        return farmRepo.findByUniqueId(uniqueId);
     }
 }
