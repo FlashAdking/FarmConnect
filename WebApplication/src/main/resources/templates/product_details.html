@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <script th:src="@{/js/global.js}"></script>
@@ -33,14 +33,14 @@
         </nav>
 
         <div class="dropdown-user" id="dropdownUser">
-            <i class="fa fa-user"></i>
+            <i class="fa-solid fa-user"></i>
             <div class="dropdown-user-menu">
                 <a th:href="@{/profile}">
-                    <i class="fas fa-user"></i>My Profile
+                    <i class="fa-solid fa-user"></i>My Profile
                 </a>
                 <form th:action="@{/logout}" method="POST" style="margin: 0;">
                     <button type="submit" class="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i>Logout
+                        <i class="fa-solid fa-sign-out-alt"></i>Logout
                     </button>
                 </form>
             </div>
