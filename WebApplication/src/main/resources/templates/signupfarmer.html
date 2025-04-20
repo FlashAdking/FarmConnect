@@ -457,6 +457,34 @@
     document.getElementById("githubBtn").addEventListener("click", function () {
       window.location.href = "/oauth2/authorization/github";
     });
+
+    document.getElementById('dropdownUser').addEventListener('click', function (event) {
+  event.stopPropagation(); // Prevent the event from bubbling up
+  this.classList.toggle('active'); // Toggle dropdown visibility
+});
+
+document.querySelector('.dropdown-item').addEventListener('click', function (event) {
+  event.stopPropagation(); // Prevent closing when clicking the dropdown item
+});
+
+document.addEventListener('click', function (event) {
+  var dropdown = document.getElementById('dropdownUser');
+  if (!dropdown.contains(event.target)) {
+    dropdown.classList.remove('active'); // Close dropdown if click is outside
+  }
+});
+
+const dropdownUser = document.getElementById("dropdownUser");
+
+    dropdownUser.addEventListener("click", function (e) {
+        e.stopPropagation(); // Stop click from going to document
+        this.classList.toggle("active"); // Toggle dropdown
+    });
+
+    document.addEventListener("click", function () {
+        dropdownUser.classList.remove("active"); // Hide when clicked outside
+    });
+
   </script>
 
 

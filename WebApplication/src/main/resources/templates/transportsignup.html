@@ -21,18 +21,31 @@
 
 <body>
     <header>
-        <nav>
-            <div class="logo">🏠</div>
-            <input type="text" placeholder="Hinted search text">
-            <ul>
-                <li><a th:href="@{index.html}">Home</a></li>
-                <li><a th:href="@{farmerlogin.html}">Farmers</a></li>
-                <li><a th:href="@{crops.html}">Crops</a></li>
-                <li><a th:href="@{transport.html}">Transport</a></li>
-                <li><a th:href="@{about}">About</a></li>
-            </ul>
-            <div class="profile-icon">👤</div>
-        </nav>
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fa fa-home"></i>
+                <span class="logo-text">FarmConnect</span>
+            </div>
+
+            <nav>
+                <a th:href="@{/}">Home</a>
+                <a th:href="@{/Farmers}">Farmers</a>
+                <a th:href="@{/crops}">Crops</a>
+                <a th:href="@{/transport}">Transport</a>
+                <a th:href="@{/about}">About</a>
+                
+
+                <!-- Example HTML for the dropdown -->
+        <div class="dropdown-user" id="dropdownUser">
+            <i class="fa fa-user"></i>
+            <div class="dropdown-user-menu">
+                <a th:href="@{/profile}">
+                    <i class="fas fa-user"></i>My Profile</a>
+            </div>
+        </div>
+
+            </nav>
+        </div>
     </header>
 
     <main>
