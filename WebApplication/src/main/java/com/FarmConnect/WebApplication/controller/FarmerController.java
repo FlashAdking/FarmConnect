@@ -55,7 +55,7 @@ public class FarmerController {
     }
 
 
-    @PutMapping(value = "Farmers/{id}/uploadImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/farmers/{id}/uploadImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateFarmerImage(
             @PathVariable("id") String id,
             @RequestParam("image") MultipartFile image) {
@@ -87,7 +87,7 @@ public class FarmerController {
         }
     }
 
-    @GetMapping("/Farmers/{uniqueId}/image")
+    @GetMapping("/farmers/{uniqueId}/image")
     public ResponseEntity<byte[]> getCropImage(@PathVariable("uniqueId") String uniqueId) {
         System.out.println("Attempting to fetch crop with ID: " + uniqueId);
         Optional<Farmer> optionalFarmer = farmService.findByUniqueId(uniqueId);
@@ -95,8 +95,15 @@ public class FarmerController {
         if (optionalFarmer.isPresent()) {
             Farmer farmer = optionalFarmer.get();
             System.out.println("Found Farmer: " + farmer.getFullName() + ", Serving image.");
+
+            // Retrieve image type, using a default if it's null or blank
+            String imageType = farmer.getImageType();
+            if (imageType == null || imageType.trim().isEmpty()) {
+                imageType = "image/jpeg"; // Fallback to a default MIME type
+            }
+
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(farmer.getImageType()))
+                    .contentType(MediaType.parseMediaType(imageType))
                     .body(farmer.getFarmerImage());
         } else {
             System.out.println("Farmer not found for ID: " + uniqueId);
@@ -104,7 +111,8 @@ public class FarmerController {
         }
     }
 
-    @GetMapping("/Farmers")
+
+    @GetMapping("/farmers")
     public String getFarmerPage(Model model){
 
         List<Farmer> farmer = farmService.getAllFarmers();

@@ -5,16 +5,6 @@
 
 
     <script th:src="@{/js/global.js}"></script>
-    <script th:inline="javascript">
-        document.addEventListener("DOMContentLoaded", () => {
-            // Check if token exists
-            const token = localStorage.getItem('jwtToken');
-            if (!token) {
-                // No token found, redirect to login
-                window.location.href = /*[[@{/farmerlogin}]]*/ '/farmerlogin';
-            }
-        });
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FarmConnect Shopping Cart</title>
@@ -118,7 +108,7 @@
                 <nav>
                     <div class="nav-links">
                         <a th:href="@{/}">Home</a>
-                        <a th:href="@{/Farmers}">Farmers</a>
+                        <a th:href="@{/farmers}">Farmers</a>
                         <a th:href="@{/crops}">Crops</a>
                         <a th:href="@{/transport}">Transport</a>
                         <a th:href="@{/about}">About</a>
@@ -200,82 +190,93 @@
     <!-- Add-to-Cart Event Delegation Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Retrieve cart items from localStorage
             let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
-
-            // Select elements
             const cartContainer = document.getElementById('cart');
             const emptyCartMessage = document.getElementById('emptyCartMessage');
             const confirmOrderButton = document.getElementById('confirmOrder');
 
-            // Function to save cart items to localStorage
+            console.log("Cart items loaded:", JSON.stringify(cartItems));
+
             function saveCartItems() {
                 localStorage.setItem("cartItems", JSON.stringify(cartItems));
             }
 
-            // Function to render cart items
             function renderCartItems() {
-                // Clear existing items in the cart container
                 cartContainer.innerHTML = '';
 
-                if (cartItems.length === 0) {
-                    // Show "empty cart" message and hide confirm order button
+                if (!cartItems.length) {
                     emptyCartMessage.style.display = 'block';
                     confirmOrderButton.style.display = 'none';
-                } else {
-                    // Hide "empty cart" message and show confirm order button
-                    emptyCartMessage.style.display = 'none';
-                    confirmOrderButton.style.display = 'block';
-
-                    // Render each cart item
-                    cartItems.forEach(function (item, index) {
-                        const itemEl = document.createElement('div');
-                        itemEl.classList.add('cart-item');
-                        itemEl.innerHTML = `
-                    <div class="cart-item-image">
-                        <img src="${item.image}" alt="${item.name}" style="width: 100px; height: 100px; object-fit: cover;">
-                    </div>
-                    <div class="cart-item-details">
-                        <h3>${item.name}</h3>
-                        <p>Price: ₹${item.price}</p>
-                    </div>
-                    <div class="cart-item-controls">
-                        <div class="quantity-control">
-                            <button class="quantity-btn decrease-btn" data-index="${index}">-</button>
-                            <span>${item.quantity}</span>
-                            <button class="quantity-btn increase-btn" data-index="${index}">+</button>
-                        </div>
-                        <button class="delete-btn" data-index="${index}">Delete</button>
-                    </div>
-                `;
-                        cartContainer.appendChild(itemEl);
-                    });
-
-                    // Add a "Total" summary
-                    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                    const totalEl = document.createElement('p');
-                    totalEl.classList.add('cart-total');
-                    totalEl.textContent = `Total Price: ₹${total}`;
-                    cartContainer.appendChild(totalEl);
-
-                    // Add event listeners for quantity and delete buttons
-                    document.querySelectorAll('.decrease-btn').forEach(btn => {
-                        btn.addEventListener('click', decreaseQuantity);
-                    });
-
-                    document.querySelectorAll('.increase-btn').forEach(btn => {
-                        btn.addEventListener('click', increaseQuantity);
-                    });
-
-                    document.querySelectorAll('.delete-btn').forEach(btn => {
-                        btn.addEventListener('click', deleteItem);
-                    });
+                    return;
                 }
+
+                emptyCartMessage.style.display = 'none';
+                confirmOrderButton.style.display = 'block';
+
+                cartItems.forEach((item, index) => {
+                    // Default fallback image is now the crop image default
+                    let imgSrc = '/img/default-crop.jpg';
+
+                    // Use stored image URL if present and valid.
+                    if (item.image && item.image.trim() !== "" && !item.image.includes('default-crop')) {
+                        imgSrc = item.image;
+                        console.log(`Item ${index} - Using stored image URL:`, imgSrc);
+                    }
+                    // Optionally, if cropId is available, you could reconstruct it:
+                    else if (item.cropId) {
+                        imgSrc = window.location.origin + '/crops/' + item.cropId + '/image';
+                        console.log(`Item ${index} - Constructed image URL from cropId:`, imgSrc);
+                    }
+
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'cart-item';
+                    itemEl.innerHTML = `
+                <div class="cart-item-image">
+                    <img src="${imgSrc}" alt="${item.name}" 
+                         style="width: 100px; height: 100px; object-fit: cover;"
+                         onerror="this.onerror=null;this.src='/img/default-crop.jpg';">
+                </div>
+                <div class="cart-item-details">
+                    <h3>${item.name}</h3>
+                    <p>Price: ₹${parseFloat(item.price) || 0}</p>
+                </div>
+                <div class="cart-item-controls">
+                    <div class="quantity-control">
+                        <button class="quantity-btn decrease-btn" data-index="${index}">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn increase-btn" data-index="${index}">+</button>
+                    </div>
+                    <button class="delete-btn" data-index="${index}">Delete</button>
+                </div>
+            `;
+                    cartContainer.appendChild(itemEl);
+
+                    const img = itemEl.querySelector('img');
+                    img.addEventListener('load', function () {
+                        console.log(`Image for item ${index} loaded successfully:`, this.src);
+                    });
+                    img.addEventListener('error', function () {
+                        console.error(`Failed to load image for item ${index}:`, this.src);
+                        if (item.cropId && !this.src.includes('default')) {
+                            console.log("Trying alternative URL format for item", index);
+                            this.src = window.location.origin + '/crops/' + item.cropId + '/image';
+                        }
+                    });
+                });
+
+                const total = cartItems.reduce((sum, item) => sum + ((parseFloat(item.price) || 0) * item.quantity), 0);
+                const totalEl = document.createElement('p');
+                totalEl.className = 'cart-total';
+                totalEl.textContent = `Total Price: ₹${total}`;
+                cartContainer.appendChild(totalEl);
+
+                document.querySelectorAll('.decrease-btn').forEach(btn => btn.addEventListener('click', decreaseQuantity));
+                document.querySelectorAll('.increase-btn').forEach(btn => btn.addEventListener('click', increaseQuantity));
+                document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', deleteItem));
             }
 
-            // Function to decrease item quantity
-            function decreaseQuantity(event) {
-                const index = event.target.dataset.index;
+            function decreaseQuantity(e) {
+                const index = +e.target.dataset.index;
                 if (cartItems[index].quantity > 1) {
                     cartItems[index].quantity--;
                     saveCartItems();
@@ -283,34 +284,33 @@
                 }
             }
 
-            // Function to increase item quantity
-            function increaseQuantity(event) {
-                const index = event.target.dataset.index;
+            function increaseQuantity(e) {
+                const index = +e.target.dataset.index;
                 cartItems[index].quantity++;
                 saveCartItems();
                 renderCartItems();
             }
 
-            // Function to delete an item from the cart
-            function deleteItem(event) {
-                const index = event.target.dataset.index;
+            function deleteItem(e) {
+                const index = +e.target.dataset.index;
                 cartItems.splice(index, 1);
                 saveCartItems();
                 renderCartItems();
             }
 
-            // Initialize the cart rendering
-            renderCartItems();
-
-            // Event listener for the "Confirm Order" button
-            confirmOrderButton.addEventListener('click', function () {
-                alert('Order confirmed! Thank you for your purchase.');
-                // Clear the cart after confirmation
+            confirmOrderButton.addEventListener('click', () => {
+                alert('Order confirmed! Please complete the payment. Thank you for your purchase.');
                 localStorage.removeItem("cartItems");
-                location.reload(); // Refresh the page to update the cart display
+                location.reload();
             });
+
+            renderCartItems();
         });
+
+
     </script>
+
+
 
 
 </body>

@@ -5,7 +5,7 @@
     <script th:src="@{/js/global.js}"></script>
 
 
-    <script th:inline="javascript">
+    <!-- <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded", () => {
             // Check if token exists
             const token = localStorage.getItem('jwtToken');
@@ -14,7 +14,7 @@
                 window.location.href = /*[[@{/farmerlogin}]]*/ '/farmerlogin';
             }
         });
-    </script>
+    </script> -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FarmConnect Crops</title>
@@ -121,7 +121,7 @@
         </div>
         <nav>
             <a th:href="@{/}">Home</a>
-            <a th:href="@{/Farmers}">Farmers</a>
+            <a th:href="@{/farmers}">Farmers</a>
             <a th:href="@{/crops}">Crops</a>
             <a th:href="@{/transport}">Transport</a>
             <a th:href="@{/about}">About</a>
@@ -270,7 +270,11 @@
                     </div>
                     <div class="product-actions">
                         <button type="button" onclick="addCropToCart(this)">Add to Cart</button>
-                        <button type="button">View Details</button>
+                        <button type="button">
+                           <a th:href="@{/crops/crop.cropId}" style="color: inherit; text-decoration: none;"> 
+                            View Details
+                           </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -475,28 +479,49 @@
             applyFilters();
         });
 
-
-
+        // This function will be invoked when the "Add to Cart" button is clicked
         // This function will be invoked when the "Add to Cart" button is clicked
         function addCropToCart(button) {
             console.log("addCropToCart called!");
+
             // Find the nearest parent product card
             const productCard = button.closest('.product-card');
-            if (!productCard) return;
+            if (!productCard) {
+                console.error("Product card not found.");
+                return;
+            }
 
+            // Get the image element; try to obtain a valid crop image URL.
             const imgElement = productCard.querySelector('.product-image img');
-            const cropImageURL = imgElement ? imgElement.getAttribute('src') : '';
+            let cropImageURL = '/img/default-crop.jpg'; // use default crop image fallback
 
+            if (imgElement) {
+                // Check if the DOM property is valid, non-empty and not a transient blob URL.
+                if (imgElement.src && !imgElement.src.startsWith("blob:") && imgElement.src.trim() !== "") {
+                    cropImageURL = imgElement.src;
+                } else {
+                    // If lazy-loading hasn't populated src, retrieve from data-src.
+                    cropImageURL = imgElement.getAttribute("data-src") || '/img/default-crop.jpg';
+                }
+            }
+            console.log("Captured image URL:", cropImageURL);
 
-            // Extract crop details from the product card attributes and inner text
-            const cropName = productCard.querySelector('.product-info h3').innerText.trim();
-            const cropPrice = parseFloat(productCard.getAttribute('data-price'));
-            const cropCategory = productCard.getAttribute('data-category');
-            const cropLabel = productCard.getAttribute('data-label');
-            const cropColor = productCard.getAttribute('data-color');
-            const cropQuantity = productCard.getAttribute('data-quantity') || 1; // provide a default in case it's missing
+            // Extract crop details
+            const cropNameElem = productCard.querySelector('.product-info h3');
+            if (!cropNameElem) {
+                console.error("Crop name element not found.");
+                return;
+            }
+            const cropName = cropNameElem.innerText.trim();
 
-            // Create a crop object
+            // Parse attributes with defaults as needed
+            const cropPrice = parseFloat(productCard.getAttribute('data-price')) || 0;
+            const cropCategory = productCard.getAttribute('data-category') || "Uncategorized";
+            const cropLabel = productCard.getAttribute('data-label') || "";
+            const cropColor = productCard.getAttribute('data-color') || "";
+            const cropQuantity = parseInt(productCard.getAttribute('data-quantity'), 10) || 1;
+
+            // Create a crop item object
             const cropItem = {
                 name: cropName,
                 price: cropPrice,
@@ -504,20 +529,24 @@
                 label: cropLabel,
                 color: cropColor,
                 quantity: cropQuantity,
-                image: cropImageURL
+                image: cropImageURL,
+                // Optionally, store cropId if needed later to construct an image URL.
+                cropId: productCard.getAttribute('data-cropid')
             };
 
-            // Check if your global Cart module with an 'addItem' function is available
-            if (window.Cart && typeof Cart.addItem === 'function') {
-                Cart.addItem(cropItem);
+            // Add the item to the Cart module (ensure that window.Cart is defined elsewhere)
+            if (window.Cart && typeof window.Cart.addItem === 'function') {
+                window.Cart.addItem(cropItem);
                 console.log(`${cropName} added to the cart`);
                 alert(`${cropName} has been added to your cart.`);
-
                 window.location.reload();
             } else {
                 console.error("Cart module is not available or does not support addItem.");
             }
         }
+
+
+
 
         // For persistence across pages, the Cart module is defined on the global window object.
         window.Cart = (function () {
@@ -621,7 +650,6 @@
                 }
             };
         })();
-
 
     </script>
 </body>

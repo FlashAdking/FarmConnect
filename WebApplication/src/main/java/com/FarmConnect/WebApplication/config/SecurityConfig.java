@@ -39,41 +39,44 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain getSecurityFilterchain(HttpSecurity http) throws Exception {
 
-        return http.csrf(customizer -> customizer.disable())
-                .authorizeHttpRequests(request -> request.requestMatchers("/", "/farmerlogin",
-                                "/Home","/wholesalerlogin","/Signupwholesaler", "/oauth-redirect",
-                                "/Signupfarmer", "/css/**", "/js/**", "/img/**"
-                                )
-                        .permitAll()
-                        .anyRequest().authenticated())
-//                .httpBasic(Customizer.withDefaults())
-//                .oauth2Login(Customizer.withDefaults()) // github and google
-                .oauth2Login(
-                        oauth2 -> oauth2.loginPage("/farmerlogin")
-                        .successHandler(customOAuth2SuccessHandler)
-                        .userInfoEndpoint(userInfo -> userInfo.userService(new CustomOAuth2UserService()))
+        return http
+                .csrf(customizer -> customizer.disable())
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers(
+                                "/", "/farmerlogin", "/Home", "/wholesalerlogin", "/Signupwholesaler",
+                                "/oauth-redirect", "/Signupfarmer", "/css/**", "/js/**", "/img/**",
+                                "/crops/**", "/farmers/**", "/about","/api/farmers"
+                        ).permitAll()
+                        // These endpoints are public
+                        .anyRequest().authenticated()   // All others require authentication
                 )
-                // github and google
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/farmers")
+                        .successHandler(customOAuth2SuccessHandler)
+                        .userInfoEndpoint(userInfo ->
+                                userInfo.userService(new CustomOAuth2UserService())
+                        )
+                )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception ->
-                    exception.authenticationEntryPoint((request, response, authException) -> {
-                        // Check if it's an AJAX/fetch request
-                        String xRequestedWith = request.getHeader("X-Requested-With");
-                        String accept = request.getHeader("Accept");
+                        exception.authenticationEntryPoint((request, response, authException) -> {
+                            // If the request is an AJAX request or expects JSON, return a JSON error
+                            String xRequestedWith = request.getHeader("X-Requested-With");
+                            String accept = request.getHeader("Accept");
 
-                        if ((xRequestedWith != null && xRequestedWith.equals("XMLHttpRequest")) ||
-                            (accept != null && accept.contains("application/json"))) {
-                            // For API requests
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"error\":\"Unauthorized\"}");
-                        } else {
-                            // For HTML page requests
-                            response.sendRedirect("/");
-                        }
-                    }))
-                .addFilterBefore(jwtFilter , UsernamePasswordAuthenticationFilter.class)
+                            if ((xRequestedWith != null && xRequestedWith.equals("XMLHttpRequest")) ||
+                                    (accept != null && accept.contains("application/json"))) {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                response.setContentType("application/json");
+                                response.getWriter().write("{\"error\":\"Unauthorized\"}");
+                            } else {
+                                // Otherwise, for HTML requests redirect to the home page.
+                                response.sendRedirect("/");
+                            }
+                        })
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

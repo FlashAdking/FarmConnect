@@ -5,15 +5,6 @@
   <script th:src="@{/js/global.js}"></script>
 
 
-  <script th:inline="javascript">
-    document.addEventListener("DOMContentLoaded", () => {
-      // Check if token exists
-      const token = localStorage.getItem('jwtToken');
-      if (!token) {
-        // No token found, redirect to login
-        window.location.href = /*[[@{/farmerlogin}]]*/ '/farmerlogin';
-      }
-    });
   </script>
 
   <meta charset="UTF-8">
@@ -101,61 +92,58 @@
 
 <body>
   <header>
-    <div class="logo">
-      <i class="fa fa-home"></i>
-      <span class="logo-text">FarmConnect</span>
-    </div>
-    <div class="search-container position-relative">
-      <form class="d-flex align-items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          class="search-icon feather feather-search">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input class="form-control search-input ps-5" type="search" placeholder="Search anything..."
-          aria-label="Search">
-        <button class="btn btn-search ms-2" type="submit">Search</button>
-      </form>
-    </div>
-    <nav>
-      <a th:href="@{/}">Home</a>
-      <a th:href="@{/Farmers}">Farmers</a>
-      <a th:href="@{/crops}">Crops</a>
-      <a th:href="@{/transport}">Transport</a>
-      <a th:href="@{/about}">About</a>
-      <!-- <i class="fa fa-user"></i> -->
-    </nav>
-
-    <div class="dropdown-user" id="dropdownUser">
-      <i class="fa fa-user"></i>
-      <div class="dropdown-user-menu">
-        <a th:href="@{/profile}">
-          <i class="fas fa-user"></i>My Profile
-        </a>
-        <div id="logout-placeholder"></div>
+    <div class="header-container">
+      <div class="logo">
+        <i class="fa fa-home"></i>
+        <span class="logo-text">FarmConnect</span>
       </div>
+
+      <div class="search-container">
+        <form id="searchForm" th:action="@{/search}" method="GET">
+          <i class="fa fa-search search-icon"></i>
+          <input type="text" name="query" class="search-input" placeholder="Search anything..."
+            th:value="${param.query}" />
+          <button type="submit" class="btn-search">Search</button>
+        </form>
+      </div>
+
+      <nav>
+        <div class="nav-links">
+          <a th:href="@{/}">Home</a>
+          <a th:href="@{/farmers}">Farmers</a>
+          <a th:href="@{/crops}">Crops</a>
+          <a th:href="@{/transport}">Transport</a>
+          <a th:href="@{/about}">About</a>
+        </div>
+
+        <div class="dropdown-user">
+          <i class="fa fa-user"></i>
+          <div class="dropdown-user-menu">
+            <a th:href="@{/profile}">
+              <i class="fas fa-user"></i>My Profile
+            </a>
+            <div id="logout-placeholder"></div>
+          </div>
+        </div>
+      </nav>
     </div>
-
-
-    <script>
-      // JavaScript to toggle the dropdown menu on click
-      document.getElementById('dropdownUser').addEventListener('click', function (event) {
-        // Prevent the click from bubbling up (so that clicking’s confined to this element)
-        event.stopPropagation();
-        this.classList.toggle('active');
-      });
-
-      // Hide the dropdown when clicking outside
-      document.addEventListener('click', function (event) {
-        var dropdown = document.getElementById('dropdownUser');
-        if (!dropdown.contains(event.target)) {
-          dropdown.classList.remove('active');
-        }
-      });
-
-    </script>
   </header>
+  <script>
+    // JavaScript to toggle the dropdown menu on click
+    document.getElementById('dropdownUser').addEventListener('click', function (event) {
+      // Prevent the click from bubbling up (so that clicking’s confined to this element)
+      event.stopPropagation();
+      this.classList.toggle('active');
+    });
+
+    // Hide the dropdown when clicking outside
+    document.addEventListener('click', function (event) {
+      var dropdown = document.getElementById('dropdownUser');
+      if (!dropdown.contains(event.target)) {
+        dropdown.classList.remove('active');
+      }
+    });
+  </script>
 
 
   <!-- Middle Content Start -->
@@ -172,7 +160,7 @@
     function getToken() {
       return window.token || localStorage.getItem('jwt-token');
     }
-  
+
     // Function to fetch farmers from the API endpoint
     async function fetchFarmers() {
       try {
@@ -183,11 +171,11 @@
           },
           credentials: 'include'
         });
-  
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-  
+
         const farmers = await response.json();
         renderFarmers(farmers);
       } catch (error) {
@@ -195,12 +183,12 @@
         displayError("Failed to load farmers. Please try again later.");
       }
     }
-  
+
     // Function to load farmer image
     async function loadFarmerImage(uniqueId) {
       try {
         // Note: Fixed the URL to match the Spring Boot controller exactly
-        const response = await fetch(`/Farmers/${uniqueId}/image`, {
+        const response = await fetch(`/farmers/${uniqueId}/image`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${getToken()}`,
@@ -208,12 +196,12 @@
           },
           credentials: 'include'
         });
-  
+
         if (!response.ok) {
           console.error(`Failed to load image for farmer ${uniqueId}. Status: ${response.status}`);
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-  
+
         const blob = await response.blob();
         return URL.createObjectURL(blob);
       } catch (error) {
@@ -222,40 +210,40 @@
         return '/img/default-farmer.jpg';
       }
     }
-  
+
     // Function to display an error message in the UI
     function displayError(message) {
       const farmerGrid = document.querySelector('.farmers-grid');
       farmerGrid.innerHTML = `<div class="error">${message}</div>`;
     }
-  
+
     // Function to render the farmer details
     async function renderFarmers(farmers) {
       const farmerGrid = document.querySelector('.farmers-grid');
       farmerGrid.innerHTML = "";
-  
+
       if (farmers.length === 0) {
         farmerGrid.innerHTML = '<div class="no-data">No farmers found.</div>';
         return;
       }
-  
+
       // Create and append cards for each farmer
       for (const farmer of farmers) {
         const card = document.createElement('div');
         card.classList.add("farmer-card");
-  
+
         console.log('Farmer uniqueId:', farmer.uniqueId);
         card.setAttribute('data-uniqueid', farmer.uniqueId);
-  
+
         // Render tags
         const tagsHtml = Array.isArray(farmer.tags) && farmer.tags.length > 0
           ? farmer.tags.map(tag => `<span class="tag ${tag.toLowerCase()}">${tag}</span>`).join('')
           : `<span class="tag organic">Organic</span>
              <span class="tag fruits">Fruits</span>`;
-  
+
         // Load image first
         const imageUrl = await loadFarmerImage(farmer.uniqueId);
-  
+
         card.innerHTML = `
             <img src="${imageUrl}" alt="Farmer ${farmer.fullName}"
                  onerror="this.onerror=null;this.src='/img/default-farmer.jpg';">
@@ -265,21 +253,21 @@
             <p class="contact">${farmer.emailOrPhone}</p>
             <button class="crops-btn">Crops Uploaded</button>
         `;
-  
+
         // Clean up object URL when image loads or errors
         const img = card.querySelector('img');
         img.onload = () => URL.revokeObjectURL(imageUrl);
         img.onerror = () => URL.revokeObjectURL(imageUrl);
-  
+
         farmerGrid.appendChild(card);
       }
     }
-  
+
     // Run when DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
       fetchFarmers();
     });
-  
+
     // Export function for manual reloading if needed
     window.fetchFarmers = fetchFarmers;
   </script>

@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/WholeSalerLogin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <title>Wholesaler Buyer Dashboard</title>
+    <style>
+        .search-container {
+            background-color: white;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            max-width: 500px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .search-container:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-control.search-input {
+            border: none;
+            background: transparent;
+            padding-left: 20px;
+            font-size: 1rem;
+            height: 50px;
+        }
+
+        .form-control.search-input:focus {
+            box-shadow: none;
+            outline: none;
+        }
+
+        .btn-search {
+            background-color: black;
+            color: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-search:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .search-icon {
+            color: #6c757d;
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* farmconnect logo */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 24px;
+            color: black;
+            /* A green color to represent farming */
+            margin-right: 8px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: black;
+            /* A deeper green for contrast */
+            font-family: 'Inter', sans-serif;
+            /* Assuming you're using Inter font from previous CSS */
+            letter-spacing: -0.5px;
+        }
+
+        /* Reset and Base Styles */
+        :root {
+            --primary: #000000;
+            --secondary: #333333;
+            --accent: #0071e3;
+            --success: #34c759;
+            --warning: #ff9500;
+            --error: #ff3b30;
+            --neutral-100: #ffffff;
+            --neutral-200: #f5f5f7;
+            --neutral-300: #e5e5e5;
+            --neutral-400: #d1d1d6;
+            --neutral-500: #86868b;
+            --neutral-600: #636366;
+            --neutral-700: #48484a;
+            --neutral-800: #3a3a3c;
+            --neutral-900: #1c1c1e;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.03);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --spacing-1: 8px;
+            --spacing-2: 16px;
+            --spacing-3: 24px;
+            --spacing-4: 32px;
+            --spacing-5: 40px;
+            --spacing-6: 48px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            color: var(--neutral-900);
+            background-color: var(--neutral-200);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-2);
+        }
+
+        .main-content {
+            padding: var(--spacing-4) 0;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--neutral-100);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-4);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            padding: var(--spacing-3);
+            border-bottom: 1px solid var(--neutral-300);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: var(--spacing-3);
+        }
+
+        /* Profile Section */
+        .profile-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-4);
+        }
+
+        @media (min-width: 768px) {
+            .profile-section {
+                grid-template-columns: 220px 1fr;
+            }
+        }
+
+        .profile-image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: var(--shadow-md);
+            border: 3px solid var(--neutral-100);
+            transition: var(--transition);
+        }
+
+        .profile-image:hover {
+            transform: scale(1.02);
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-3);
+        }
+
+        @media (min-width: 576px) {
+            .profile-info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .info-group {
+            margin-bottom: var(--spacing-2);
+        }
+
+        .info-label {
+            font-size: 0.875rem;
+            color: var(--neutral-600);
+            margin-bottom: var(--spacing-1);
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        /* Order Section */
+        .order-section {
+            margin-top: var(--spacing-4);
+        }
+
+        .order-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-3);
+        }
+
+        .order-item {
+            background-color: var(--neutral-100);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-3);
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .order-item:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-2);
+        }
+
+        .order-id {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .order-date {
+            color: var(--neutral-600);
+            font-size: 0.875rem;
+        }
+
+        .order-details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-2);
+        }
+
+        @media (min-width: 576px) {
+            .order-details {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .order-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--neutral-600);
+            margin-bottom: var(--spacing-1);
+        }
+
+        .detail-value {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .order-products {
+            margin-top: var(--spacing-2);
+            padding-top: var(--spacing-2);
+            border-top: 1px solid var(--neutral-300);
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--spacing-1) 0;
+            font-size: 0.875rem;
+        }
+
+        .product-name {
+            font-weight: 500;
+        }
+
+        .product-quantity-price {
+            color: var(--neutral-700);
+        }
+
+        .order-status {
+            display: inline-block;
+            padding: var(--spacing-1) var(--spacing-2);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-delivered {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .status-processing {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .status-pending {
+            background-color: var(--neutral-500);
+            color: white;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-1) var(--spacing-3);
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--neutral-800);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--neutral-300);
+            color: var(--neutral-900);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--neutral-400);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+        }
+
+        /* Badges and Stats */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: var(--neutral-300);
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-3);
+            margin-bottom: var(--spacing-4);
+        }
+
+        @media (min-width: 768px) {
+            .stats-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-card {
+            background-color: var(--neutral-100);
+            padding: var(--spacing-3);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-1);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--neutral-600);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .animate-delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .animate-delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .animate-delay-3 {
+            animation-delay: 0.3s;
+        }
+
+        .animate-delay-4 {
+            animation-delay: 0.4s;
+        }
+
+        header {
+            position: relative;
+            display: flex;
+        }
+
+        .elements {
+            position: absolute;
+            right: 0;
+        }
+
+        .dropdown-user {
+            position: relative;
+            /* Establish positioning context */
+            display: inline-block;
+            /* Optional: makes the container only as wide as needed */
+            cursor: pointer;
+        }
+
+        /* Initially hide the dropdown menu */
+        .dropdown-user-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            /* Align the dropdown menu to the right side of the parent */
+            top: 100%;
+            /* Position below the parent element */
+            background-color: #fff;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            padding: 10px 0;
+        }
+
+        /* Style the links inside the dropdown */
+        .dropdown-user-menu a {
+            color: #333;
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        /* Change color on hover for links */
+        .dropdown-user-menu a:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Show the dropdown when hovering over the .dropdown-user container */
+        .dropdown-user:hover .dropdown-user-menu {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <i class="fa fa-home"></i>
+            <span class="logo-text">FarmConnect</span>
+        </div>
+        <nav class="elements">
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/farmers}">Farmers</a>
+            <a th:href="@{/crops}">Crops</a>
+            <a th:href="@{/transport}">Transport</a>
+            <a th:href="@{/about}">About</a>
+
+            <!-- Example HTML for the dropdown -->
+            <div class="dropdown-user">
+                <i class="fa fa-user"></i>
+                <div class="dropdown-user-menu">
+                    <!-- <a th:href="@{/profile}">
+                        <i class="fas fa-user"></i>My Profile
+                    </a> -->
+                    <div id="logout-placeholder"></div>
+                </div>
+            </div>
+        </nav>
+
+
+        <script>
+            // JavaScript to toggle the dropdown menu on click
+            document.getElementById('dropdownUser').addEventListener('click', function (event) {
+                // Prevent the click from bubbling up (so that clicking’s confined to this element)
+                event.stopPropagation();
+                this.classList.toggle('active');
+            });
+
+            // Hide the dropdown when clicking outside
+            document.addEventListener('click', function (event) {
+                var dropdown = document.getElementById('dropdownUser');
+                if (!dropdown.contains(event.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+
+        </script>
+
+    </header>
+    <div class="container">
+        <div class="main-content">
+            <!-- Stats Section -->
+            <div class="stats-container animate-fade-in">
+                <div class="stat-card animate-delay-1">
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">Total Purchases</div>
+                </div>
+                <div class="stat-card animate-delay-2">
+                    <div class="stat-value">₹187,542</div>
+                    <div class="stat-label">Amount Spent</div>
+                </div>
+                <div class="stat-card animate-delay-3">
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">Farmers Connected</div>
+                </div>
+                <div class="stat-card animate-delay-4">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">Pending Deals</div>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <div class="card animate-fade-in">
+                <div class="card-header">
+                    <h2 class="card-title">Buyer Profile</h2>
+                    <button class="btn btn-primary">Edit Profile</button>
+                </div>
+                <div class="card-body">
+                    <div class="profile-section">
+                        <div class="profile-image-container">
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400&q=80"
+                                alt="Profile Image" class="profile-image">
+                            <button class="btn btn-primary">Change Image</button>
+                        </div>
+                        <div class="profile-info">
+                            <div class="info-group">
+                                <div class="info-label">Business Name</div>
+                                <div class="info-value">Kumar Wholesale Trading Co.</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Owner Name</div>
+                                <div class="info-value">Rajesh Kumar</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Email</div>
+                                <div class="info-value">kumar.trading@example.com</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Phone Number</div>
+                                <div class="info-value">+91 98765 43210</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Business Address</div>
+                                <div class="info-value">123 Market Complex, APMC Yard, Mumbai, Maharashtra, 400001</div>
+                            </div>
+                            <div class="info-group">
+                                <div class="info-label">Registration Number</div>
+                                <div class="info-value">WB-78954621</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Purchases Section -->
+            <div class="order-section animate-fade-in">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Purchases from Farmers</h2>
+                        <button class="btn btn-primary">View All Purchases</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="order-list">
+                            <!-- Purchase 1 -->
+                            <div class="order-item">
+                                <div class="order-header">
+                                    <div class="order-id">#PUR-2024-7845</div>
+                                    <div class="order-status status-delivered">Completed</div>
+                                </div>
+                                <div class="order-details">
+                                    <div class="order-detail">
+                                        <div class="detail-label">Purchase Date</div>
+                                        <div class="detail-value">May 15, 2024</div>
+                                    </div>
+                                    <div class="order-detail">
+                                        <div class="detail-label">Farmer</div>
+                                        <div class="detail-value">Ramesh Patil Farms</div>
+                                    </div>
+                                    <div class="order-detail">
+                                        <div class="detail-label">Amount Paid</div>
+                                        <div class="detail-value">₹37,450</div>
+                                    </div>
+                                </div>
+                                <div class="order-products">
+                                    <div class="product-item">
+                                        <div class="product-name">Organic Rice (Bulk)</div>
+                                        <div class="product-quantity-price">1000 kg × ₹25</div>
+                                    </div>
+                                    <div class="product-item">
+                                        <div class="product-name">Premium Wheat</div>
+                                        <div class="product-quantity-price">500 kg × ₹30</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Purchase 2 -->
+                            <div class="order-item">
+                                <div class="order-header">
+                                    <div class="order-id">#PUR-2024-7832</div>
+                                    <div class="order-status status-processing">Processing</div>
+                                </div>
+                                <div class="order-details">
+                                    <div class="order-detail">
+                                        <div class="detail-label">Purchase Date</div>
+                                        <div class="detail-value">May 12, 2024</div>
+                                    </div>
+                                    <div class="order-detail">
+                                        <div class="detail-label">Farmer</div>
+                                        <div class="detail-value">Green Valley Organic Farm</div>
+                                    </div>
+                                    <div class="order-detail">
+                                        <div class="detail-label">Amount</div>
+                                        <div class="detail-value">₹45,780</div>
+                                    </div>
+                                </div>
+                                <div class="order-products">
+                                    <div class="product-item">
+                                        <div class="product-name">Organic Vegetables Assorted</div>
+                                        <div class="product-quantity-price">800 kg × ₹35</div>
+                                    </div>
+                                    <div class="product-item">
+                                        <div class="product-name">Fresh Tomatoes</div>
+                                        <div class="product-quantity-price">500 kg × ₹28</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Purchase 3 -->
+                            <div class="order-item">
+                                <div class="order-header">
+                                    <div class="order-id">#PUR-2024-7816</div>
+                                    <div class="order-status status-pending">Deal Proposed</div>
+                                </div>
+                                <div class="order-details">
+                                    <div class="order-detail">
+                                        <div class="detail-label">Proposal Date</div>
+                                        <div class="detail-value">May 10, 2024</div>
+                                    </div>
+                                    <div class="order-detail">
+                                        <div class="detail-label">Farmer</div>
+                                        <div class="detail-value">Singh Organic Farms</div>
+                                    </div>
+                                    <div class="order-detail">
+                                        <div class="detail-label">Estimated Value</div>
+                                        <div class="detail-value">₹28,650</div>
+                                    </div>
+                                </div>
+                                <div class="order-products">
+                                    <div class="product-item">
+                                        <div class="product-name">Organic Pulses Mix</div>
+                                        <div class="product-quantity-price">400 kg × ₹45</div>
+                                    </div>
+                                    <div class="product-item">
+                                        <div class="product-name">Premium Soybeans</div>
+                                        <div class="product-quantity-price">300 kg × ₹38</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Exclusive</h3>
+                <p>Subscribe</p>
+                <form th:action="@{/subscribe}" method="POST">
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <button type="submit" class="subscribe-btn">Subscribe</button>
+                </form>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
+                <p>exclusive@gmail.com</p>
+                <p>+88015-88888-9999</p>
+            </div>
+            <div class="footer-section">
+                <h3>Account</h3>
+                <p><a th:href="@{/profile}">My Account</a></p>
+                <p><a th:href="@{/login}">Login / Register</a></p>
+                <p><a th:href="@{/cart}">Cart</a></p>
+                <p><a th:href="@{/wishlist}">Wishlist</a></p>
+                <p><a th:href="@{/shop}">Shop</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Link</h3>
+                <p><a th:href="@{/privacy}">Privacy Policy</a></p>
+                <p><a th:href="@{/terms}">Terms of Use</a></p>
+                <p><a th:href="@{/faq}">FAQ</a></p>
+                <p><a th:href="@{/contact}">Contact</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>Download App</h3>
+                <p>Save $3 with App New User Only</p>
+                <div class="app-icons">
+                    <a href="#" class="app-store"><i class="fab fa-google-play"></i></a>
+                    <a href="#" class="play-store"><i class="fab fa-apple"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

@@ -9,6 +9,7 @@ import com.FarmConnect.WebApplication.service.MyUserDatailService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -58,6 +60,15 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             // Create a new Farmer by default
             Farmer newFarmer = new Farmer();
             newFarmer.setEmailOrPhone(email);
+
+            InputStream is = getClass().getResourceAsStream("/static/img/default-farmer.jpg");
+
+            if (is != null) {
+                byte[] defaultImage = IOUtils.toByteArray(is);
+                newFarmer.setFarmerImage(defaultImage);
+                newFarmer.setImageName("default-farmer.jpg");
+                newFarmer.setImageType("image/jpeg");
+            }
             // Set any other default fields here
             farmersRepo.save(newFarmer);
             role = "ROLE_FARMER";

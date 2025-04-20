@@ -1,0 +1,637 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+/*header*/
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 30px;
+  background-color: white;
+  border-bottom: 1px solid #ccc;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-left i {
+  font-size: 20px;
+}
+
+.logo-text {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #f9f9f9;
+  border-radius: 30px;
+  padding: 5px 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  width: 400px;
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.search-btn {
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 10px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+}
+
+.user-icon {
+  font-size: 18px;
+  color: black;
+  cursor: pointer;
+}
+
+/* Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Styles */
+header {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.logo i {
+    font-size: 28px;
+}
+
+/* Search Container */
+.search-container {
+    flex: 1;
+    max-width: 500px;
+    position: relative;
+}
+
+.search-container form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: white;
+    border-radius: 50px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 5px 15px;
+}
+
+.search-input {
+    border: none;
+    background: transparent;
+    padding: 10px 10px 10px 35px;
+    font-size: 1rem;
+    width: 100%;
+    outline: none;
+}
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+.btn-search {
+    background-color: black;
+    color: white;
+    border-radius: 50px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.btn-search:hover {
+    background-color: #333;
+    transform: scale(1.05);
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+    padding: 5px 10px;
+    transition: all 0.3s ease;
+}
+
+nav a:hover {
+    color: #000;
+}
+
+/* Dropdown User Menu */
+.dropdown-user {
+    position: relative;
+    cursor: pointer;
+}
+
+.dropdown-user i {
+    font-size: 20px;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.dropdown-user i:hover {
+    color: #000;
+}
+
+.dropdown-user-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    min-width: 200px;
+    margin-top: 10px;
+}
+
+.dropdown-user:hover .dropdown-user-menu {
+    display: block;
+}
+
+.dropdown-user-menu a,
+.dropdown-user-menu .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+    text-align: left;
+}
+
+.dropdown-user-menu a:hover,
+.dropdown-user-menu .logout-btn:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-user-menu .logout-btn {
+    color: #dc3545;
+}
+
+/* Checkout Steps */
+.checkout-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.checkout-steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #777;
+}
+
+.step.active {
+  color: #2e7d32;
+}
+
+.step i {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.step-line {
+  width: 50px;
+  height: 2px;
+  background-color: #ccc;
+  margin: 0 10px;
+}
+
+/* Checkout Content */
+.checkout-content {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+/* Left: Main Content */
+.checkout-main {
+  flex: 2;
+  min-width: 300px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  margin-top: 30px;
+}
+
+.cart-items {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding: 15px 0;
+}
+
+.cart-item img {
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  object-fit: cover;
+  margin-right: 20px;
+}
+
+.item-details h3 {
+  margin-bottom: 5px;
+}
+
+.item-details p {
+  font-size: 14px;
+  color: #666;
+}
+
+.price {
+  font-weight: bold;
+  color: #2e7d32;
+  margin-top: 5px;
+}
+
+.remove-item {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+/* Shipping Form */
+.shipping-form {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 180px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Payment Methods */
+.payment-methods {
+  background: #fff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.payment-method {
+  margin: 10px 0;
+}
+
+.payment-method label {
+  margin-left: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Right: Sidebar */
+.checkout-sidebar {
+  flex: 1;
+  min-width: 280px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.05);
+}
+
+.order-summary h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 18px;
+  border-top: 1px solid #eee;
+  margin-top: 15px;
+  padding-top: 10px;
+}
+
+.promo-code {
+  display: flex;
+  margin: 15px 0;
+}
+
+.promo-code input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #aaa;
+  border-radius: 6px 0 0 6px;
+}
+
+.promo-code button {
+  padding: 8px 12px;
+  background-color: #2e7d32;
+  border: none;
+  color: #fff;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+}
+
+.place-order-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #1b5e20;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+/* Footer */
+/* Footer */
+footer {
+    background: black;
+    color: white;
+    padding: 40px 20px;
+    margin-top: auto;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.footer-section {
+    flex: 1;
+}
+
+.footer-section h3 {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.footer-section p {
+    margin-bottom: 10px;
+    color: #999;
+}
+
+.footer-section a {
+    color: #999;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: white;
+}
+
+.footer-section input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #333;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.footer-section input::placeholder {
+    color: #999;
+}
+
+.subscribe-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: #0056b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.subscribe-btn:hover {
+    background: #003d82;
+}
+
+.app-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.app-icons a {
+    font-size: 24px;
+    color: #999;
+    transition: color 0.3s ease;
+}
+
+.app-icons a:hover {
+    color: white;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    .logo {
+        margin-bottom: 15px;
+    }
+
+    .search-container {
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    nav {
+        flex-direction: column;
+        width: 100%;
+        gap: 15px;
+    }
+
+    .nav-links {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    nav a {
+        text-align: center;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .dropdown-user {
+        align-self: center;
+    }
+
+    .dropdown-user-menu {
+        position: static;
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .footer-container {
+        flex-direction: column;
+    }
+
+    .footer-section {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+}

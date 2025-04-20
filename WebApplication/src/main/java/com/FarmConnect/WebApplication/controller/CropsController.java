@@ -131,4 +131,25 @@ public class CropsController {
 //    public void deleteById(@PathVariable String uniqueID){
 //        cropService.deleteByID(uniqueID);
 //    }
+
+//    @GetMapping("/view_crop")
+//    public String getIndividualCrop(){
+//        return "product_details";
+//    }
+
+    @Controller
+    public class CropController {
+
+        @GetMapping("/crops/{id}")
+        public String getCropDetail(@PathVariable("id") String cropId, Model model) {
+            // Retrieve crop data using the cropId
+            Optional<Crops> crop = cropService.getById(cropId);
+            if(!crop.isEmpty()){
+                System.out.println("serving Individual crop : "+cropId);
+            }
+            model.addAttribute("crop", crop);
+            return "product_details";  // Returns the cropDetail.html Thymeleaf template
+        }
+    }
+
 }

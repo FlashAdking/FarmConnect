@@ -21,12 +21,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String registrationId = request.getClientRegistration().getRegistrationId();
         String email = (String) attributes.get("email");
 
-        if ("github".equals(registrationId) && email == null) {
-            String login = (String) attributes.get("login");
-            email = login + "@githubuser.local";
-            attributes.put("email", email);
-        }
-
         return new DefaultOAuth2User(
                 Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                 attributes,

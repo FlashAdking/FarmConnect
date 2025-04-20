@@ -1,70 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <script th:src="@{/js/global.js}"></script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FarmConnect crop</title>
-    <link rel="stylesheet" href="../static/css/product_details.css">
+    <title>crop</title>
+    <link rel="stylesheet" th:href="@{/css/product_details.css}">
+    <!-- <link rel="stylesheet" href="../static/css/product_details.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
+<style>
+    .search-container {
+        background-color: white;
+        border-radius: 50px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        max-width: 500px;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .search-container:hover {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-control.search-input {
+        border: none;
+        background: transparent;
+        padding-left: 20px;
+        font-size: 1rem;
+        height: 50px;
+    }
+
+    .form-control.search-input:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    .btn-search {
+        background-color: black;
+        color: white;
+        border-radius: 50px;
+        padding: 10px 20px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-search:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+    .search-icon {
+        color: #6c757d;
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+
+    /* farmconnect logo */
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logo i {
+        font-size: 24px;
+        color: black;
+        /* A green color to represent farming */
+        margin-right: 8px;
+    }
+
+    .logo-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: black;
+        /* A deeper green for contrast */
+        font-family: 'Inter', sans-serif;
+        /* Assuming you're using Inter font from previous CSS */
+        letter-spacing: -0.5px;
+    }
+</style>
 
 <body>
 
     <!-- Header Section -->
     <header>
-        <div class="logo">
-            <i class="fa fa-home"></i>
-        </div>
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search for products..." onkeyup="searchProduct()">
-            <i class="fa fa-search"></i>
-        </div>
-        <nav>
-            <a href="index.html">Home</a>
-            <a href="farmerlogin.html">Farmers</a>
-            <a href="crops.html">Crops</a>
-            <a href="transport.html">Transport</a>
-            <a href="#">About</a>
-            <!-- <i class="fa fa-user"></i> -->
-        </nav>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fa fa-home"></i>
+                <span class="logo-text">FarmConnect</span>
+            </div>
 
-        <div class="dropdown-user" id="dropdownUser">
-            <i class="fa fa-user"></i>
-            <div class="dropdown-user-menu">
-                <a th:href="@{/profile}">
-                    <i class="fas fa-user"></i>My Profile
-                </a>
-                <form th:action="@{/logout}" method="POST" style="margin: 0;">
-                    <button type="submit" class="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i>Logout
-                    </button>
+            <div class="search-container">
+                <form id="searchForm" th:action="@{/search}" method="GET">
+                    <i class="fa fa-search search-icon"></i>
+                    <input type="text" name="query" class="search-input" placeholder="Search anything..."
+                        th:value="${param.query}" />
+                    <button type="submit" class="btn-search">Search</button>
                 </form>
             </div>
+
+            <nav>
+                <div class="nav-links">
+                    <a th:href="@{/}">Home</a>
+                    <a th:href="@{/farmers}">Farmers</a>
+                    <a th:href="@{/crops}">Crops</a>
+                    <a th:href="@{/transport}">Transport</a>
+                    <a th:href="@{/about}">About</a>
+                </div>
+
+                <div class="dropdown-user">
+                    <i class="fa fa-user"></i>
+                    <div class="dropdown-user-menu">
+                        <a th:href="@{/profile}">
+                            <i class="fas fa-user"></i>My Profile
+                        </a>
+                        <div id="logout-placeholder"></div>
+                    </div>
+                </div>
+            </nav>
         </div>
-
-
-        <script>
-            // JavaScript to toggle the dropdown menu on click
-            document.getElementById('dropdownUser').addEventListener('click', function (event) {
-                // Prevent the click from bubbling up (so that clicking’s confined to this element)
-                event.stopPropagation();
-                this.classList.toggle('active');
-            });
-
-            // Hide the dropdown when clicking outside
-            document.addEventListener('click', function (event) {
-                var dropdown = document.getElementById('dropdownUser');
-                if (!dropdown.contains(event.target)) {
-                    dropdown.classList.remove('active');
-                }
-            });
-
-        </script>
     </header>
+    <script>
+        // JavaScript to toggle the dropdown menu on click
+        document.getElementById('dropdownUser').addEventListener('click', function (event) {
+            // Prevent the click from bubbling up (so that clicking’s confined to this element)
+            event.stopPropagation();
+            this.classList.toggle('active');
+        });
+
+        // Hide the dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            var dropdown = document.getElementById('dropdownUser');
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+    </script>
 
     <!-- Product Section -->
     <main>
@@ -105,47 +185,43 @@
     <footer>
         <div class="footer-container">
             <div class="footer-section">
-                <h4>Exclusive</h4>
+                <h3>Exclusive</h3>
                 <p>Subscribe</p>
-                <p>Get 10% off your first order</p>
-                <input type="email" placeholder="Enter your email">
+                <form th:action="@{/subscribe}" method="POST">
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <button type="submit" class="subscribe-btn">Subscribe</button>
+                </form>
             </div>
-
             <div class="footer-section">
-                <h4>Support</h4>
-                <p>111 Bijoy sarani, Dhaka, DH 1515, Bangladesh.</p>
-                <p>Email: exclusive@gmail.com</p>
-                <p>Phone: +88015-88888-9999</p>
+                <h3>Support</h3>
+                <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
+                <p>exclusive@gmail.com</p>
+                <p>+88015-88888-9999</p>
             </div>
-
             <div class="footer-section">
-                <h4>Account</h4>
-                <p><a href="#">My Account</a></p>
-                <p><a href="#">Login / Register</a></p>
-                <p><a href="#">Cart</a></p>
-                <p><a href="#">Wishlist</a></p>
-                <p><a href="#">Shop</a></p>
+                <h3>Account</h3>
+                <p><a th:href="@{/profile}">My Account</a></p>
+                <p><a th:href="@{/login}">Login / Register</a></p>
+                <p><a th:href="@{/cart}">Cart</a></p>
+                <p><a th:href="@{/wishlist}">Wishlist</a></p>
+                <p><a th:href="@{/shop}">Shop</a></p>
             </div>
-
             <div class="footer-section">
-                <h4>Quick Link</h4>
-                <p><a href="#">Privacy Policy</a></p>
-                <p><a href="#">Terms Of Use</a></p>
-                <p><a href="#">FAQ</a></p>
-                <p><a href="#">Contact</a></p>
+                <h3>Quick Link</h3>
+                <p><a th:href="@{/privacy}">Privacy Policy</a></p>
+                <p><a th:href="@{/terms}">Terms of Use</a></p>
+                <p><a th:href="@{/faq}">FAQ</a></p>
+                <p><a th:href="@{/contact}">Contact</a></p>
             </div>
-
             <div class="footer-section">
-                <h4>Download App</h4>
+                <h3>Download App</h3>
                 <p>Save $3 with App New User Only</p>
-                <img src="qr-code.png" alt="QR Code">
-                <div class="app-links">
-                    <img src="google-play.png" alt="Google Play">
-                    <img src="app-store.png" alt="App Store">
+                <div class="app-icons">
+                    <a href="#" class="app-store"><i class="fab fa-google-play"></i></a>
+                    <a href="#" class="play-store"><i class="fab fa-apple"></i></a>
                 </div>
             </div>
         </div>
-        <p class="copyright">© Copyright Rimel 2022. All rights reserved.</p>
     </footer>
 
     <script src="script.js"></script>

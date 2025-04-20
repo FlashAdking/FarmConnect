@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class JWTFilter extends OncePerRequestFilter {
@@ -26,31 +28,78 @@ public class JWTFilter extends OncePerRequestFilter {
     @Autowired
     ApplicationContext context;
 
+    private static final List<String> EXCLUDED_PATHS = Arrays.asList(
+            "/",
+            "/farmerlogin",
+            "/Home",
+            "/wholesalerlogin",
+            "/Signupwholesaler",
+            "/oauth-redirect",
+            "/Signupfarmer",
+            "/css",
+            "/js",
+            "/img",
+            "/crops",
+            "/farmers",
+            "/api/farmers",
+            "/about"
+    );
+
+    private boolean isExcludedEndpoint(String path) {
+        // Check if the path exactly equals any of the excluded endpoints,
+        // or if it starts with one plus a "/" indicating a subpath.
+        return EXCLUDED_PATHS.stream().anyMatch(excluded ->
+                path.equals(excluded) || path.startsWith(excluded + "/"));
+    }
+
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-//        Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuYWt1bC50aGFrdXI4MDgwQGdtYWlsLmNvbSIsImlhdCI6MTc0MzY4OTQ2MCwiZXhwIjoxNzQzNjg5Njc2fQ.pC0oUkYDXlhREa8_AzKpsW_SliijjjDcr78GPQ3wtFk
+        String requestPath = request.getRequestURI();
+
+        // Bypass token check for public endpoints.
+        if (isExcludedEndpoint(requestPath)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String authHeader = request.getHeader("Authorization");
-        String  token = null;
-        String emailOrPhone = null;
-
-        if( authHeader != null && authHeader.startsWith("Bearer ")){
-            token = authHeader.substring(7);
-            emailOrPhone = jwtService.extractUserName(token);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            // For endpoints that require authentication, you might want to return an error.
+            // Alternatively, let Spring Security handle it.
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        if( emailOrPhone != null && SecurityContextHolder.getContext().getAuthentication() == null){
+        String token = authHeader.substring(7).trim(); // Remove "Bearer " prefix.
 
-            
-            UserDetails userDetails = context.getBean(MyUserDatailService.class).loadUserByUsername(emailOrPhone);
+        // Validate token format: should contain exactly 2 periods for a JWS
+        if (token.isEmpty() || token.chars().filter(ch -> ch == '.').count() != 2) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT Token format");
+            return;
+        }
 
-            if( jwtService.validateToken(token , userDetails)){
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails , null , userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request) );
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+        try {
+            String emailOrPhone = jwtService.extractUserName(token);
+            if (emailOrPhone != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = context.getBean(MyUserDatailService.class).loadUserByUsername(emailOrPhone);
+                if (jwtService.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        } catch (Exception ex) {
+            // Optionally log the exception or handle the error (e.g., clear context, etc.)
+            SecurityContextHolder.clearContext();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid/Expired JWT Token");
+            return;
         }
-        filterChain.doFilter(request , response);
+
+        filterChain.doFilter(request, response);
     }
+
 }
