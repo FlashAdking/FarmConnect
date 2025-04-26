@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
+    <script th:src="@{/js/global.js}"></script>
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            // Check if token exists
+            const token = localStorage.getItem('jwtToken');
+            if (!token) {
+                // No token found, redirect to login
+                window.location.href = /*[[@{/wholesaler}]]*/ '/wholesalerlogin';
+            }
+        });
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/css/WholeSalerLogin.css">
+    <link rel="stylesheet" th:href="@{/css/WholeSalerLogin.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <title>Wholesaler Buyer Dashboard</title>
@@ -518,6 +529,108 @@
         .dropdown-user:hover .dropdown-user-menu {
             display: block;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--neutral-300);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: var(--neutral-600);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--neutral-400);
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+        }
+
+        /* File Input Styles */
+        .file-input-container {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .file-input {
+            position: absolute;
+            font-size: 100px;
+            right: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .file-input-label:hover {
+            background-color: var(--neutral-800);
+        }
+
+        .file-name {
+            margin-left: 10px;
+            font-size: 14px;
+        }
     </style>
 </head>
 
@@ -538,52 +651,32 @@
             <div class="dropdown-user">
                 <i class="fa fa-user"></i>
                 <div class="dropdown-user-menu">
-                    <!-- <a th:href="@{/profile}">
-                        <i class="fas fa-user"></i>My Profile
-                    </a> -->
-                    <div id="logout-placeholder"></div>
+                    <a th:href="@{/logout}" id="logout-link">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
                 </div>
             </div>
         </nav>
-
-
-        <script>
-            // JavaScript to toggle the dropdown menu on click
-            document.getElementById('dropdownUser').addEventListener('click', function (event) {
-                // Prevent the click from bubbling up (so that clicking’s confined to this element)
-                event.stopPropagation();
-                this.classList.toggle('active');
-            });
-
-            // Hide the dropdown when clicking outside
-            document.addEventListener('click', function (event) {
-                var dropdown = document.getElementById('dropdownUser');
-                if (!dropdown.contains(event.target)) {
-                    dropdown.classList.remove('active');
-                }
-            });
-
-        </script>
-
     </header>
+
     <div class="container">
         <div class="main-content">
             <!-- Stats Section -->
             <div class="stats-container animate-fade-in">
                 <div class="stat-card animate-delay-1">
-                    <div class="stat-value">24</div>
+                    <div class="stat-value" id="totalPurchases">0</div>
                     <div class="stat-label">Total Purchases</div>
                 </div>
                 <div class="stat-card animate-delay-2">
-                    <div class="stat-value">₹187,542</div>
+                    <div class="stat-value" id="amountSpent">₹0</div>
                     <div class="stat-label">Amount Spent</div>
                 </div>
                 <div class="stat-card animate-delay-3">
-                    <div class="stat-value">18</div>
+                    <div class="stat-value" id="farmersConnected">0</div>
                     <div class="stat-label">Farmers Connected</div>
                 </div>
                 <div class="stat-card animate-delay-4">
-                    <div class="stat-value">6</div>
+                    <div class="stat-value" id="pendingDeals">0</div>
                     <div class="stat-label">Pending Deals</div>
                 </div>
             </div>
@@ -591,157 +684,131 @@
             <!-- Profile Section -->
             <div class="card animate-fade-in">
                 <div class="card-header">
-                    <h2 class="card-title">Buyer Profile</h2>
-                    <button class="btn btn-primary">Edit Profile</button>
+                    <h2 class="card-title">Wholesaler Profile</h2>
+                    <button class="btn btn-primary" id="editProfileBtn">Edit Profile</button>
                 </div>
                 <div class="card-body">
                     <div class="profile-section">
                         <div class="profile-image-container">
-                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400&q=80"
-                                alt="Profile Image" class="profile-image">
-                            <button class="btn btn-primary">Change Image</button>
+                            <!-- If a wholesaler exists and its image exists, load it via the mapped endpoint -->
+                            <!-- Real profile image -->
+                            <img id="profileImage" th:src="${wholesaler != null and wholesaler.wholesalerImage != null} ?
+             @{/wholesaler/{_id}/image(_id=${wholesaler._id}) + '?t=' + ${T(java.lang.System).currentTimeMillis()}} :
+             @{/api/placeholder/200/200}" alt="Profile Image" class="profile-image">
+
+
+
+                            <button class="btn btn-primary" id="changeImageBtn">Change Image</button>
                         </div>
                         <div class="profile-info">
                             <div class="info-group">
-                                <div class="info-label">Business Name</div>
-                                <div class="info-value">Kumar Wholesale Trading Co.</div>
-                            </div>
-                            <div class="info-group">
-                                <div class="info-label">Owner Name</div>
-                                <div class="info-value">Rajesh Kumar</div>
+                                <div class="info-label">Full Name</div>
+                                <div class="info-value"
+                                    th:text="${wholesaler != null ? wholesaler.fullName : 'Wholesaler Name'}">Wholesaler
+                                    Name</div>
                             </div>
                             <div class="info-group">
                                 <div class="info-label">Email</div>
-                                <div class="info-value">kumar.trading@example.com</div>
+                                <div class="info-value"
+                                    th:text="${wholesaler != null ? wholesaler.email : 'email@example.com'}">
+                                    email@example.com</div>
                             </div>
                             <div class="info-group">
                                 <div class="info-label">Phone Number</div>
-                                <div class="info-value">+91 98765 43210</div>
+                                <div class="info-value"
+                                    th:text="${wholesaler != null ? wholesaler.phoneNumber : '+91 12345 67890'}">+91
+                                    12345 67890</div>
                             </div>
                             <div class="info-group">
-                                <div class="info-label">Business Address</div>
-                                <div class="info-value">123 Market Complex, APMC Yard, Mumbai, Maharashtra, 400001</div>
-                            </div>
-                            <div class="info-group">
-                                <div class="info-label">Registration Number</div>
-                                <div class="info-value">WB-78954621</div>
+                                <div class="info-label">Address</div>
+                                <div class="info-value"
+                                    th:text="${wholesaler != null ? wholesaler.address : 'Address details'}">Address
+                                    details</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+
 
             <!-- Purchases Section -->
             <div class="order-section animate-fade-in">
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">Recent Purchases from Farmers</h2>
-                        <button class="btn btn-primary">View All Purchases</button>
+                        <button class="btn btn-primary" id="viewAllPurchasesBtn">View All Purchases</button>
                     </div>
                     <div class="card-body">
-                        <div class="order-list">
-                            <!-- Purchase 1 -->
-                            <div class="order-item">
-                                <div class="order-header">
-                                    <div class="order-id">#PUR-2024-7845</div>
-                                    <div class="order-status status-delivered">Completed</div>
-                                </div>
-                                <div class="order-details">
-                                    <div class="order-detail">
-                                        <div class="detail-label">Purchase Date</div>
-                                        <div class="detail-value">May 15, 2024</div>
-                                    </div>
-                                    <div class="order-detail">
-                                        <div class="detail-label">Farmer</div>
-                                        <div class="detail-value">Ramesh Patil Farms</div>
-                                    </div>
-                                    <div class="order-detail">
-                                        <div class="detail-label">Amount Paid</div>
-                                        <div class="detail-value">₹37,450</div>
-                                    </div>
-                                </div>
-                                <div class="order-products">
-                                    <div class="product-item">
-                                        <div class="product-name">Organic Rice (Bulk)</div>
-                                        <div class="product-quantity-price">1000 kg × ₹25</div>
-                                    </div>
-                                    <div class="product-item">
-                                        <div class="product-name">Premium Wheat</div>
-                                        <div class="product-quantity-price">500 kg × ₹30</div>
-                                    </div>
-                                </div>
+                        <div class="order-list" id="purchasesList">
+                            <!-- Display fallback message if wholesaler exists and no confirmed deals are found -->
+                            <div th:if="${wholesaler != null and (wholesaler.confirmedDeals == null or wholesaler.confirmedDeals.isEmpty())}"
+                                class="text-center">
+                                <p>No purchases found.</p>
                             </div>
 
-                            <!-- Purchase 2 -->
-                            <div class="order-item">
-                                <div class="order-header">
-                                    <div class="order-id">#PUR-2024-7832</div>
-                                    <div class="order-status status-processing">Processing</div>
-                                </div>
-                                <div class="order-details">
-                                    <div class="order-detail">
-                                        <div class="detail-label">Purchase Date</div>
-                                        <div class="detail-value">May 12, 2024</div>
-                                    </div>
-                                    <div class="order-detail">
-                                        <div class="detail-label">Farmer</div>
-                                        <div class="detail-value">Green Valley Organic Farm</div>
-                                    </div>
-                                    <div class="order-detail">
-                                        <div class="detail-label">Amount</div>
-                                        <div class="detail-value">₹45,780</div>
-                                    </div>
-                                </div>
-                                <div class="order-products">
-                                    <div class="product-item">
-                                        <div class="product-name">Organic Vegetables Assorted</div>
-                                        <div class="product-quantity-price">800 kg × ₹35</div>
-                                    </div>
-                                    <div class="product-item">
-                                        <div class="product-name">Fresh Tomatoes</div>
-                                        <div class="product-quantity-price">500 kg × ₹28</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Purchase 3 -->
-                            <div class="order-item">
-                                <div class="order-header">
-                                    <div class="order-id">#PUR-2024-7816</div>
-                                    <div class="order-status status-pending">Deal Proposed</div>
-                                </div>
-                                <div class="order-details">
-                                    <div class="order-detail">
-                                        <div class="detail-label">Proposal Date</div>
-                                        <div class="detail-value">May 10, 2024</div>
-                                    </div>
-                                    <div class="order-detail">
-                                        <div class="detail-label">Farmer</div>
-                                        <div class="detail-value">Singh Organic Farms</div>
-                                    </div>
-                                    <div class="order-detail">
-                                        <div class="detail-label">Estimated Value</div>
-                                        <div class="detail-value">₹28,650</div>
-                                    </div>
-                                </div>
-                                <div class="order-products">
-                                    <div class="product-item">
-                                        <div class="product-name">Organic Pulses Mix</div>
-                                        <div class="product-quantity-price">400 kg × ₹45</div>
-                                    </div>
-                                    <div class="product-item">
-                                        <div class="product-name">Premium Soybeans</div>
-                                        <div class="product-quantity-price">300 kg × ₹38</div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Profile</h2>
+                <span class="close-modal" id="closeEditProfileModal">&times;</span>
+            </div>
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <label for="fullName" class="form-label">Full Name</label>
+                    <input type="text" id="fullName" name="fullName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber" class="form-label">Phone Number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="address" class="form-label">Address</label>
+                    <textarea id="address" name="address" class="form-control" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Image Modal -->
+    <div id="changeImageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Change Profile Image</h2>
+                <span class="close-modal" id="closeChangeImageModal">&times;</span>
+            </div>
+            <form id="changeImageForm" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="profileImageFile" class="form-label">Select New Image</label>
+                    <div class="file-input-container">
+                        <label for="profileImageFile" class="file-input-label">Browse Files</label>
+                        <input type="file" id="profileImageFile" name="profileImageFile" class="file-input"
+                            accept="image/*" required>
+                        <span id="fileName" class="file-name">No file selected</span>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <img id="imagePreview" src="#" alt="Preview"
+                        style="max-width: 100%; max-height: 200px; display: none;">
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Upload Image</button>
+            </form>
+        </div>
+    </div>
 
     <footer>
         <div class="footer-container">
@@ -763,8 +830,6 @@
                 <h3>Account</h3>
                 <p><a th:href="@{/profile}">My Account</a></p>
                 <p><a th:href="@{/login}">Login / Register</a></p>
-                <p><a th:href="@{/cart}">Cart</a></p>
-                <p><a th:href="@{/wishlist}">Wishlist</a></p>
                 <p><a th:href="@{/shop}">Shop</a></p>
             </div>
             <div class="footer-section">
@@ -785,6 +850,224 @@
         </div>
     </footer>
 
-</body>
 
-</html>
+    <script th:inline="javascript">
+        // DOM content loaded event
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize the page
+            fetchWholesalerData();
+            fetchConfirmedDeals();
+
+            // Set up event listeners for edit profile button
+            document.getElementById('editProfileBtn').addEventListener('click', function () {
+                // Get current values to prepopulate the edit form
+                const fullName = document.querySelectorAll('.info-value')[0].textContent.trim();
+                const email = document.querySelectorAll('.info-value')[1].textContent.trim();
+                const phoneNumber = document.querySelectorAll('.info-value')[2].textContent.trim();
+                const address = document.querySelectorAll('.info-value')[3].textContent.trim();
+
+                // Set the form field values
+                document.getElementById('fullName').value = fullName;
+                document.getElementById('email').value = email;
+                document.getElementById('phoneNumber').value = phoneNumber;
+                document.getElementById('address').value = address;
+
+                // Show the modal
+                document.getElementById('editProfileModal').style.display = 'block';
+            });
+
+            // Close modals with X button
+            document.getElementById('closeEditProfileModal').addEventListener('click', function () {
+                document.getElementById('editProfileModal').style.display = 'none';
+            });
+
+            document.getElementById('closeChangeImageModal').addEventListener('click', function () {
+                document.getElementById('changeImageModal').style.display = 'none';
+            });
+
+            // Change image button
+            document.getElementById('changeImageBtn').addEventListener('click', function () {
+                document.getElementById('changeImageModal').style.display = 'block';
+            });
+
+            // Show filename and preview when a file is selected
+            document.getElementById('profileImageFile').addEventListener('change', function (e) {
+                const fileName = e.target.files[0]?.name || 'No file selected';
+                document.getElementById('fileName').textContent = fileName;
+
+                // Preview the image
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const preview = document.getElementById('imagePreview');
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+
+            // Submit handler for edit profile form
+            document.getElementById('editProfileForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const updatedProfile = {
+                    fullName: document.getElementById('fullName').value,
+                    email: document.getElementById('email').value,
+                    phoneNumber: document.getElementById('phoneNumber').value,
+                    address: document.getElementById('address').value
+                };
+
+                updateWholesalerProfile(updatedProfile);
+            });
+
+            // Submit handler for change image form
+            document.getElementById('changeImageForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const formData = new FormData();
+                const fileInput = document.getElementById('profileImageFile');
+
+                if (fileInput.files && fileInput.files[0]) {
+                    // ✅ Use the correct key to match the backend
+                    formData.append('profileImageFile', fileInput.files[0]);
+                    updateWholesalerImage(formData);
+                } else {
+                    alert('Please select an image file');
+                }
+            });
+
+
+            // View all purchases button
+            document.getElementById('viewAllPurchasesBtn').addEventListener('click', function () {
+                window.location.href = '/wholesaler/all-purchases';
+            });
+        });
+
+        // Fetch wholesaler profile data and update the page
+        function fetchWholesalerData() {
+            fetch('/api/wholesaler/profile')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch wholesaler data');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Update dashboard statistics
+                    document.getElementById('totalPurchases').textContent = data.totalPurchases || 0;
+                    document.getElementById('amountSpent').textContent = `₹${data.amountSpent || 0}`;
+                    document.getElementById('farmersConnected').textContent = data.farmersConnected || 0;
+                    document.getElementById('pendingDeals').textContent = data.pendingDeals || 0;
+
+                    // Update profile information
+                    const infoValues = document.querySelectorAll('.info-value');
+                    if (infoValues.length >= 4) {
+                        infoValues[0].textContent = data.fullName;
+                        infoValues[1].textContent = data.email;
+                        infoValues[2].textContent = data.phoneNumber;
+                        infoValues[3].textContent = data.address;
+                    }
+
+                    // Update profile image if available
+                    if (data.imageBase64) {
+                        document.getElementById('profileImage').src = `data:${data.imageType};base64,${data.imageBase64}`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching wholesaler data:', error);
+                });
+        }
+
+        // Fetch confirmed deals
+        function fetchConfirmedDeals() {
+            fetch('/api/wholesaler/confirmed-deals')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch confirmed deals');
+                    }
+                    return response.json();
+                })
+                .then(deals => {
+                    const purchasesList = document.getElementById('purchasesList');
+                    purchasesList.innerHTML = '';
+
+                    if (deals.length === 0) {
+                        purchasesList.innerHTML = '<p class="text-center">No purchases found.</p>';
+                        return;
+                    }
+
+                    deals.forEach(deal => {
+                        const dealElement = document.createElement('div');
+                        dealElement.classList.add('deal-card');
+                        dealElement.innerHTML = `
+                            <div><strong>Farmer:</strong> ${deal.farmerName}</div>
+                            <div><strong>Product:</strong> ${deal.productName}</div>
+                            <div><strong>Quantity:</strong> ${deal.quantity} kg</div>
+                            <div><strong>Total Price:</strong> ₹${deal.totalPrice}</div>
+                            <div><strong>Date:</strong> ${new Date(deal.date).toLocaleDateString()}</div>
+                        `;
+                        purchasesList.appendChild(dealElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching confirmed deals:', error);
+                });
+        }
+
+        // Update wholesaler profile
+        function updateWholesalerProfile(updatedProfile) {
+            fetch('/api/wholesaler/update-profile', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content')
+                },
+                body: JSON.stringify(updatedProfile)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Profile update failed');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    alert('Profile updated successfully');
+                    document.getElementById('editProfileModal').style.display = 'none';
+                    fetchWholesalerData(); // Refresh profile data
+                })
+                .catch(error => {
+                    console.error('Error updating profile:', error);
+                    alert('Failed to update profile: ' + error.message);
+                });
+        }
+
+        // Upload wholesaler image
+        function updateWholesalerImage(formData) {
+            fetch('/api/wholesaler/upload-image', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="_csrf"]')?.getAttribute('content')
+                },
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text || 'Image upload failed'); });
+                    }
+                    return response.text(); // ✅ use text() instead of json()
+                })
+                .then(result => {
+                    alert(result); // Shows "Wholesaler image updated successfully"
+                    document.getElementById('changeImageModal').style.display = 'none';
+                    fetchWholesalerData();
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                    alert('Failed to upload image: ' + error.message);
+                });
+        }
+    </script>
+
+</body>
+</head>

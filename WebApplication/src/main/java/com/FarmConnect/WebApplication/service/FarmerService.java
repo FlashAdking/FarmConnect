@@ -64,13 +64,13 @@ public class FarmerService {
     }
 
 
-    public ResponseEntity<?> verify(Farmer farmer) {
+    public ResponseEntity<?> verify(Farmer farmer , String role) {
         try {
             Authentication authentication =
                     authmanager.authenticate(new UsernamePasswordAuthenticationToken(farmer.getEmailOrPhone(), farmer.getPassword()));
 
 
-            String token = jwts.genrateToken(farmer.getEmailOrPhone());
+            String token = jwts.generateToken(farmer.getEmailOrPhone() , role);
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
             System.out.println(token);

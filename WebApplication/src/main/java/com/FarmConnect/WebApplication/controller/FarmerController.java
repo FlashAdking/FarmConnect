@@ -131,7 +131,7 @@ public class FarmerController {
     public ResponseEntity<?> getLoginDetails(@RequestBody Farmer farmer) {
         try {
             System.out.println("Received login request for: " + farmer);
-            return farmService.verify(farmer);
+            return farmService.verify(farmer , "ROLE_FARMER");
         } catch (Exception e) {
             // Catch any unexpected exceptions
             Map<String, String> errorResponse = new HashMap<>();

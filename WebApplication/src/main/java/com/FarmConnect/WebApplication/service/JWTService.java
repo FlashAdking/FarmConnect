@@ -1,9 +1,13 @@
 package com.FarmConnect.WebApplication.service;
 
-
+import com.FarmConnect.WebApplication.model.Wholesaler;
+import com.FarmConnect.WebApplication.repository.WholeSalerRepo;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.security.Keys;
@@ -20,6 +24,9 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
+    @Autowired
+    WholeSalerRepo wholeSalerRepo;
+
     private String secretKey = "";
 
     public JWTService(){
@@ -35,18 +42,21 @@ public class JWTService {
 //        secretKey = Base64.getDecoder().encodeToString(sk.getEncoded());
     }
 
-    public String genrateToken(String emailOrPhone) {
 
-        Map<String , Object> claims = new HashMap<>();
+// Ensure you import the necessary JJWT classes
+
+    public String generateToken(String emailOrPhone, String role) {
 
         return Jwts.builder()
-                .setClaims(claims)
                 .setSubject(emailOrPhone)
+                .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + (5 * 60 * 1000)))
-                .signWith(getKey())
+                .setExpiration(new Date(System.currentTimeMillis() + (5 * 60 * 1000))) // 5 minutes expiration
+                .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
+
 
     public SecretKey getKey(){
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -83,5 +93,18 @@ public class JWTService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
+    // Add this method to your existing JwtService class
+    public String extractWholesalerId(String token) {
+        String emailOrPhone = extractUserName(token);
+        // Assuming your WholesalerRepository has a method to find by email or phone
+        Wholesaler wholesaler = wholeSalerRepo.findByEmail(emailOrPhone)
+                .orElseThrow(() -> new RuntimeException("Wholesaler not found"));
+        return wholesaler.get_id(); // or _id or whatever field you use
     }
 }

@@ -1,13 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
+
+  <script th:src="@{/js/global.js}"></script>
+
+  <script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", () => {
+      // Check if token exists
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        // No token found, redirect to login
+        window.location.href = /*[[@{/wholesalerlogin}]]*/ '/wholesalerlogin';
+      }
+    });
+  </script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FarmConnect Shopping Cart</title>
-  <link rel="stylesheet" href="../static/css/checkout.css" />
+  <!-- <link rel="stylesheet" href="../static/css/checkout.css" /> -->
+  <link rel="stylesheet" th:href="@{/css/checkout.css}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Dropdown User Menu */
+    .dropdown-user {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .dropdown-user i {
+      font-size: 20px;
+      color: #333;
+      transition: color 0.3s ease;
+    }
+
+    .dropdown-user i:hover {
+      color: #000;
+    }
+
+    .dropdown-user-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      min-width: 200px;
+      margin-top: 10px;
+    }
+
+    .dropdown-user:hover .dropdown-user-menu {
+      display: block;
+    }
+
+    .dropdown-user-menu a,
+    .dropdown-user-menu .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      color: #333;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 1rem;
+      text-align: left;
+    }
+
+    .dropdown-user-menu a:hover,
+    .dropdown-user-menu .logout-btn:hover {
+      background-color: #f8f9fa;
+    }
+
+    .dropdown-user-menu .logout-btn {
+      color: #dc3545;
+    }
+  </style>
 </head>
+
 <body>
   <header class="header">
     <div class="header-left">
@@ -20,13 +96,24 @@
       <button class="search-btn">Search</button>
     </div>
 
-    <nav class="nav-links">
-      <a href="#">Home</a>
-      <a href="#">Farmers</a>
-      <a href="#">Crops</a>
-      <a href="#">Transport</a>
-      <a href="#">About</a>
-      <i class="fas fa-user user-icon"></i>
+    <nav>
+      <div class="nav-links">
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/farmers}">Farmers</a>
+        <a th:href="@{/crops}">Crops</a>
+        <a th:href="@{/transport}">Transport</a>
+        <a th:href="@{/about}">About</a>
+      </div>
+
+      <div class="dropdown-user">
+        <i class="fa fa-user"></i>
+        <div class="dropdown-user-menu">
+          <a th:href="@{/profile}">
+            <i class="fas fa-user"></i>My Profile
+          </a>
+          <div id="logout-placeholder"></div>
+        </div>
+      </div>
     </nav>
   </header>
 
@@ -54,7 +141,8 @@
           <div class="section-title text-2xl font-bold text-gray-800 mb-6">Your Cart</div>
           <div class="cart-items">
             <div class="cart-item flex items-center p-4 bg-gray-50 rounded-lg mb-4">
-              <img src="assets/images/sample-product.jpg" alt="Product" class="w-20 h-20 object-cover rounded-md mr-4" />
+              <img src="assets/images/sample-product.jpg" alt="Product"
+                class="w-20 h-20 object-cover rounded-md mr-4" />
               <div class="item-details flex-1">
                 <h3 class="text-lg font-semibold text-gray-800">Wheat Seeds</h3>
                 <p class="text-sm text-gray-600">High yield, 1 kg</p>
@@ -71,26 +159,30 @@
             <div class="form-row flex flex-col sm:flex-row gap-6 mb-6">
               <div class="form-group flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                <input type="text" placeholder="Enter your name" class="w-full p-3 border border-gray-300 rounded-md transition duration-300" />
+                <input type="text" placeholder="Enter your name"
+                  class="w-full p-3 border border-gray-300 rounded-md transition duration-300" />
               </div>
               <div class="form-group flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                <input type="text" placeholder="Enter mobile number" class="w-full p-3 border border-gray-300 rounded-md transition duration-300" />
+                <input type="text" placeholder="Enter mobile number"
+                  class="w-full p-3 border border-gray-300 rounded-md transition duration-300" />
               </div>
             </div>
             <div class="form-row flex flex-col sm:flex-row gap-6">
               <div class="form-group flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
-                <input type="text" placeholder="Address" class="w-full p-3 border border-gray-300 rounded-md transition duration-300" />
+                <input type="text" placeholder="Address"
+                  class="w-full p-3 border border-gray-300 rounded-md transition duration-300" />
               </div>
               <div class="form-group flex-1">
                 <label class="block text-sm font-medium text-gray-700 mb-2">City</label>
-                <input type="text" placeholder="City" class="w-full p-3 border border-gray-300 rounded-md transition duration-300" />
+                <input type="text" placeholder="City"
+                  class="w-full p-3 border border-gray-300 rounded-md transition duration-300" />
               </div>
             </div>
           </form>
         </div>
-       
+
 
         <div class="checkout-sidebar w-full lg:w-80 bg-white rounded-xl shadow-lg p-6 sticky top-4">
           <div class="payment-section">
@@ -98,14 +190,16 @@
             <div class="payment-methods bg-gray-50 p-4 rounded-lg">
               <div class="payment-method flex items-center mb-4">
                 <input type="radio" name="payment" id="cod" checked class="mr-2" />
-                <label for="cod" class="flex items-center p-3 rounded-md border border-gray-300 w-full cursor-pointer transition duration-300">
+                <label for="cod"
+                  class="flex items-center p-3 rounded-md border border-gray-300 w-full cursor-pointer transition duration-300">
                   <i class="fas fa-money-bill-wave mr-2 text-green-600"></i>
                   Cash on Delivery
                 </label>
               </div>
               <div class="payment-method flex items-center">
                 <input type="radio" name="payment" id="upi" class="mr-2" />
-                <label for="upi" class="flex items-center p-3 rounded-md border border-gray-300 w-full cursor-pointer transition duration-300">
+                <label for="upi"
+                  class="flex items-center p-3 rounded-md border border-gray-300 w-full cursor-pointer transition duration-300">
                   <i class="fab fa-google-pay mr-2 text-blue-600"></i>
                   UPI / Google Pay
                 </label>
@@ -131,7 +225,8 @@
               <span>Total</span>
               <span>₹180</span>
             </div>
-            <button class="place-order-btn w-full mt-6 p-3 bg-green-700 text-white rounded-md font-semibold">Place Order</button>
+            <button class="place-order-btn w-full mt-6 p-3 bg-green-700 text-white rounded-md font-semibold">Place
+              Order</button>
           </div>
         </div>
       </div>
@@ -179,5 +274,181 @@
       </div>
     </div>
   </footer>
+
+
+  <script th:inline="javascript">
+    // Cart loading functionality
+    document.addEventListener("DOMContentLoaded", () => {
+      // First load cart items from localStorage
+      const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+      const cartContainer = document.querySelector(".cart-items");
+
+      // Clear any existing items (like the sample wheat seeds)
+      cartContainer.innerHTML = '';
+
+      // Render cart items
+      if (cartItems.length === 0) {
+        cartContainer.innerHTML = `
+          <div class="p-4 text-center text-gray-500">
+            Your cart is empty. Please add some items.
+          </div>
+        `;
+      } else {
+        cartItems.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "cart-item flex items-center p-4 bg-gray-50 rounded-lg mb-4";
+          div.innerHTML = `
+            <img src="/api/crops/image/${item.imageName}" class="w-20 h-20 object-cover rounded-md mr-4" />
+            <div class="item-details flex-1">
+              <h3 class="text-lg font-semibold text-gray-800">${item.name}</h3>
+              <p class="text-sm text-gray-600">${item.description}</p>
+              <span class="price text-green-700 font-bold">₹${item.price}</span>
+            </div>
+            <button class="remove-item text-red-500 hover:text-red-700" data-cropid="${item.cropId}">
+              <i class="fa fa-trash text-lg"></i>
+            </button>
+          `;
+          cartContainer.appendChild(div);
+        });
+
+        // Add event listeners for remove buttons
+        document.querySelectorAll('.remove-item').forEach(button => {
+          button.addEventListener('click', () => {
+            const cropId = button.getAttribute('data-cropid');
+            removeFromCart(cropId);
+          });
+        });
+      }
+
+      // Update order summary
+      updateOrderSummary(cartItems);
+    });
+
+    // Function to remove item from cart
+    function removeFromCart(cropId) {
+      let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+      cartItems = cartItems.filter(item => item.cropId !== cropId);
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
+
+      // Reload the page to reflect changes
+      location.reload();
+    }
+
+    // Function to update order summary
+    function updateOrderSummary(cartItems) {
+      const subtotal = cartItems.reduce((sum, crop) => sum + crop.price, 0);
+      const shipping = subtotal > 0 ? 30 : 0;
+      const total = subtotal + shipping;
+
+      document.querySelector('.summary-item:nth-child(1) span:last-child').textContent = `₹${subtotal}`;
+      document.querySelector('.summary-item:nth-child(2) span:last-child').textContent = `₹${shipping}`;
+      document.querySelector('.summary-total span:last-child').textContent = `₹${total}`;
+    }
+
+    // Keep your existing place-order-btn event listener
+    document.querySelector(".place-order-btn").addEventListener("click", async () => {
+      const token = localStorage.getItem('jwtToken');
+      if (!token) {
+        window.location.href = '/wholesalerlogin';
+        return;
+      }
+
+      // Rest of your existing code for order placement...
+      // [Your existing code continues here...]
+    });
+  </script>
+
+
+
+
+
+  <script >
+    document.addEventListener("DOMContentLoaded", () => {
+      const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+      const cartContainer = document.querySelector(".cart-items");
+
+      // Render cart
+      cartItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "cart-item flex items-center p-4 bg-gray-50 rounded-lg mb-4";
+        div.innerHTML = `
+                <img src="/api/crops/image/${item.imageName}" class="w-20 h-20 object-cover rounded-md mr-4" />
+                <div class="item-details flex-1">
+                    <h3 class="text-lg font-semibold text-gray-800">${item.name}</h3>
+                    <p class="text-sm text-gray-600">${item.description}</p>
+                    <span class="price text-green-700 font-bold">₹${item.price}</span>
+                </div>
+            `;
+        cartContainer.appendChild(div);
+      });
+
+      // Place order logic
+      document.querySelector(".place-order-btn").addEventListener("click", async () => {
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+          window.location.href = '/wholesalerlogin';
+          return;
+        }
+
+        if (!cartItems.length) {
+          alert("Cart is empty");
+          return;
+        }
+
+        const name = document.querySelector("input[placeholder='Enter your name']").value;
+        const phone = document.querySelector("input[placeholder='Enter mobile number']").value;
+        const address = document.querySelector("input[placeholder='Address']").value;
+        const city = document.querySelector("input[placeholder='City']").value;
+        const paymentMethod = document.querySelector("input[name='payment']:checked").id;
+
+        const deliveryLocation = `${address}, ${city}`;
+        const pickupLocation = "Warehouse"; // You can later allow user to pick this
+
+        const totalPrice = cartItems.reduce((sum, crop) => sum + crop.price, 0);
+
+        const confirmedDeal = {
+          pickupLocation,
+          deliveryLocation,
+          crops: cartItems.map(crop => ({
+            cropId: crop.cropId,
+            name: crop.name,
+            price: crop.price,
+            farmerId: crop.farmerId,
+            quantity: crop.quantity,
+            description: crop.description
+          })),
+          totalPrice,
+          orderDate: new Date(),
+          cashOnDelivery: paymentMethod === 'cod',
+          upi: paymentMethod === 'upi'
+        };
+
+        try {
+          const response = await fetch('/Deals/save', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify([confirmedDeal])
+          });
+
+          if (!response.ok) {
+            throw new Error('Order placement failed.');
+          }
+
+          const result = await response.json();
+          alert("Order placed successfully!");
+          localStorage.removeItem('cartItems');
+          window.location.href = '/order-success'; // Redirect to success page
+        } catch (err) {
+          console.error("Error placing order:", err);
+          alert("Something went wrong. Please try again.");
+        }
+      });
+    });
+  </script>
+
 </body>
+
 </html>

@@ -1,6 +1,5 @@
 package com.FarmConnect.WebApplication.service;
 
-import com.FarmConnect.WebApplication.model.Farmer;
 import com.FarmConnect.WebApplication.model.Wholesaler;
 import com.FarmConnect.WebApplication.repository.WholeSalerRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +42,13 @@ public class WholesalerService {
 
     }
 
-    public ResponseEntity<?> Check(Wholesaler wholesaler) {
+    public ResponseEntity<?> Check(Wholesaler wholesaler ,String role) {
         try {
             Authentication authentication =
                     authmanager.authenticate(new UsernamePasswordAuthenticationToken(wholesaler.getEmail(), wholesaler.getPassword()));
 
 
-            String token = jwts.genrateToken(wholesaler.getEmail());
+            String token = jwts.generateToken(wholesaler.getEmail(), role );
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
             System.out.println(token);
@@ -66,5 +65,23 @@ public class WholesalerService {
             errorResponse.put("error", "Authentication failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         }
+    }
+
+    public Wholesaler getByEmailId(String username) {
+        // Return the found Wholesaler, or null if not present.
+        return wholeRepo.getBy_id(username).orElse(null);
+    }
+
+
+    public Optional<Wholesaler> findByEmail(String id) {
+        return wholeRepo.findByEmail(id);
+    }
+
+    public void updateWholesaler(Wholesaler wholesaler) {
+        wholeRepo.save(wholesaler);
+    }
+
+    public Optional<Wholesaler> getBy_id(String id) {
+        return wholeRepo.getBy_id(id);
     }
 }

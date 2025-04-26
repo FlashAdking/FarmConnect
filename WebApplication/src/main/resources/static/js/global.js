@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Public pages never require a token.
     const publicPaths = ['/', '/farmerlogin', '/Home', '/Signupfarmer', '/crops', '/farmers'];
     // Protected pages require a valid token.
-    const protectedPaths = ['/profile', '/confirmorder'];  // Adjust to match your actual protected URLs
+    const protectedPaths = ['/profile', '/confirmorder', '/checkout'];
+    // Adjust to match your actual protected URLs
 
     // Returns true if the given path is protected.
     function isProtectedPath(path) {
@@ -34,20 +35,20 @@ document.addEventListener("DOMContentLoaded", () => {
             return false;
         }
     }
-    
+
     // If the current page is protected and the token is invalid, redirect immediately.
     if (isProtectedPath(window.location.pathname) && !isTokenValid()) {
         window.location.href = '/farmerlogin';
         return;
     }
-    
+
     // Add JWT token to every link navigation for protected pages
     function addTokenToLinks() {
         // For links, we'll skip adding token for public pages.
         // (You might change this logic if your public pages need some token data—but here we assume they don't.)
         const token = localStorage.getItem('jwtToken');
         if (!isTokenValid()) return;
-        
+
         // Process all links except those that are explicitly public (or oauth buttons).
         const allLinks = document.querySelectorAll('a:not(.oauth-btn)');
         // We'll use our publicPaths here
@@ -55,18 +56,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const href = link.getAttribute('href');
             // Skip if no href, an external link, an anchor (#), or one of our public base paths.
             if (
-                !href || 
-                href.startsWith('http') || 
-                href.startsWith('#') || 
+                !href ||
+                href.startsWith('http') ||
+                href.startsWith('#') ||
                 publicPaths.some(publicPath =>
                     href === publicPath || href.startsWith(publicPath + '/')
                 )
             ) {
                 return;
             }
-            
+
             // Modify link click to use fetch for protected endpoints.
-            link.addEventListener('click', function(e) {
+            link.addEventListener('click', function (e) {
                 e.preventDefault();
                 if (!isTokenValid()) {
                     window.location.href = '/farmerlogin';
@@ -77,38 +78,38 @@ document.addEventListener("DOMContentLoaded", () => {
                         'Authorization': `Bearer ${token}`
                     }
                 })
-                .then(response => {
-                    if (response.status === 401) {
-                        // Token rejected by server.
-                        localStorage.removeItem('jwtToken');
-                        window.location.href = '/farmerlogin';
-                        return null;
-                    }
-                    return response.text();
-                })
-                .then(html => {
-                    if (html) {
-                        document.open();
-                        document.write(html);
-                        document.close();
-                        window.history.pushState({}, '', href);
-                    }
-                })
-                .catch(error => {
-                    console.error('Navigation error:', error);
-                    if (error.message && error.message.includes('JWT')) {
-                        localStorage.removeItem('jwtToken');
-                        window.location.href = '/farmerlogin';
-                    }
-                });
+                    .then(response => {
+                        if (response.status === 401) {
+                            // Token rejected by server.
+                            localStorage.removeItem('jwtToken');
+                            window.location.href = '/farmerlogin';
+                            return null;
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        if (html) {
+                            document.open();
+                            document.write(html);
+                            document.close();
+                            window.history.pushState({}, '', href);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Navigation error:', error);
+                        if (error.message && error.message.includes('JWT')) {
+                            localStorage.removeItem('jwtToken');
+                            window.location.href = '/farmerlogin';
+                        }
+                    });
             });
         });
     }
-    
+
     // Add token to all forms for protected endpoints.
     function addTokenToForms() {
         if (!isTokenValid()) return;
-        
+
         const token = localStorage.getItem('jwtToken');
         // Only intercept forms that post to protected endpoints.
         const forms = document.querySelectorAll('form:not(#loginForm):not([action="/farmerlogin"]):not([action="/Signupfarmer"])');
@@ -123,8 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
             ) {
                 return;
             }
-            
-            form.addEventListener('submit', function(e) {
+
+            form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 if (!isTokenValid()) {
                     window.location.href = '/farmerlogin';
@@ -132,18 +133,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 const formData = new FormData(form);
                 const method = form.method.toUpperCase() || 'GET';
-                
+
                 let fetchOptions = {
                     method: method,
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 };
-                
+
                 if (method !== 'GET') {
                     fetchOptions.body = formData;
                 }
-                
+
                 fetch(form.action, fetchOptions)
                     .then(response => {
                         if (response.status === 401) {
@@ -170,10 +171,10 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
-    
+
     // Intercept fetch calls and add Authorization header for protected URLs.
     const originalFetch = window.fetch;
-    window.fetch = function(url, options = {}) {
+    window.fetch = function (url, options = {}) {
         // Use our publicPaths array to determine if authorization should be skipped.
         const skipAuth = publicPaths.some(path => url === path || url.startsWith(path + '?') || url.startsWith(path + '/'));
         if (!skipAuth && isTokenValid()) {
@@ -203,10 +204,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 throw error;
             });
     };
-    
+
     // Global error handler for JWT signature issues.
     function handleInvalidSignature() {
-        window.addEventListener('error', function(event) {
+        window.addEventListener('error', function (event) {
             if (event.message && event.message.includes('JWT')) {
                 console.error('JWT validation error detected');
                 localStorage.removeItem('jwtToken');
@@ -216,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-    
+
     // Inject a logout button.
     function injectLogoutButton() {
         if (!document.getElementById("logout-btn")) {
@@ -232,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     }
-    
+
     // Only enforce token validation when on protected pages.
     // On public pages (like crops or Farmers), simply inject logout if a token exists.
     if (isProtectedPath(window.location.pathname)) {
@@ -248,7 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
             injectLogoutButton();
         }
     }
-    
+
     // Using a MutationObserver to catch dynamically added content.
     const observer = new MutationObserver(() => {
         if (isTokenValid()) {

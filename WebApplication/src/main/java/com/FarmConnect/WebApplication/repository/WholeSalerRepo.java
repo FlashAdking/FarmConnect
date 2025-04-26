@@ -13,4 +13,6 @@ import java.util.Optional;
 public interface WholeSalerRepo extends MongoRepository<Wholesaler, String> {
     @Query( "{'email' : ?0 }" )
     Optional<Wholesaler> findByEmail(String wholesaler);
+
+    Optional<Wholesaler>  getBy_id(String username);
 }

@@ -6,20 +6,22 @@
     <title>Wholesaler Login</title>
     <!-- <link rel="stylesheet" th:href="../static/css/WholeSalerLogin.css"> -->
     <link rel="stylesheet" th:href="@{/css/WholeSalerLogin.css}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-xrDnQ+G2vIj6FJp77Crj1cRgAD+ZHO0+Y2CqGzZKLyj8Zzwf6Koqkmrq8xX92d90Ak9U3ytHDPnJDk1TvLHZwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        integrity="sha512-xrDnQ+G2vIj6FJp77Crj1cRgAD+ZHO0+Y2CqGzZKLyj8Zzwf6Koqkmrq8xX92d90Ak9U3ytHDPnJDk1TvLHZwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
 </head>
 <style>
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
     }
 
     body {
-      background-color: #f9f9f9;
+        background-color: #f9f9f9;
     }
 
     /* Header Navigation */
@@ -28,6 +30,7 @@
         padding: 15px 20px;
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     }
+
     .nav-container {
         display: flex;
         align-items: center;
@@ -55,163 +58,163 @@
     }
 
     .container {
-      width: 90%;
-      max-width: 1000px;
-      margin: 50px auto;
-      display: flex;
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
+        width: 90%;
+        max-width: 1000px;
+        margin: 50px auto;
+        display: flex;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
     }
 
     .image-section {
-      flex: 1;
-      background-color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
+        flex: 1;
+        background-color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
     }
 
     .image-section img {
-      width: 80%;
-      max-width: 300px;
+        width: 80%;
+        max-width: 300px;
     }
 
     .form-section {
-      flex: 1;
-      padding: 40px 30px;
+        flex: 1;
+        padding: 40px 30px;
     }
 
     .form-section h2 {
-      margin-bottom: 20px;
-      color: #333;
+        margin-bottom: 20px;
+        color: #333;
     }
 
     .form-section input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
     }
 
     .form-section button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      background-color: #d9534f;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        background-color: #d9534f;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
     }
 
     .google-btn {
-            width: 100%;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-top: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+        width: 100%;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
 
-        .google-btn:hover {
-            background-color: #f1f1f1;
-        }
+    .google-btn:hover {
+        background-color: #f1f1f1;
+    }
 
 
     .form-section p {
-      margin-top: 15px;
-      text-align: center;
+        margin-top: 15px;
+        text-align: center;
     }
 
     .form-section a {
-      color: #d9534f;
-      text-decoration: none;
+        color: #d9534f;
+        text-decoration: none;
     }
 
     @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
+        .container {
+            flex-direction: column;
+        }
 
-      .image-section,
-      .form-section {
-        width: 100%;
-      }
-      }
-      footer {
-          background-color: #222;
-          color: white;
-          padding: 40px 20px;
-          margin-top: 50px;
-      }
+        .image-section,
+        .form-section {
+            width: 100%;
+        }
+    }
 
-      .footer-container {
-          display: flex;
-          justify-content: space-between;
-          flex-wrap: wrap;
-      }
+    footer {
+        background-color: #222;
+        color: white;
+        padding: 40px 20px;
+        margin-top: 50px;
+    }
 
-      .footer-column {
-          margin-bottom: 20px;
-      }
+    .footer-container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
 
-      h3 {
-          margin-bottom: 10px;
-      }
+    .footer-column {
+        margin-bottom: 20px;
+    }
 
-      .footer-column a {
-          display: block;
-          color: white;
-          text-decoration: none;
-          margin: 5px 0;
-      }
+    h3 {
+        margin-bottom: 10px;
+    }
 
-      .footer-column img {
-          width: 120px;
-          margin-top: 10px;
-      }
+    .footer-column a {
+        display: block;
+        color: white;
+        text-decoration: none;
+        margin: 5px 0;
+    }
 
-      .copyright {
-          text-align: center;
-          margin-top: 20px;
-          font-size: 14px;
-          color: #bbb;
-      }
+    .footer-column img {
+        width: 120px;
+        margin-top: 10px;
+    }
+
+    .copyright {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #bbb;
+    }
 
     .github-btn {
         color: #333;
     }
-/* Dropdown user styles */
-.dropdown-user {
-    position: relative;
-    cursor: pointer;
-}
 
-.dropdown-user-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px;
-    min-width: 150px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-}
+    /* Dropdown user styles */
+    .dropdown-user {
+        position: relative;
+        cursor: pointer;
+    }
 
-.dropdown-user.active .dropdown-user-menu {
-    display: block;
-}
+    .dropdown-user-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+        min-width: 150px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
 
-
+    .dropdown-user.active .dropdown-user-menu {
+        display: block;
+    }
 </style>
 
 <body>
@@ -228,19 +231,19 @@
                 <a th:href="@{/transport}">Transport</a>
                 <a th:href="@{/about}">About</a>
 
-                
-                    <div class="dropdown-user" id="dropdownUser">
-                        <i class="fa-solid fa-user" style="color: black; font-size: 22px;"></i>
-                        <div class="dropdown-user-menu">
-                          <a th:href="@{/profile}">
-                            <i class="fa fa-user" style="margin-right: 5px;"></i> My Profile
-                          </a>
-                        </div>
-                      </div>
-                      
-</div>
 
-            </nav>
+                <div class="dropdown-user" id="dropdownUser">
+                    <i class="fa-solid fa-user" style="color: black; font-size: 22px;"></i>
+                    <div class="dropdown-user-menu">
+                        <a th:href="@{/profile}">
+                            <i class="fa fa-user" style="margin-right: 5px;"></i> My Profile
+                        </a>
+                    </div>
+                </div>
+
+        </div>
+
+        </nav>
         </div>
     </header>
     <div class="container">
@@ -264,16 +267,40 @@
 
                 <button type="submit">Login</button>
 
-                <div class="social-login">
-                    <a href="/oauth2/authorization/google" class="oauth-btn google-btn">
+                <!-- <div class="social-login">
+                    <a id="oauthLoginButton" href="/oauth2/authorization/google?role=ROLE_WHOLESALER" class="oauth-btn google-btn">
                         <i class="fab fa-google"></i> Login with Google
                     </a>
-                </div>
+                </div> -->
 
                 <p>Don't have an account? <a th:href="@{/wholesalerlogin}">Sign up</a></p>
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const oauthLoginButton = document.getElementById("oauthLoginButton");
+
+            oauthLoginButton.addEventListener("click", (event) => {
+                event.preventDefault();
+
+                const role = "ROLE_WHOLESALER";
+                fetch('/store-role', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ role: role })
+                })
+                    .then(() => {
+                        // After storing the role, proceed to OAuth2 authorization
+                        window.location.href = "/oauth2/authorization/google";
+                    })
+                    .catch(error => console.error("Error storing role:", error));
+            });
+        });
+    </script>
 
 
     <script th:inline="javascript">
@@ -340,6 +367,7 @@
 
                 const emailPhoneValue = emailOrPhone.value.trim();
                 const passwordValue = password.value;
+
 
                 // Validate input fields again on submit
                 const validEmailOrPhone = isValidEmail(emailPhoneValue) || isValidPhone(emailPhoneValue);
@@ -421,14 +449,14 @@
 
         const dropdownUser = document.getElementById("dropdownUser");
 
-    dropdownUser.addEventListener("click", function (e) {
-        e.stopPropagation(); // Stop click from going to document
-        this.classList.toggle("active"); // Toggle dropdown
-    });
+        dropdownUser.addEventListener("click", function (e) {
+            e.stopPropagation(); // Stop click from going to document
+            this.classList.toggle("active"); // Toggle dropdown
+        });
 
-    document.addEventListener("click", function () {
-        dropdownUser.classList.remove("active"); // Hide when clicked outside
-    });
+        document.addEventListener("click", function () {
+            dropdownUser.classList.remove("active"); // Hide when clicked outside
+        });
 
     </script>
     <!-- Footer -->

@@ -364,16 +364,17 @@
                 <button type="submit" class="btn">Log in</button>
 
                 <p>Or login using social accounts:</p>
-                <div class="social-login">
-                    <a href="/oauth2/authorization/google" class="oauth-btn google-btn">
+                <!-- <div class="social-login">                 
+                    <a id="oauthLoginButton"  href="/oauth2/authorization/google" class="oauth-btn google-btn">
                         <i class="fab fa-google"></i> Login with Google
                     </a>
-                </div>
+                </div> -->
 
                 <p>Do not have an account? <a th:href="@{/Signupfarmer}">Signup</a></p>
             </form>
         </div>
     </section>
+
 
 
 
@@ -442,6 +443,7 @@
 
                 const emailPhoneValue = emailOrPhone.value.trim();
                 const passwordValue = password.value;
+            
 
                 // Validate input fields again on submit
                 const validEmailOrPhone = isValidEmail(emailPhoneValue) || isValidPhone(emailPhoneValue);

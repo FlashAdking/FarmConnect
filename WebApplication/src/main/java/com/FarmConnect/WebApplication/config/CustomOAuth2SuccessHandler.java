@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -29,10 +30,10 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
     private final MyUserDatailService userDetailsService;
 
     @Autowired
-    FarmersRepo farmersRepo;
+    private FarmersRepo farmersRepo;
 
     @Autowired
-    WholeSalerRepo wholeSalerRepo;
+    private WholeSalerRepo wholeSalerRepo;
 
     public CustomOAuth2SuccessHandler(JWTService jwtService, MyUserDatailService userDetailsService) {
         this.jwtService = jwtService;
@@ -46,53 +47,68 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
         String email = oauthUser.getAttribute("email");
 
-        // Check if user already exists
+        // Retrieve the 'state' parameter from the request. It will include our role.
+        String state = request.getParameter("state");
+        String role = null;
+        if (state != null && state.contains(":")) {
+            // Assuming the format is "originalState:ROLE_FARMER" or "originalState:ROLE_WHOLESALER"
+            String[] parts = state.split(":");
+            if (parts.length >= 2) {
+                role = parts[1];
+            }
+        }
+
+        if (role == null || role.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Role is missing. Login failed. backend");
+            return;
+        }
+
+        // Check if the user already exists in either the Farmer or Wholesaler repository
         Optional<Farmer> existingFarmer = farmersRepo.findByEmailOrPhone(email);
         Optional<Wholesaler> existingWholesaler = wholeSalerRepo.findByEmail(email);
 
-        String role;
-
         if (existingFarmer.isPresent()) {
             role = "ROLE_FARMER";
+            System.out.println("Existing farmer logged in.");
         } else if (existingWholesaler.isPresent()) {
             role = "ROLE_WHOLESALER";
+            System.out.println("Existing wholesaler logged in.");
         } else {
-            // Create a new Farmer by default
-            Farmer newFarmer = new Farmer();
-            newFarmer.setEmailOrPhone(email);
+            // New user; create a new entry based on the provided role
+            if ("ROLE_FARMER".equals(role)) {
+                Farmer newFarmer = new Farmer();
+                newFarmer.setEmailOrPhone(email);
 
-            InputStream is = getClass().getResourceAsStream("/static/img/default-farmer.jpg");
-
-            if (is != null) {
-                byte[] defaultImage = IOUtils.toByteArray(is);
-                newFarmer.setFarmerImage(defaultImage);
-                newFarmer.setImageName("default-farmer.jpg");
-                newFarmer.setImageType("image/jpeg");
+                // Set default image for the new farmer
+                InputStream is = getClass().getResourceAsStream("/static/img/default-farmer.jpg");
+                if (is != null) {
+                    byte[] defaultImage = IOUtils.toByteArray(is);
+                    newFarmer.setFarmerImage(defaultImage);
+                    newFarmer.setImageName("default-farmer.jpg");
+                    newFarmer.setImageType("image/jpeg");
+                }
+                farmersRepo.save(newFarmer);
+                System.out.println("New farmer created for email: " + email);
+            } else if ("ROLE_WHOLESALER".equals(role)) {
+                Wholesaler newWholesaler = new Wholesaler();
+                newWholesaler.setEmail(email);
+                wholeSalerRepo.save(newWholesaler);
+                System.out.println("New wholesaler created for email: " + email);
+            } else {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid role.");
+                return;
             }
-            // Set any other default fields here
-            farmersRepo.save(newFarmer);
-            role = "ROLE_FARMER";
         }
 
-        // Generate JWT
-        String token = jwtService.genrateToken(email);
-
-        // Set redirect path based on role
-        String targetPath = switch (role) {
-            case "ROLE_WHOLESALER" -> "/";
-            case "ROLE_FARMER" -> "/";
-            default -> "/";
-        };
-
-        System.out.println("req received for " + email + " token: " + token);
-
-        String redirectUrl = "/oauth-redirect?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8)
+        // Generate JWT using the determined role
+        String token = jwtService.generateToken(email, role);
+        String targetPath = "/";
+        String redirectUrl = "/oauth-redirect?token="
+                + URLEncoder.encode(token, StandardCharsets.UTF_8)
                 + "&redirect=" + URLEncoder.encode(targetPath, StandardCharsets.UTF_8);
 
+        System.out.println("Request received for " + email + ", token: " + token);
         response.sendRedirect(redirectUrl);
     }
-
-
-
-
 }
+

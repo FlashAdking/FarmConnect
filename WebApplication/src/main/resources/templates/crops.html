@@ -271,9 +271,10 @@
                     <div class="product-actions">
                         <button type="button" onclick="addCropToCart(this)">Add to Cart</button>
                         <button type="button">
-                           <a th:href="@{/crops/crop.cropId}" style="color: inherit; text-decoration: none;"> 
-                            View Details
-                           </a>
+                            <a th:href="@{/crops/${crop.cropId}}" onclick="saveCropToLocalStorage(this)"
+                                style="color: inherit; text-decoration: none;">
+                                View Details
+                            </a>
                         </button>
                     </div>
                 </div>
@@ -282,6 +283,44 @@
         </main>
 
     </div>
+
+
+    <!-- savecroptoLocalstorage -->
+    <script>
+        /**
+         * Save the crop details to localStorage so the detail page can render the original crop.
+         * @param {HTMLElement} anchor - The clicked anchor element ("View Details" link)
+         */
+        function saveCropToLocalStorage(anchor) {
+            // Find the nearest product card container
+            const productCard = anchor.closest('.product-card');
+            if (!productCard) {
+                console.error("Product card not found!");
+                return;
+            }
+
+            // Gather crop information from data attributes and inner elements
+            const crop = {
+                cropId: productCard.getAttribute('data-cropid'),
+                name: productCard.querySelector('.product-info h3').innerText,
+                category: productCard.getAttribute('data-category'),
+                price: parseFloat(productCard.getAttribute('data-price')),
+                label: productCard.getAttribute('data-label'),
+                color: productCard.getAttribute('data-color'),
+                quantity: parseInt(productCard.getAttribute('data-quantity'), 10),
+                description: productCard.querySelector('.product-info p') ? productCard.querySelector('.product-info p').innerText : "",
+                // Use the actual src from the lazy-loading mechanism
+                image: productCard.querySelector('.product-image img').getAttribute('data-src') ||
+                    productCard.querySelector('.product-image img').src
+            };
+
+            // Save the crop data as a JSON string in localStorage
+            localStorage.setItem('selectedCrop', JSON.stringify(crop));
+
+            console.log("Crop saved to localStorage:", crop);
+        }
+    </script>
+
 
     <!-- image loading -->
     <script>

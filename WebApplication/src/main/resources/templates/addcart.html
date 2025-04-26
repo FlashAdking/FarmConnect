@@ -5,6 +5,8 @@
 
 
     <script th:src="@{/js/global.js}"></script>
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FarmConnect Shopping Cart</title>
@@ -140,6 +142,64 @@
                 Confirm Order
             </button>
         </main>
+        
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                function redirectOrder() {
+                    const token = localStorage.getItem('jwtToken');
+                    if (!token) {
+                        window.location.href = '/wholesalerlogin';
+                        return;
+                    }
+        
+                    fetch('/checkout', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                        .then(res => {
+                            if (res.status === 401) {
+                                localStorage.removeItem('jwtToken');
+                                window.location.href = '/wholesalerlogin';
+                                return null;
+                            }
+                            return res.text();
+                        })
+                        .then(html => {
+                            if (html) {
+                                document.open();
+                                document.write(html);
+                                document.close();
+                                window.history.pushState({}, '', '/checkout');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Checkout redirect error:', err);
+                            window.location.href = '/';
+                        });
+                }
+        
+                const confirmOrderButton = document.getElementById('confirmOrder');
+                const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+        
+                confirmOrderButton.addEventListener('click', function () {
+                    if (!cartItems.length) {
+                        alert("Your cart is empty. Please add items before confirming your order.");
+                        return;
+                    }
+        
+                    const token = localStorage.getItem('jwtToken');
+                    if (!token) {
+                        window.location.href = '/wholesalerlogin';
+                    } else {
+                        redirectOrder(); // ✅ this sends the token and handles unauthorized cases
+                    }
+                });
+            });
+        </script>
+        
+
+
 
 
         <footer>
@@ -187,20 +247,21 @@
 
 
 
+
     <!-- Add-to-Cart Event Delegation Script -->
-    <script>
+    <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', function () {
             let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
             const cartContainer = document.getElementById('cart');
             const emptyCartMessage = document.getElementById('emptyCartMessage');
             const confirmOrderButton = document.getElementById('confirmOrder');
 
-            console.log("Cart items loaded:", JSON.stringify(cartItems));
-
+            // Save the cart items into localStorage after modifications
             function saveCartItems() {
                 localStorage.setItem("cartItems", JSON.stringify(cartItems));
             }
 
+            // Renders the list of cart items along with the total price
             function renderCartItems() {
                 cartContainer.innerHTML = '';
 
@@ -214,67 +275,55 @@
                 confirmOrderButton.style.display = 'block';
 
                 cartItems.forEach((item, index) => {
-                    // Default fallback image is now the crop image default
                     let imgSrc = '/img/default-crop.jpg';
-
-                    // Use stored image URL if present and valid.
                     if (item.image && item.image.trim() !== "" && !item.image.includes('default-crop')) {
                         imgSrc = item.image;
-                        console.log(`Item ${index} - Using stored image URL:`, imgSrc);
-                    }
-                    // Optionally, if cropId is available, you could reconstruct it:
-                    else if (item.cropId) {
+                    } else if (item.cropId) {
                         imgSrc = window.location.origin + '/crops/' + item.cropId + '/image';
-                        console.log(`Item ${index} - Constructed image URL from cropId:`, imgSrc);
                     }
 
                     const itemEl = document.createElement('div');
                     itemEl.className = 'cart-item';
                     itemEl.innerHTML = `
-                <div class="cart-item-image">
-                    <img src="${imgSrc}" alt="${item.name}" 
-                         style="width: 100px; height: 100px; object-fit: cover;"
-                         onerror="this.onerror=null;this.src='/img/default-crop.jpg';">
-                </div>
-                <div class="cart-item-details">
-                    <h3>${item.name}</h3>
-                    <p>Price: ₹${parseFloat(item.price) || 0}</p>
-                </div>
-                <div class="cart-item-controls">
-                    <div class="quantity-control">
-                        <button class="quantity-btn decrease-btn" data-index="${index}">-</button>
-                        <span>${item.quantity}</span>
-                        <button class="quantity-btn increase-btn" data-index="${index}">+</button>
-                    </div>
-                    <button class="delete-btn" data-index="${index}">Delete</button>
-                </div>
-            `;
+                        <div class="cart-item-image">
+                            <img src="${imgSrc}" alt="${item.name}" 
+                                 style="width: 100px; height: 100px; object-fit: cover;"
+                                 onerror="this.onerror=null;this.src='/img/default-crop.jpg';">
+                        </div>
+                        <div class="cart-item-details">
+                            <h3>${item.name}</h3>
+                            <p>Price: ₹${parseFloat(item.price) || 0}</p>
+                        </div>
+                        <div class="cart-item-controls">
+                            <div class="quantity-control">
+                                <button class="quantity-btn decrease-btn" data-index="${index}">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="quantity-btn increase-btn" data-index="${index}">+</button>
+                            </div>
+                            <button class="delete-btn" data-index="${index}">Delete</button>
+                        </div>
+                    `;
                     cartContainer.appendChild(itemEl);
-
-                    const img = itemEl.querySelector('img');
-                    img.addEventListener('load', function () {
-                        console.log(`Image for item ${index} loaded successfully:`, this.src);
-                    });
-                    img.addEventListener('error', function () {
-                        console.error(`Failed to load image for item ${index}:`, this.src);
-                        if (item.cropId && !this.src.includes('default')) {
-                            console.log("Trying alternative URL format for item", index);
-                            this.src = window.location.origin + '/crops/' + item.cropId + '/image';
-                        }
-                    });
                 });
 
-                const total = cartItems.reduce((sum, item) => sum + ((parseFloat(item.price) || 0) * item.quantity), 0);
+                // Append the total price at the end
+                const total = cartItems.reduce((sum, item) =>
+                    sum + ((parseFloat(item.price) || 0) * item.quantity), 0);
                 const totalEl = document.createElement('p');
                 totalEl.className = 'cart-total';
                 totalEl.textContent = `Total Price: ₹${total}`;
                 cartContainer.appendChild(totalEl);
 
-                document.querySelectorAll('.decrease-btn').forEach(btn => btn.addEventListener('click', decreaseQuantity));
-                document.querySelectorAll('.increase-btn').forEach(btn => btn.addEventListener('click', increaseQuantity));
-                document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', deleteItem));
+                // Event listeners on quantity and delete buttons
+                document.querySelectorAll('.decrease-btn')
+                    .forEach(btn => btn.addEventListener('click', decreaseQuantity));
+                document.querySelectorAll('.increase-btn')
+                    .forEach(btn => btn.addEventListener('click', increaseQuantity));
+                document.querySelectorAll('.delete-btn')
+                    .forEach(btn => btn.addEventListener('click', deleteItem));
             }
 
+            // Decrease quantity for a cart item
             function decreaseQuantity(e) {
                 const index = +e.target.dataset.index;
                 if (cartItems[index].quantity > 1) {
@@ -284,6 +333,7 @@
                 }
             }
 
+            // Increase quantity for a cart item
             function increaseQuantity(e) {
                 const index = +e.target.dataset.index;
                 cartItems[index].quantity++;
@@ -291,6 +341,7 @@
                 renderCartItems();
             }
 
+            // Delete a cart item from the list
             function deleteItem(e) {
                 const index = +e.target.dataset.index;
                 cartItems.splice(index, 1);
@@ -298,17 +349,33 @@
                 renderCartItems();
             }
 
-            confirmOrderButton.addEventListener('click', () => {
-                alert('Order confirmed! Please complete the payment. Thank you for your purchase.');
-                localStorage.removeItem("cartItems");
-                location.reload();
+            // When the Confirm Order button is clicked,
+            // first check if the cart is empty, then check for a token.
+            // If token is not found, redirect to the wholesaler login page.
+            // If token exists, redirect to the checkout page.
+            confirmOrderButton.addEventListener('click', function () {
+                // Check for empty cart
+                if (!cartItems.length) {
+                    alert("Your cart is empty. Please add items before confirming your order.");
+                    return;
+                }
+
+                // Check if token exists in local storage
+                const token = localStorage.getItem('jwtToken');
+                if (!token) {
+                    // No token found, redirect to wholesaler login page
+                    window.location.href = /*[[@{/wholesalerlogin}]]*/ '/wholesalerlogin';
+                } else {
+                    // Token exists, redirect to checkout page
+                    window.location.href = /*[[@{/checkout}]]*/ '/checkout';
+                }
             });
 
             renderCartItems();
         });
-
-
     </script>
+
+
 
 
 

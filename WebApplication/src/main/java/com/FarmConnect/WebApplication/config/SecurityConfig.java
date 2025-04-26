@@ -47,11 +47,12 @@ public class SecurityConfig {
                                 "/oauth-redirect", "/Signupfarmer", "/css/**", "/js/**", "/img/**",
                                 "/crops/**", "/farmers/**", "/about","/api/farmers"
                         ).permitAll()
+                        .requestMatchers("/checkout", "/confirmorder").hasRole("WHOLESALER")
                         // These endpoints are public
                         .anyRequest().authenticated()   // All others require authentication
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/farmers")
+                        .loginPage("/")
                         .successHandler(customOAuth2SuccessHandler)
                         .userInfoEndpoint(userInfo ->
                                 userInfo.userService(new CustomOAuth2UserService())
