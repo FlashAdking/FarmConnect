@@ -96,8 +96,8 @@ nav a {
 }
 
 .hero {
-    background: url('../img/Background\ Image.jpg') no-repeat center center/cover;
-    height: 50vh;
+    background: url('../img/Background Image.jpg') no-repeat center 20%/cover;
+    height: 55vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -106,14 +106,16 @@ nav a {
     flex-direction: column;
 }
 
+
+
 .hero h1 {
-    color: black;
+    color: green;
     font-size: 3em;
     /* Increase the font size of the h1 element */
 }
 
 .hero p {
-    color: black;
+    color: green;
     font-size: 1.5em;
     /* Increase the font size of the p element */
 }

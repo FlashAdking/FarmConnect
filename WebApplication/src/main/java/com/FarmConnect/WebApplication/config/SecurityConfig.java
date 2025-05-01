@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(
                                 "/", "/farmerlogin", "/Home", "/wholesalerlogin", "/Signupwholesaler",
-                                "/oauth-redirect", "/Signupfarmer", "/css/**", "/js/**", "/img/**",
+                                "/oauth-redirect", "/Signupfarmer", "/css/**", "/js/**", "/img/**","/api/**",
                                 "/crops/**", "/farmers/**", "/about","/api/farmers"
                         ).permitAll()
                         .requestMatchers("/checkout", "/confirmorder").hasRole("WHOLESALER")

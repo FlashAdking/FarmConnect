@@ -255,7 +255,7 @@
             <div class="products-grid">
                 <div class="product-card" th:each="crop : ${crops}" th:data-category="${crop.category}"
                     th:data-cropid="${crop.cropId}" th:data-label="${crop.label}" th:data-color="${crop.color}"
-                    th:data-quantity="${crop.quantity}" th:data-price="${crop.price}">
+                    th:data-quantity="${crop.quantity}" th:data-price="${crop.price}" th:data-farmerid="${crop.farmerId}">
                     <div class="product-image">
                         <!-- <img th:src="@{/crops/{id}/image(id=${crop.cropId})}" th:alt="${crop.name}"> -->
                         <img data-src="@{/crops/{id}/image(id=${crop.cropId})}" th:alt="${crop.name}">
@@ -311,7 +311,9 @@
                 description: productCard.querySelector('.product-info p') ? productCard.querySelector('.product-info p').innerText : "",
                 // Use the actual src from the lazy-loading mechanism
                 image: productCard.querySelector('.product-image img').getAttribute('data-src') ||
-                    productCard.querySelector('.product-image img').src
+                    productCard.querySelector('.product-image img').src,
+                
+                farmerId: productCard.getAttribute('data-farmerid')
             };
 
             // Save the crop data as a JSON string in localStorage
@@ -558,7 +560,10 @@
             const cropCategory = productCard.getAttribute('data-category') || "Uncategorized";
             const cropLabel = productCard.getAttribute('data-label') || "";
             const cropColor = productCard.getAttribute('data-color') || "";
-            const cropQuantity = parseInt(productCard.getAttribute('data-quantity'), 10) || 1;
+            // const cropQuantity = parseInt(productCard.getAttribute('data-quantity'), 10) || 1;
+            const cropQuantity = 10;
+            const cropId = productCard.getAttribute('data-cropid') || "";      // capture cropId
+            const farmerId = productCard.getAttribute('data-farmerid') || "";
 
             // Create a crop item object
             const cropItem = {
@@ -569,8 +574,8 @@
                 color: cropColor,
                 quantity: cropQuantity,
                 image: cropImageURL,
-                // Optionally, store cropId if needed later to construct an image URL.
-                cropId: productCard.getAttribute('data-cropid')
+                cropId: cropId,
+                farmerId: farmerId
             };
 
             // Add the item to the Cart module (ensure that window.Cart is defined elsewhere)
@@ -597,24 +602,23 @@
                 localStorage.setItem("cartItems", JSON.stringify(items));
             }
 
-            // Utility: Find an item by a unique identifier.
-            // This example uses `name` as the unique key. Change this if your items have a unique ID.
-            function findItemIndex(itemName) {
-                return items.findIndex(item => item.name === itemName);
+            // Utility: Find an item by cropId (more unique than name)
+            function findItemIndex(cropId) {
+                return items.findIndex(item => item.cropId === cropId);
             }
 
             return {
                 /**
                  * Adds an item to the cart.
-                 * If an item with the same unique identifier (name) exists,
+                 * If an item with the same cropId exists,
                  * it updates the quantity accordingly.
                  *
                  * @param {Object} item - An object representing the product.
                  */
                 addItem: function (item) {
-                    const idx = findItemIndex(item.name);
+                    const idx = findItemIndex(item.cropId);
                     if (idx !== -1) {
-                        // Update quantity: Sum existing and new quantity.
+                        // Update quantity: Sum existing and new quantity
                         items[idx].quantity = parseInt(items[idx].quantity, 10) + parseInt(item.quantity, 10);
                     } else {
                         items.push(item);
@@ -632,12 +636,12 @@
                 },
 
                 /**
-                 * Removes an item from the cart by its unique identifier (here, name).
+                 * Removes an item from the cart by its cropId.
                  *
-                 * @param {String} itemName - The unique name of the item to remove.
+                 * @param {String} cropId - The unique cropId of the item to remove.
                  */
-                removeItem: function (itemName) {
-                    const idx = findItemIndex(itemName);
+                removeItem: function (cropId) {
+                    const idx = findItemIndex(cropId);
                     if (idx !== -1) {
                         items.splice(idx, 1);
                         saveCart();
@@ -645,13 +649,13 @@
                 },
 
                 /**
-                 * Updates the quantity for a specific item.
+                 * Updates the quantity for a specific item using cropId.
                  *
-                 * @param {String} itemName - The unique name of the item.
+                 * @param {String} cropId - The unique cropId of the item.
                  * @param {Number} quantity - The new quantity to set.
                  */
-                updateItemQuantity: function (itemName, quantity) {
-                    const idx = findItemIndex(itemName);
+                updateItemQuantity: function (cropId, quantity) {
+                    const idx = findItemIndex(cropId);
                     if (idx !== -1) {
                         items[idx].quantity = quantity;
                         saveCart();
@@ -689,6 +693,7 @@
                 }
             };
         })();
+
 
     </script>
 </body>

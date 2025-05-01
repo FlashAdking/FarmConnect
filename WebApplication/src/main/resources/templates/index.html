@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FarmConnect</title>
-  <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
     <!-- <link rel="stylesheet" href="../static/css/index.css"> -->
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -107,7 +107,7 @@
                     <i class="fas fa-user"></i>My Profile
                 </a>
                 <div id="logout-placeholder">
-                </div>    
+                </div>
             </div>
         </div>
 
@@ -115,7 +115,7 @@
         <script>
             // JavaScript to toggle the dropdown menu on click
             document.getElementById('dropdownUser').addEventListener('click', function (event) {
-                // Prevent the click from bubbling up (so that clicking’s confined to this element)
+                // Prevent the click from bubbling up (so that clicking's confined to this element)
                 event.stopPropagation();
                 this.classList.toggle('active');
             });
@@ -199,27 +199,312 @@
         </div>
     </section>
 
+    <!-- Enhanced Farmers Section with Carousel -->
+    <section style="padding: 60px 0; background: linear-gradient(to bottom, #f9f9f9, #ffffff); position: relative;">
+        <h2
+            style="text-align: center; font-size: 2.2rem; margin-bottom: 40px; color: #333; font-weight: 700; position: relative; display: inline-block; left: 50%; transform: translateX(-50%);">
+            Connect Direct Farmers from Various Regions
+            <span
+                style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 80px; height: 3px; background-color: #4CAF50;"></span>
+        </h2>
 
+        <!-- Carousel Container -->
+        <div style="position: relative; max-width: 1200px; margin: 0 auto; overflow: hidden; padding: 20px 60px;">
+            <!-- Carousel Navigation Buttons -->
+            <button id="prevBtn"
+                style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background-color: rgba(255, 255, 255, 0.8); color: #333; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); cursor: pointer; z-index: 2; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-chevron-left"></i>
+            </button>
 
-    <section class="farmers">
-        <h2>Connect Direct Farmers from Various Regions</h2>
-        <div class="farmer-list">
-            <div class="farmer-card">
-                <img th:src="@{/img/farmer1.jpg}" alt="Shenkar Patil">
-                <h3>SHENKAR PATIL - FARMER</h3>
-                <p>KOLHAPUR, MAHARASHTRA</p>
+            <button id="nextBtn"
+                style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background-color: rgba(255, 255, 255, 0.8); color: #333; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); cursor: pointer; z-index: 2; display: flex; align-items: center; justify-content: center;">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <!-- Carousel Track -->
+            <div id="farmerCarousel" style="display: flex; transition: transform 0.5s ease; gap: 20px;">
+                <!-- Farmer Card 1 -->
+                <div class="farmer-card"
+                    style="min-width: 300px; flex: 0 0 300px; background-color: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; transform: translateY(0);">
+                    <div style="position: relative; height: 220px; overflow: hidden;">
+                        <img th:src="@{/img/farmer1.jpg}" alt="Shenkar Patil"
+                            style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                        <div
+                            style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); padding: 20px 15px 10px; color: white;">
+                            <span
+                                style="background-color: #4CAF50; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;">FARMER</span>
+                        </div>
+                    </div>
+                    <div style="padding: 20px; text-align: left;">
+                        <h3 style="margin: 0 0 10px; font-size: 18px; font-weight: 700; color: #333;">SHENKAR PATIL</h3>
+                        <p style="display: flex; align-items: center; margin: 0; color: #666; font-size: 14px;">
+                            <i class="fas fa-map-marker-alt" style="color: #4CAF50; margin-right: 8px;"></i>
+                            KOLHAPUR, MAHARASHTRA
+                        </p>
+                        <div
+                            style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-seedling" style="color: #4CAF50; margin-right: 5px;"></i>
+                                <span style="font-size: 14px; color: #666;">Organic Crops</span>
+                            </div>
+                            <a style="text-decoration: none; color: #4CAF50; font-weight: 600; font-size: 14px;">View
+                                Profile →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Farmer Card 2 -->
+                <div class="farmer-card"
+                    style="min-width: 300px; flex: 0 0 300px; background-color: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; transform: translateY(0);">
+                    <div style="position: relative; height: 220px; overflow: hidden;">
+                        <img th:src="@{/img/farmer2.jpg}" alt="Ajay Bhosale"
+                            style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                        <div
+                            style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); padding: 20px 15px 10px; color: white;">
+                            <span
+                                style="background-color: #4CAF50; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;">FARMER</span>
+                        </div>
+                    </div>
+                    <div style="padding: 20px; text-align: left;">
+                        <h3 style="margin: 0 0 10px; font-size: 18px; font-weight: 700; color: #333;">AJAY BHOSALE</h3>
+                        <p style="display: flex; align-items: center; margin: 0; color: #666; font-size: 14px;">
+                            <i class="fas fa-map-marker-alt" style="color: #4CAF50; margin-right: 8px;"></i>
+                            TALNA, MAHARASHTRA
+                        </p>
+                        <div
+                            style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-leaf" style="color: #4CAF50; margin-right: 5px;"></i>
+                                <span style="font-size: 14px; color: #666;">Fresh Produce</span>
+                            </div>
+                            <a style="text-decoration: none; color: #4CAF50; font-weight: 600; font-size: 14px;">View
+                                Profile →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Farmer Card 3 -->
+                <div class="farmer-card"
+                    style="min-width: 300px; flex: 0 0 300px; background-color: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; transform: translateY(0);">
+                    <div style="position: relative; height: 220px; overflow: hidden;">
+                        <img th:src="@{/img/farmer3.jpg}" alt="Shenkar Patil"
+                            style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                        <div
+                            style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); padding: 20px 15px 10px; color: white;">
+                            <span
+                                style="background-color: #4CAF50; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;">FARMER</span>
+                        </div>
+                    </div>
+                    <div style="padding: 20px; text-align: left;">
+                        <h3 style="margin: 0 0 10px; font-size: 18px; font-weight: 700; color: #333;">SHENKAR PATIL</h3>
+                        <p style="display: flex; align-items: center; margin: 0; color: #666; font-size: 14px;">
+                            <i class="fas fa-map-marker-alt" style="color: #4CAF50; margin-right: 8px;"></i>
+                            BULDHANA, MAHARASHTRA
+                        </p>
+                        <div
+                            style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-wheat-awn" style="color: #4CAF50; margin-right: 5px;"></i>
+                                <span style="font-size: 14px; color: #666;">Grain Specialist</span>
+                            </div>
+                            <a style="text-decoration: none; color: #4CAF50; font-weight: 600; font-size: 14px;">View
+                                Profile →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Duplicated cards for continuous scrolling effect -->
+                <div class="farmer-card"
+                    style="min-width: 300px; flex: 0 0 300px; background-color: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; transform: translateY(0);">
+                    <div style="position: relative; height: 220px; overflow: hidden;">
+                        <img th:src="@{/img/farmer1.jpg}" alt="Shenkar Patil"
+                            style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                        <div
+                            style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); padding: 20px 15px 10px; color: white;">
+                            <span
+                                style="background-color: #4CAF50; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;">FARMER</span>
+                        </div>
+                    </div>
+                    <div style="padding: 20px; text-align: left;">
+                        <h3 style="margin: 0 0 10px; font-size: 18px; font-weight: 700; color: #333;">SHENKAR PATIL</h3>
+                        <p style="display: flex; align-items: center; margin: 0; color: #666; font-size: 14px;">
+                            <i class="fas fa-map-marker-alt" style="color: #4CAF50; margin-right: 8px;"></i>
+                            KOLHAPUR, MAHARASHTRA
+                        </p>
+                        <div
+                            style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-seedling" style="color: #4CAF50; margin-right: 5px;"></i>
+                                <span style="font-size: 14px; color: #666;">Organic Crops</span>
+                            </div>
+                            <a style="text-decoration: none; color: #4CAF50; font-weight: 600; font-size: 14px;">View
+                                Profile →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="farmer-card"
+                    style="min-width: 300px; flex: 0 0 300px; background-color: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; transform: translateY(0);">
+                    <div style="position: relative; height: 220px; overflow: hidden;">
+                        <img th:src="@{/img/farmer2.jpg}" alt="Ajay Bhosale"
+                            style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                        <div
+                            style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); padding: 20px 15px 10px; color: white;">
+                            <span
+                                style="background-color: #4CAF50; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;">FARMER</span>
+                        </div>
+                    </div>
+                    <div style="padding: 20px; text-align: left;">
+                        <h3 style="margin: 0 0 10px; font-size: 18px; font-weight: 700; color: #333;">AJAY BHOSALE</h3>
+                        <p style="display: flex; align-items: center; margin: 0; color: #666; font-size: 14px;">
+                            <i class="fas fa-map-marker-alt" style="color: #4CAF50; margin-right: 8px;"></i>
+                            TALNA, MAHARASHTRA
+                        </p>
+                        <div
+                            style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center;">
+                                <i class="fas fa-leaf" style="color: #4CAF50; margin-right: 5px;"></i>
+                                <span style="font-size: 14px; color: #666;">Fresh Produce</span>
+                            </div>
+                            <a style="text-decoration: none; color: #4CAF50; font-weight: 600; font-size: 14px;">View
+                                Profile →</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="farmer-card">
-                <img th:src="@{/img/farmer2.jpg}" alt="Ajay Bhosale">
-                <h3>AJAY BHOSALE - FARMER</h3>
-                <p>TALNA, MAHARASHTRA</p>
-            </div>
-            <div class="farmer-card">
-                <img th:src="@{/img/farmer3.jpg}" alt="Shenkar Patil">
-                <h3>SHENKAR PATIL - FARMER</h3>
-                <p>BULDHANA, MAHARASHTRA</p>
+
+            <!-- Carousel Indicators -->
+            <div style="display: flex; justify-content: center; margin-top: 30px; gap: 8px;">
+                <span class="carousel-indicator active"
+                    style="width: 10px; height: 10px; background-color: #4CAF50; border-radius: 50%; cursor: pointer;"></span>
+                <span class="carousel-indicator"
+                    style="width: 10px; height: 10px; background-color: #e0e0e0; border-radius: 50%; cursor: pointer;"></span>
+                <span class="carousel-indicator"
+                    style="width: 10px; height: 10px; background-color: #e0e0e0; border-radius: 50%; cursor: pointer;"></span>
             </div>
         </div>
+
+        <!-- Carousel JavaScript -->
+        <script>
+            // Wait for DOM to be fully loaded
+            document.addEventListener('DOMContentLoaded', function () {
+                const carousel = document.getElementById('farmerCarousel');
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const cards = document.querySelectorAll('.farmer-card');
+                const indicators = document.querySelectorAll('.carousel-indicator');
+
+                let cardWidth = 320; // Card width + gap
+                let currentIndex = 0;
+                let autoScrollInterval;
+
+                // Add hover effects
+                cards.forEach(card => {
+                    card.addEventListener('mouseenter', function () {
+                        this.style.transform = 'translateY(-10px)';
+                        this.style.boxShadow = '0 15px 30px rgba(0,0,0,0.1)';
+                        const img = this.querySelector('img');
+                        if (img) img.style.transform = 'scale(1.05)';
+                    });
+
+                    card.addEventListener('mouseleave', function () {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = '0 10px 20px rgba(0,0,0,0.08)';
+                        const img = this.querySelector('img');
+                        if (img) img.style.transform = 'scale(1)';
+                    });
+                });
+
+                // Update carousel position
+                function updateCarousel() {
+                    carousel.style.transform = `translateX(${-currentIndex * cardWidth}px)`;
+
+                    // Update indicators
+                    indicators.forEach((indicator, index) => {
+                        if (index === currentIndex % 3) {
+                            indicator.style.backgroundColor = '#4CAF50';
+                        } else {
+                            indicator.style.backgroundColor = '#e0e0e0';
+                        }
+                    });
+                }
+
+                // Previous button click
+                prevBtn.addEventListener('click', function () {
+                    currentIndex = (currentIndex > 0) ? currentIndex - 1 : cards.length - 3;
+                    updateCarousel();
+                    resetAutoScroll();
+                });
+
+                // Next button click
+                nextBtn.addEventListener('click', function () {
+                    currentIndex = (currentIndex < cards.length - 3) ? currentIndex + 1 : 0;
+                    updateCarousel();
+                    resetAutoScroll();
+                });
+
+                // Indicator clicks
+                indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', function () {
+                        currentIndex = index;
+                        updateCarousel();
+                        resetAutoScroll();
+                    });
+                });
+
+                // Auto scroll
+                function startAutoScroll() {
+                    autoScrollInterval = setInterval(function () {
+                        currentIndex = (currentIndex < cards.length - 3) ? currentIndex + 1 : 0;
+                        updateCarousel();
+                    }, 4000);
+                }
+
+                function resetAutoScroll() {
+                    clearInterval(autoScrollInterval);
+                    startAutoScroll();
+                }
+
+                // Initialize
+                startAutoScroll();
+
+                // Touch events for mobile swipe
+                let touchStartX = 0;
+                let touchEndX = 0;
+
+                carousel.addEventListener('touchstart', function (e) {
+                    touchStartX = e.changedTouches[0].screenX;
+                }, false);
+
+                carousel.addEventListener('touchend', function (e) {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleSwipe();
+                }, false);
+
+                function handleSwipe() {
+                    if (touchEndX < touchStartX) {
+                        // Swipe left
+                        nextBtn.click();
+                    } else if (touchEndX > touchStartX) {
+                        // Swipe right
+                        prevBtn.click();
+                    }
+                }
+
+                // Responsive adjustments
+                function adjustForScreenSize() {
+                    if (window.innerWidth < 768) {
+                        cardWidth = window.innerWidth - 80; // Adjust for mobile
+                    } else {
+                        cardWidth = 320;
+                    }
+                    updateCarousel();
+                }
+
+                window.addEventListener('resize', adjustForScreenSize);
+                adjustForScreenSize(); // Initial adjustment
+            });
+        </script>
     </section>
 
     <script th:src="@{/js/global.js}"></script>

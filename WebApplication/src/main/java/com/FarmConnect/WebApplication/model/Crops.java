@@ -23,7 +23,7 @@ public class Crops {
 
     private String name;
     private String description;
-    private int price;
+    private double price;
     private String category;
     private boolean productAvailable;
 

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.*;
 
 @RestController
@@ -34,9 +35,28 @@ public class DealsController {
     @Autowired
     FarmersRepo farmersRepo;
 
-    @GetMapping("/Deals")
-    public List<ConfirmedDeals> getDealsByUser(@RequestBody String userId){
-        return dealsService.FindUserGetDeals( userId);
+    @GetMapping("/api/confirm-deals")
+    public List<ConfirmedDeals> getDealsByUser(Principal principal) {
+        String emailOrPhone = principal.getName();
+
+        // First try to find wholesaler by email
+        Optional<Wholesaler> wholesaler = wholeSalerRepo.findByEmail(emailOrPhone);
+        if (wholesaler.isPresent()) {
+            System.out.println("Wholesaler found by email in deal: " + wholesaler.get().get_id());
+            return dealsService.FindUserGetDeals(wholesaler.get().get_id());
+        }
+
+        // If not found by email, try to find farmer by email
+        Optional<Farmer> farmer = farmersRepo.findByEmailOrPhone(emailOrPhone);
+        if (farmer.isPresent()) {
+            System.out.println("Farmer found by email in deal: " + farmer.get().getUniqueId());
+            return dealsService.FindUserGetDeals(farmer.get().getUniqueId());
+        }
+
+        // If still not found, try phone number
+        // If no user found, return empty list
+        System.out.println("No user found for: " + emailOrPhone);
+        return new ArrayList<>();
     }
 
     @PostMapping("/Deals/save")

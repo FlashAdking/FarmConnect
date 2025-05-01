@@ -42,7 +42,8 @@ public class JWTFilter extends OncePerRequestFilter {
             "/crops",
             "/farmers",
             "/api/farmers",
-            "/about"
+            "/about",
+            "/api/crops"
     );
 
     private boolean isExcludedEndpoint(String path) {

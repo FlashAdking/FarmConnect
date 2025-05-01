@@ -36,9 +36,10 @@ public class CropService {
         return objCrop.findAllWithoutImageData();
     }
 
-    public void addCrops(Crops crop){
-        crop.setCropId(new ObjectId().toString());
+    public Crops addCrops(Crops crop){
+//        crop.setCropId(new ObjectId().toString());
         objCrop.save(crop);
+        return crop;
     }
 
     @Autowired
@@ -143,4 +144,10 @@ public class CropService {
     public List<Crops> findByPriceLessThanEqual(Integer maxPrice) {
         return objCrop.findByPriceLessThanEqual(maxPrice);
     }
+
+    public List<Crops> getCropsByfarmer(String farmerId){
+        return objCrop.findByFarmerId(farmerId);
+    }
+
+
 }

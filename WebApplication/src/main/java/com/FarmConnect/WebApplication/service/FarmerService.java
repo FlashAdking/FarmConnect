@@ -93,4 +93,23 @@ public class FarmerService {
         System.out.println();
         return farmRepo.findByUniqueId(uniqueId);
     }
+
+    @Autowired
+    private JWTService jwtService;
+
+    public Optional<Farmer> findByToken(String token) {
+        try {
+            // Remove "Bearer " prefix if present
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+
+            String emailOrPhone = jwtService.extractUserName(token);
+            return farmRepo.findByEmailOrPhone(emailOrPhone); // or findByPhone(emailOrPhone) based on what you store in the token
+
+        } catch (Exception e) {
+            // Log the error in real app
+            return Optional.empty(); // Return empty if token is invalid or any issue occurs
+        }
+    }
 }

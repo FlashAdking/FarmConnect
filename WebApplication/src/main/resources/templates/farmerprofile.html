@@ -3,8 +3,6 @@
 
 <head>
     <script th:src="@{/js/global.js}"></script>
-
-    
     <script th:inline="javascript">
         document.addEventListener("DOMContentLoaded", () => {
             // Check if token exists
@@ -12,6 +10,11 @@
             if (!token) {
                 // No token found, redirect to login
                 window.location.href = /*[[@{/farmerlogin}]]*/ '/farmerlogin';
+            } else {
+                // Token exists, load farmer data
+                loadFarmerData();
+                loadFarmerCrops();
+                loadConfirmedDeals();
             }
         });
     </script>
@@ -71,6 +74,80 @@
             top: 50%;
             transform: translateY(-50%);
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        .deals-section {
+            margin-top: 30px;
+        }
+
+        .deal-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .deal-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .profile-image img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        #uploadImageForm {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .crop-image img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
     </style>
 </head>
 
@@ -98,7 +175,6 @@
             <a th:href="@{/crops}">Crops</a>
             <a th:href="@{/transport}">Transport</a>
             <a th:href="@{/about}">About</a>
-            <!-- <i class="fa fa-user" > <button> </button></i> -->
         </nav>
 
         <div class="dropdown-user" id="dropdownUser">
@@ -107,28 +183,11 @@
                 <a th:href="@{/profile}">
                     <i class="fas fa-user"></i>My Profile
                 </a>
-                <div id="logout-placeholder"></div>
+                <a href="#" id="logoutLink">
+                    <i class="fas fa-sign-out-alt"></i>Logout
+                </a>
             </div>
         </div>
-
-
-        <script>
-            // JavaScript to toggle the dropdown menu on click
-            document.getElementById('dropdownUser').addEventListener('click', function (event) {
-                // Prevent the click from bubbling up (so that clicking’s confined to this element)
-                event.stopPropagation();
-                this.classList.toggle('active');
-            });
-
-            // Hide the dropdown when clicking outside
-            document.addEventListener('click', function (event) {
-                var dropdown = document.getElementById('dropdownUser');
-                if (!dropdown.contains(event.target)) {
-                    dropdown.classList.remove('active');
-                }
-            });
-
-        </script>
     </header>
 
     <!-- Middle Content -->
@@ -139,61 +198,69 @@
                 <div class="profile-header">
                     <div class="profile-image-container">
                         <div class="profile-image">
-                            <i class="fa-solid fa-user"></i>
+                            <img id="farmerImage" src="/api/placeholder/100/100" alt="Farmer Profile Image">
                         </div>
                         <div class="image-upload">
-                            <label for="upload-photo">
+                            <label for="upload-photo" id="changePhotoBtn">
                                 <i class="fa-solid fa-camera"></i> Change Photo
                             </label>
-                            <input type="file" id="upload-photo" accept="image/*">
+
+                            <form id="uploadImageForm" enctype="multipart/form-data">
+                                <input type="file" id="upload-photo" name="image" accept="image/*" required>
+                                <button type="submit" class="btn btn-primary mt-2">Upload</button>
+                            </form>
                         </div>
+
                     </div>
                     <div class="profile-info">
-                        <h2>John Farmer</h2>
-                        <p><i class="fa-solid fa-location-dot"></i> Green Valley Farm, Springfield</p>
-                        <p><i class="fa-solid fa-phone"></i> (555) 123-4567</p>
-                        <p><i class="fa-solid fa-envelope"></i> john.farmer@example.com</p>
+                        <h2 id="farmerName">Loading...</h2>
+                        <p><i class="fa-solid fa-location-dot"></i> <span id="farmerAddress">Loading...</span>, <span
+                                id="farmerState">Loading...</span></p>
+                        <p><i class="fa-solid fa-phone"></i> <span id="farmerContact">Loading...</span></p>
+                        <p><i class="fa-solid fa-envelope"></i> <span id="farmerEmail">Loading...</span></p>
+                        <p><i class="fa-solid fa-ruler-combined"></i> Land: <span id="farmerLand">Loading...</span>
+                            acres</p>
                     </div>
                 </div>
 
                 <div class="profile-actions">
-                    <button class="btn edit-profile-btn"><i class="fa-solid fa-pen"></i> Edit Profile</button>
+                    <button class="btn edit-profile-btn" id="editProfileBtn"><i class="fa-solid fa-pen"></i> Edit
+                        Profile</button>
                 </div>
 
-                <!-- Edit Profile Form (initially hidden, would be shown with JavaScript in a real app) -->
-                <div class="edit-profile-form">
-                    <h3>Edit Profile</h3>
-                    <form>
-                        <div class="form-group">
-                            <label for="fullname">Full Name</label>
-                            <input type="text" id="fullname" name="fullname" placeholder="Enter your full name">
-                        </div>
-                        <div class="form-group">
-                            <label for="farm-name">Farm Name</label>
-                            <input type="text" id="farm-name" name="farm-name" placeholder="Enter your farm name">
-                        </div>
-                        <div class="form-group">
-                            <label for="location">Location</label>
-                            <input type="text" id="location" name="location" placeholder="Enter your location">
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" placeholder="Enter your email">
-                        </div>
-                        <div class="form-group">
-                            <label for="bio">Bio</label>
-                            <textarea id="bio" name="bio"
-                                placeholder="Tell us about your farming experience"></textarea>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn save-btn">Save Changes</button>
-                            <button type="button" class="btn cancel-btn">Cancel</button>
-                        </div>
-                    </form>
+                <!-- Edit Profile Modal -->
+                <div id="editProfileModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" id="closeEditProfile">&times;</span>
+                        <h3>Edit Profile</h3>
+                        <form id="editProfileForm">
+                            <div class="form-group">
+                                <label for="fullname">Full Name</label>
+                                <input type="text" id="fullname" name="fullName" placeholder="Enter your full name">
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <input type="text" id="address" name="address" placeholder="Enter your address">
+                            </div>
+                            <div class="form-group">
+                                <label for="state">State</label>
+                                <input type="text" id="state" name="state" placeholder="Enter your state">
+                            </div>
+                            <div class="form-group">
+                                <label for="landInAcre">Land in Acres</label>
+                                <input type="number" id="landInAcre" name="landInAcre"
+                                    placeholder="Enter land in acres">
+                            </div>
+                            <div class="form-group">
+                                <label for="emailOrPhone">Email/Phone (Read Only)</label>
+                                <input type="text" id="emailOrPhone" name="emailOrPhone" readonly>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn save-btn">Save Changes</button>
+                                <button type="button" class="btn cancel-btn" id="cancelEditProfile">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </section>
 
@@ -201,148 +268,164 @@
             <section class="crop-section">
                 <div class="section-header">
                     <h2>Crop Management</h2>
-                    <a th:href="@{/templates/addcrops.html}" class="btn add-crop-btn">
+                    <button class="btn add-crop-btn" id="showAddCropForm">
                         <i class="fa-solid fa-plus"></i> Add New Crop
-                    </a>
+                    </button>
                 </div>
 
-                <!-- Add Crop Form (initially hidden, would be shown with JavaScript in a real app) -->
-                <div class="add-crop-form">
-                    <h3>Add New Crop</h3>
-                    <form>
-                        <div class="form-group">
-                            <label for="crop-name">Crop Name</label>
-                            <input type="text" id="crop-name" name="crop-name" placeholder="Enter crop name">
+                <!-- Add Crop Modal -->
+                <div id="addCropModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" id="closeAddCrop">&times;</span>
+                        <h3>Add New Crop</h3>
+                        <form id="addCropForm" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label for="name">Crop Name</label>
+                                <input type="text" id="name" name="name" placeholder="Enter crop name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea id="description" name="description" placeholder="Enter crop description"
+                                    required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="price">Price (per unit)</label>
+                                <input type="number" id="price" name="price" placeholder="Enter price" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <select id="category" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Grains">Grains</option>
+                                    <option value="Vegetables">Vegetables</option>
+                                    <option value="Fruits">Fruits</option>
+                                    <option value="Dairy">Dairy</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" id="quantity" name="quantity" placeholder="Enter quantity"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="releaseDate">Release Date</label>
+                                <input type="date" id="releaseDate" name="releaseDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="productAvailable">Available</label>
+                                <select id="productAvailable" name="productAvailable" required>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="cropImage">Crop Image</label>
+                                <input type="file" id="cropImage" name="image" accept="image/*">
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn save-btn">Add Crop</button>
+                                <button type="button" class="btn cancel-btn" id="cancelAddCrop">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Edit Crop Modal -->
+                <div id="editCropModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" id="closeEditCrop">&times;</span>
+                        <h3>Edit Crop</h3>
+                        <form id="editCropForm" enctype="multipart/form-data">
+                            <input type="hidden" id="editCropId" name="cropId">
+                            <div class="form-group">
+                                <label for="editName">Crop Name</label>
+                                <input type="text" id="editName" name="name" placeholder="Enter crop name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editDescription">Description</label>
+                                <textarea id="editDescription" name="description" placeholder="Enter crop description"
+                                    required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="editPrice">Price (per unit)</label>
+                                <input type="number" id="editPrice" name="price" placeholder="Enter price" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editCategory">Category</label>
+                                <select id="editCategory" name="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="Grains">Grains</option>
+                                    <option value="Vegetables">Vegetables</option>
+                                    <option value="Fruits">Fruits</option>
+                                    <option value="Dairy">Dairy</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editQuantity">Quantity</label>
+                                <input type="number" id="editQuantity" name="quantity" placeholder="Enter quantity"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editReleaseDate">Release Date</label>
+                                <input type="date" id="editReleaseDate" name="releaseDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="editProductAvailable">Available</label>
+                                <select id="editProductAvailable" name="productAvailable" required>
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editCropImage">Crop Image (Leave empty to keep current image)</label>
+                                <input type="file" id="editCropImage" name="image" accept="image/*">
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn save-btn">Save Changes</button>
+                                <button type="button" class="btn cancel-btn" id="cancelEditCrop">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Delete Confirmation Modal -->
+                <div id="deleteCropModal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" id="closeDeleteCrop">&times;</span>
+                        <h3>Confirm Deletion</h3>
+                        <p>Are you sure you want to delete this crop? This action cannot be undone.</p>
+                        <input type="hidden" id="deleteCropId">
+                        <div class="confirmation-actions">
+                            <button class="btn delete-confirm-btn" id="confirmDeleteCrop">Yes, Delete</button>
+                            <button class="btn cancel-btn" id="cancelDeleteCrop">Cancel</button>
                         </div>
-                        <div class="form-group">
-                            <label for="crop-variety">Variety</label>
-                            <input type="text" id="crop-variety" name="crop-variety" placeholder="Enter crop variety">
-                        </div>
-                        <div class="form-group">
-                            <label for="planting-date">Planting Date</label>
-                            <input type="date" id="planting-date" name="planting-date">
-                        </div>
-                        <div class="form-group">
-                            <label for="harvest-date">Expected Harvest Date</label>
-                            <input type="date" id="harvest-date" name="harvest-date">
-                        </div>
-                        <div class="form-group">
-                            <label for="crop-area">Area (in acres)</label>
-                            <input type="number" id="crop-area" name="crop-area" placeholder="Enter area in acres">
-                        </div>
-                        <div class="form-group">
-                            <label for="crop-notes">Notes</label>
-                            <textarea id="crop-notes" name="crop-notes"
-                                placeholder="Add any additional notes"></textarea>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn save-btn">Add Crop</button>
-                            <button type="button" class="btn cancel-btn">Cancel</button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
 
                 <!-- Crop List -->
-                <div class="crop-list">
-                    <!-- Crop Item 1 -->
-                    <div class="crop-item">
-                        <div class="crop-info">
-                            <h3>Wheat</h3>
-                            <p><strong>Variety:</strong> Hard Red Winter</p>
-                            <p><strong>Planted:</strong> March 15, 2023</p>
-                            <p><strong>Expected Harvest:</strong> July 20, 2023</p>
-                            <p><strong>Area:</strong> 25 acres</p>
-                        </div>
-                        <div class="crop-actions">
-                            <button class="btn edit-btn"><i class="fa-solid fa-pen"></i> Edit</button>
-                            <button class="btn delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
-                        </div>
-                    </div>
-
-                    <!-- Crop Item 2 -->
-                    <div class="crop-item">
-                        <div class="crop-info">
-                            <h3>Corn</h3>
-                            <p><strong>Variety:</strong> Sweet Corn</p>
-                            <p><strong>Planted:</strong> April 5, 2023</p>
-                            <p><strong>Expected Harvest:</strong> August 10, 2023</p>
-                            <p><strong>Area:</strong> 15 acres</p>
-                        </div>
-                        <div class="crop-actions">
-                            <button class="btn edit-btn"><i class="fa-solid fa-pen"></i> Edit</button>
-                            <button class="btn delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
-                        </div>
-                    </div>
-
-                    <!-- Crop Item 3 -->
-                    <div class="crop-item">
-                        <div class="crop-info">
-                            <h3>Soybeans</h3>
-                            <p><strong>Variety:</strong> Roundup Ready</p>
-                            <p><strong>Planted:</strong> May 1, 2023</p>
-                            <p><strong>Expected Harvest:</strong> September 15, 2023</p>
-                            <p><strong>Area:</strong> 20 acres</p>
-                        </div>
-                        <div class="crop-actions">
-                            <button class="btn edit-btn"><i class="fa-solid fa-pen"></i> Edit</button>
-                            <button class="btn delete-btn"><i class="fa-solid fa-trash"></i> Delete</button>
-                        </div>
-                    </div>
+                <div class="crop-list" id="cropList">
+                    <!-- Crops will be dynamically loaded here -->
+                    <p class="text-center">Loading crops...</p>
                 </div>
+            </section>
 
-                <!-- Edit Crop Form (initially hidden, would be shown with JavaScript in a real app) -->
-                <div class="edit-crop-form">
-                    <h3>Edit Crop</h3>
-                    <form>
-                        <div class="form-group">
-                            <label for="edit-crop-name">Crop Name</label>
-                            <input type="text" id="edit-crop-name" name="edit-crop-name" value="Wheat">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-crop-variety">Variety</label>
-                            <input type="text" id="edit-crop-variety" name="edit-crop-variety" value="Hard Red Winter">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-planting-date">Planting Date</label>
-                            <input type="date" id="edit-planting-date" name="edit-planting-date" value="2023-03-15">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-harvest-date">Expected Harvest Date</label>
-                            <input type="date" id="edit-harvest-date" name="edit-harvest-date" value="2023-07-20">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-crop-area">Area (in acres)</label>
-                            <input type="number" id="edit-crop-area" name="edit-crop-area" value="25">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-crop-notes">Notes</label>
-                            <textarea id="edit-crop-notes"
-                                name="edit-crop-notes">Good germination rate this year. Expecting high yield.</textarea>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn save-btn">Save Changes</button>
-                            <button type="button" class="btn cancel-btn">Cancel</button>
-                        </div>
-                    </form>
+            <!-- Confirmed Deals Section -->
+            <section class="deals-section">
+                <div class="section-header">
+                    <h2>Confirmed Deals</h2>
                 </div>
-
-                <!-- Delete Confirmation Dialog (initially hidden, would be shown with JavaScript in a real app) -->
-                <div class="delete-confirmation">
-                    <div class="confirmation-content">
-                        <h3>Confirm Deletion</h3>
-                        <p>Are you sure you want to delete this crop? This action cannot be undone.</p>
-                        <div class="confirmation-actions">
-                            <button class="btn delete-confirm-btn">Yes, Delete</button>
-                            <button class="btn cancel-btn">Cancel</button>
-                        </div>
-                    </div>
+                <div class="deals-summary">
+                    <h3>Total Sales: <span id="totalSales">0</span></h3>
+                </div>
+                <div class="deals-list" id="dealsList">
+                    <!-- Deals will be dynamically loaded here -->
+                    <p class="text-center">Loading deals...</p>
                 </div>
             </section>
         </main>
     </div>
-    </div>
-
-    <script th:src="@{/js/global.js}"></script>
 
     <footer>
         <div class="footer-section">
@@ -381,6 +464,8 @@
             </div>
         </div>
     </footer>
+
+    <script th:src="@{/js/copy.js}"></script>
 </body>
 
 </html>

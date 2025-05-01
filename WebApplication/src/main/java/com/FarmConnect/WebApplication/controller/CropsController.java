@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -104,21 +106,21 @@ public class CropsController {
         return "Single crop added";
     }
 
-    @PostMapping(value = "/crops", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> addCrop(@RequestPart("crop") String cropJson, @RequestPart("image") MultipartFile imageFile) {
-        try {
-            // Use ObjectMapper to convert JSON string to Crops object
-            ObjectMapper objectMapper = new ObjectMapper();
-            Crops crop = objectMapper.readValue(cropJson, Crops.class);
-
-            Crops crop1 = cropService.addCrop(crop, imageFile);
-            return new ResponseEntity<>(crop1, HttpStatus.CREATED);
-        } catch (IOException e) {
-            return new ResponseEntity<>("Failed to process image file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @PostMapping(value = "/crops", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    public ResponseEntity<?> addCrop(@RequestPart("crop") String cropJson, @RequestPart("image") MultipartFile imageFile) {
+//        try {
+//            // Use ObjectMapper to convert JSON string to Crops object
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            Crops crop = objectMapper.readValue(cropJson, Crops.class);
+//
+//            Crops crop1 = cropService.addCrop(crop, imageFile);
+//            return new ResponseEntity<>(crop1, HttpStatus.CREATED);
+//        } catch (IOException e) {
+//            return new ResponseEntity<>("Failed to process image file: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @GetMapping("crops/addcart")
     public String getAddCartPage(){
@@ -151,5 +153,88 @@ public class CropsController {
             return "product_details";  // Returns the cropDetail.html Thymeleaf template
         }
     }
+
+    @DeleteMapping("/api/crops/{cropId}/delete")
+    public ResponseEntity<Map<String, String>> deleteCropById(@PathVariable String cropId) {
+        try {
+            cropService.deleteByID(cropId);
+            System.out.println("Crop is Deleted");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Crop deleted successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Failed to delete crop");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        }
+    }
+
+
+
+
+    @PutMapping("/api/crops/{cropId}/update")
+    public ResponseEntity<Crops> updateCropById(@PathVariable String cropId, @RequestParam Map<String, String> parameters,
+                                                @RequestParam(value = "image", required = false) MultipartFile image) throws ParseException, IOException {
+        System.out.println("Received request to update crop with ID: " + cropId);
+
+        Optional<Crops> existingCropOpt = cropService.getById(cropId);
+        if (existingCropOpt.isEmpty()) {
+            System.out.println("Crop not found for ID: " + cropId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        Crops existingCrop = existingCropOpt.get();
+        System.out.println("Found crop: " + existingCrop.getName());
+
+        // Parse and update fields
+        String dateString = parameters.get("releaseDate");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = formatter.parse(dateString);
+        existingCrop.setReleaseDate(date);
+
+        // Set other fields
+        existingCrop.setName(parameters.get("name"));
+        existingCrop.setDescription(parameters.get("description"));
+        existingCrop.setPrice(Double.parseDouble(parameters.get("price")));
+        existingCrop.setCategory(parameters.get("category"));
+        existingCrop.setQuantity(Integer.parseInt(parameters.get("quantity")));
+        existingCrop.setProductAvailable(Boolean.parseBoolean(parameters.get("productAvailable")));
+
+        // Handle image upload
+        if (image != null && !image.isEmpty()) {
+            existingCrop.setImageData(image.getBytes());
+            existingCrop.setImageType(image.getContentType());
+            System.out.println("New image uploaded for crop.");
+        }
+
+        Crops updatedCrop = cropService.addCrops(existingCrop);
+        System.out.println("Crop updated successfully: " + updatedCrop.getName());
+        return ResponseEntity.ok(updatedCrop);
+    }
+
+
+
+
+    @PostMapping(value = "api/crops/add", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> addCrop(@RequestPart("crop") String cropJson,
+                                     @RequestPart("image") MultipartFile imageFile) {
+        try {
+            // Convert JSON string to Crops object
+            ObjectMapper objectMapper = new ObjectMapper();
+            Crops crop = objectMapper.readValue(cropJson, Crops.class);
+
+            // Save crop and image
+            Crops savedCrop = cropService.addCrop(crop, imageFile);
+            return new ResponseEntity<>(savedCrop, HttpStatus.CREATED);
+
+        } catch (IOException e) {
+            return new ResponseEntity<>("Invalid crop data or image: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Internal error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
 
 }

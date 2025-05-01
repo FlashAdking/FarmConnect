@@ -980,40 +980,546 @@
         }
 
         // Fetch confirmed deals
+        // Fetch confirmed deals
+        /**
+         * Fetches and displays the confirmed deals for a wholesaler
+         * Renders a beautiful, responsive list of purchase deals from farmers
+         */
+        /**
+         * Fetches and displays the confirmed deals for a wholesaler
+         * Renders a beautiful, responsive list of purchase deals from farmers
+         */
         function fetchConfirmedDeals() {
-            fetch('/api/wholesaler/confirmed-deals')
+            // Show loading state
+            const purchasesList = document.getElementById('purchasesList');
+            purchasesList.innerHTML = `
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Loading your purchases...</p>
+        </div>
+    `;
+
+            fetch('/api/confirm-deals', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            })
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error('Failed to fetch confirmed deals');
+                        throw new Error(`Failed to fetch confirmed deals: ${response.status} ${response.statusText}`);
                     }
                     return response.json();
                 })
                 .then(deals => {
-                    const purchasesList = document.getElementById('purchasesList');
                     purchasesList.innerHTML = '';
 
-                    if (deals.length === 0) {
-                        purchasesList.innerHTML = '<p class="text-center">No purchases found.</p>';
+                    if (!deals || deals.length === 0) {
+                        purchasesList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <h3>No Purchases Found</h3>
+                        <p>You haven't made any confirmed purchases yet.</p>
+                    </div>
+                `;
                         return;
                     }
+
+                    // Sort deals by date (newest first)
+                    deals.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
 
                     deals.forEach(deal => {
                         const dealElement = document.createElement('div');
                         dealElement.classList.add('deal-card');
-                        dealElement.innerHTML = `
-                            <div><strong>Farmer:</strong> ${deal.farmerName}</div>
-                            <div><strong>Product:</strong> ${deal.productName}</div>
-                            <div><strong>Quantity:</strong> ${deal.quantity} kg</div>
-                            <div><strong>Total Price:</strong> ₹${deal.totalPrice}</div>
-                            <div><strong>Date:</strong> ${new Date(deal.date).toLocaleDateString()}</div>
+
+                        // Get farmer details with fallbacks
+                        const farmerName = deal.farmer && deal.farmer.fullName ? deal.farmer.fullName : 'Unknown Farmer';
+                        const farmerEmail = deal.farmer && deal.farmer.emailOrPhone ? deal.farmer.emailOrPhone : 'No email provided';
+                        const farmerPhone = deal.farmer && deal.farmer.phoneNumber ? deal.farmer.phoneNumber : 'No phone provided';
+
+                        // Format the date
+                        const orderDate = new Date(deal.orderDate);
+                        const formattedDate = orderDate.toLocaleDateString('en-IN', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        });
+
+                        // Format dealer ID
+                        const dealId = deal.dealId || deal._id || 'N/A';
+
+                        // Calculate total quantity and create crop details
+                        let totalQuantity = 0;
+                        let cropsHTML = '';
+
+                        if (deal.crops && deal.crops.length > 0) {
+                            cropsHTML = `
+                        <table class="crops-table">
+                            <thead>
+                                <tr>
+                                    <th>Crop</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                            deal.crops.forEach(crop => {
+                                const quantity = crop.quantity || 0;
+                                const price = crop.price || 0;
+                                const subtotal = quantity * price;
+                                totalQuantity += quantity;
+
+                                cropsHTML += `
+                            <tr>
+                                <td>${crop.name || 'Unnamed Crop'}</td>
+                                <td>${quantity} kg</td>
+                                <td>₹${price.toLocaleString('en-IN')}/kg</td>
+                                <td>₹${subtotal.toLocaleString('en-IN')}</td>
+                            </tr>
                         `;
+                            });
+
+                            cropsHTML += `
+                            </tbody>
+                        </table>
+                    `;
+                        } else {
+                            cropsHTML = '<div class="no-crops">No crop details available</div>';
+                        }
+
+                        // Determine payment method
+                        let paymentMethod = 'Other';
+                        let paymentIcon = '';
+
+                        if (deal.cashOnDelivery) {
+                            paymentMethod = 'Cash on Delivery';
+                            paymentIcon = 'cash-icon';
+                        } else if (deal.upi) {
+                            paymentMethod = 'UPI';
+                            paymentIcon = 'upi-icon';
+                        }
+
+                        // Format locations
+                        const pickupLocation = deal.pickupLocation || 'Not specified';
+                        const deliveryLocation = deal.deliveryLocation || 'Not specified';
+
+                        // Format price
+                        const totalPrice = deal.totalPrice ? `₹${deal.totalPrice.toLocaleString('en-IN')}` : 'N/A';
+
+                        // Build the HTML
+                        dealElement.innerHTML = `
+                    <div class="deal-header">
+                        <div class="deal-date">
+                            <span class="date-icon"></span>
+                            <span class="date-text">${formattedDate}</span>
+                        </div>
+                        <div class="deal-id">
+                            <span>ID: ${dealId}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="deal-info">
+                        <div class="info-section">
+                            <h3 class="section-title">Farmer Details</h3>
+                            <div class="farmer-details">
+                                <div class="farmer-name">${farmerName}</div>
+                                <div class="farmer-contact">
+                                    <div class="contact-item">
+                                        <span class="contact-icon">📧</span>
+                                        ${farmerEmail}
+                                    </div>
+                                    <div class="contact-item">
+                                        <span class="contact-icon">📱</span>
+                                        ${farmerPhone}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h3 class="section-title">Location</h3>
+                            <div class="location-details">
+                                <div><strong>Pickup:</strong> ${pickupLocation}</div>
+                                <div><strong>Delivery:</strong> ${deliveryLocation}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-section payment-section">
+                            <h3 class="section-title">Payment</h3>
+                            <div class="payment-details ${paymentIcon}">
+                                ${paymentMethod}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="crops-container">
+                        <h3 class="section-title">Products</h3>
+                        <div class="crops-list">
+                            ${cropsHTML}
+                        </div>
+                    </div>
+                    
+                    <div class="deal-summary">
+                        <div class="summary-item">
+                            <span class="summary-label">Total Quantity:</span>
+                            <span class="summary-value">${totalQuantity} kg</span>
+                        </div>
+                        <div class="summary-item total-price">
+                            <span class="summary-label">Total Price:</span>
+                            <span class="summary-value">${totalPrice}</span>
+                        </div>
+                    </div>
+                `;
+
                         purchasesList.appendChild(dealElement);
                     });
                 })
                 .catch(error => {
                     console.error('Error fetching confirmed deals:', error);
+                    purchasesList.innerHTML = `
+                <div class="error-state">
+                    <div class="error-icon">⚠️</div>
+                    <h3>Error Loading Purchases</h3>
+                    <p>${error.message || 'Please try again later'}</p>
+                    <button class="retry-button" onclick="fetchConfirmedDeals()">Try Again</button>
+                </div>
+            `;
                 });
         }
+
+        /**
+         * Adds styling for the deal cards and related elements
+         */
+        function addDealCardStyles() {
+            // Only add styles if they don't already exist
+            if (!document.getElementById('deal-card-styles')) {
+                const styleSheet = document.createElement('style');
+                styleSheet.id = 'deal-card-styles';
+                styleSheet.innerHTML = `
+            /* Main container styles */
+            #purchasesList {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                color: #333;
+                margin: 0 auto;
+                max-width: 1200px;
+            }
+            
+            /* Deal Card Styles */
+            .deal-card {
+                border-radius: 12px;
+                border: 1px solid #e0e0e0;
+                background-color: #fff;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.08);
+                margin-bottom: 24px;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+                overflow: hidden;
+            }
+            
+            .deal-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 15px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.08);
+            }
+            
+            /* Deal Header */
+            .deal-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 16px 20px;
+                background: linear-gradient(to right, #f8f9fa, #ffffff);
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .deal-date {
+                display: flex;
+                align-items: center;
+                font-weight: 500;
+            }
+            
+            .date-icon:before {
+                content: "📅";
+                margin-right: 8px;
+            }
+            
+            .deal-id {
+                font-size: 0.9rem;
+                color: #6b7280;
+            }
+            
+            /* Deal Info Section */
+            .deal-info {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 16px;
+                padding: 16px 20px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .section-title {
+                font-size: 1rem;
+                font-weight: 600;
+                margin: 0 0 8px 0;
+                color: #4b5563;
+            }
+            
+            .info-section {
+                padding: 8px;
+            }
+            
+            .farmer-details {
+                padding: 4px 0;
+            }
+            
+            .farmer-name {
+                font-weight: 500;
+                font-size: 1.05rem;
+                margin-bottom: 8px;
+            }
+            
+            .farmer-contact {
+                color: #6b7280;
+                font-size: 0.9rem;
+            }
+
+            .contact-item {
+                display: flex;
+                align-items: center;
+                margin: 4px 0;
+            }
+
+            .contact-icon {
+                margin-right: 8px;
+                font-size: 1rem;
+            }
+            
+            .location-details {
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+            
+            .payment-details {
+                display: inline-block;
+                padding: 6px 12px;
+                border-radius: 16px;
+                background-color: #f3f4f6;
+                font-weight: 500;
+                font-size: 0.9rem;
+            }
+            
+            .payment-details.cash-icon:before {
+                content: "💵";
+                margin-right: 6px;
+            }
+            
+            .payment-details.upi-icon:before {
+                content: "💳";
+                margin-right: 6px;
+            }
+            
+            /* Crops Section */
+            .crops-container {
+                padding: 16px 20px;
+                border-bottom: 1px solid #f0f0f0;
+            }
+            
+            .crops-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 8px;
+                font-size: 0.95rem;
+            }
+            
+            .crops-table th {
+                background-color: #f9fafb;
+                text-align: left;
+                padding: 10px;
+                font-weight: 600;
+                color: #4b5563;
+                border-bottom: 2px solid #e5e7eb;
+            }
+            
+            .crops-table td {
+                padding: 10px;
+                border-bottom: 1px solid #e5e7eb;
+            }
+            
+            .crops-table tbody tr:last-child td {
+                border-bottom: none;
+            }
+            
+            .crops-table tbody tr:hover {
+                background-color: #f9fafb;
+            }
+            
+            .no-crops {
+                color: #6b7280;
+                font-style: italic;
+                padding: 12px 0;
+            }
+            
+            /* Deal Summary */
+            .deal-summary {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                padding: 16px 20px;
+                background-color: #f9fafb;
+            }
+            
+            .summary-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .summary-label {
+                font-weight: 600;
+                color: #4b5563;
+            }
+            
+            .summary-value {
+                font-weight: 500;
+            }
+            
+            .total-price .summary-value {
+                font-weight: 700;
+                color: #047857;
+                font-size: 1.1rem;
+            }
+            
+            /* Loading State */
+            .loading-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 40px 0;
+                color: #6b7280;
+            }
+            
+            .loading-spinner {
+                width: 40px;
+                height: 40px;
+                border: 3px solid #e5e7eb;
+                border-radius: 50%;
+                border-top-color: #3b82f6;
+                animation: spin 1s linear infinite;
+                margin-bottom: 16px;
+            }
+            
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+            
+            /* Empty State */
+            .empty-state {
+                text-align: center;
+                padding: 40px 0;
+                color: #6b7280;
+            }
+            
+            .empty-icon {
+                font-size: 3rem;
+                margin-bottom: 16px;
+                opacity: 0.7;
+            }
+            
+            /* Error State */
+            .error-state {
+                text-align: center;
+                padding: 40px 0;
+                color: #b91c1c;
+            }
+            
+            .error-icon {
+                font-size: 3rem;
+                margin-bottom: 16px;
+            }
+            
+            .retry-button {
+                margin-top: 16px;
+                padding: 8px 16px;
+                background-color: #ef4444;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+            
+            .retry-button:hover {
+                background-color: #dc2626;
+            }
+            
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .deal-info {
+                    grid-template-columns: 1fr;
+                }
+                
+                .crops-table {
+                    font-size: 0.85rem;
+                }
+                
+                .deal-summary {
+                    flex-direction: column;
+                    gap: 8px;
+                }
+            }
+        `;
+                document.head.appendChild(styleSheet);
+            }
+        }
+
+        // Initialize the dealer display
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add styles first
+            addDealCardStyles();
+
+            // Then fetch the data
+            fetchConfirmedDeals();
+
+            // Add refresh button if needed
+            const container = document.getElementById('purchasesList')?.parentElement;
+            if (container && !document.querySelector('.refresh-button')) {
+                const refreshButton = document.createElement('button');
+                refreshButton.className = 'refresh-button';
+                refreshButton.innerHTML = 'Refresh Deals';
+                refreshButton.onclick = fetchConfirmedDeals;
+
+                container.insertBefore(refreshButton, container.firstChild);
+
+                // Add button style
+                const buttonStyle = document.createElement('style');
+                buttonStyle.innerHTML = `
+            .refresh-button {
+                margin-bottom: 16px;
+                padding: 8px 16px;
+                background-color: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background-color 0.2s;
+                align-self: flex-end;
+            }
+            
+            .refresh-button:hover {
+                background-color: #2563eb;
+            }
+        `;
+                document.head.appendChild(buttonStyle);
+            }
+        });
 
         // Update wholesaler profile
         function updateWholesalerProfile(updatedProfile) {

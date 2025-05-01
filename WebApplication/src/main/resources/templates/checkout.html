@@ -2,7 +2,6 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-
   <script th:src="@{/js/global.js}"></script>
 
   <script th:inline="javascript">
@@ -18,7 +17,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FarmConnect Shopping Cart</title>
-  <!-- <link rel="stylesheet" href="../static/css/checkout.css" /> -->
   <link rel="stylesheet" th:href="@{/css/checkout.css}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -140,18 +138,7 @@
         <div class="checkout-main flex-1 bg-white rounded-xl shadow-lg p-6">
           <div class="section-title text-2xl font-bold text-gray-800 mb-6">Your Cart</div>
           <div class="cart-items">
-            <div class="cart-item flex items-center p-4 bg-gray-50 rounded-lg mb-4">
-              <img src="assets/images/sample-product.jpg" alt="Product"
-                class="w-20 h-20 object-cover rounded-md mr-4" />
-              <div class="item-details flex-1">
-                <h3 class="text-lg font-semibold text-gray-800">Wheat Seeds</h3>
-                <p class="text-sm text-gray-600">High yield, 1 kg</p>
-                <span class="price text-green-700 font-bold">₹150</span>
-              </div>
-              <button class="remove-item text-red-500 hover:text-red-700">
-                <i class="fa fa-trash text-lg"></i>
-              </button>
-            </div>
+            <!-- Cart items will be dynamically inserted here -->
           </div>
 
           <div class="section-title text-2xl font-bold text-gray-800 mb-6 mt-8">Shipping Details</div>
@@ -211,11 +198,11 @@
             <h2 class="text-xl font-bold text-gray-800 mb-6">Order Summary</h2>
             <div class="summary-item flex justify-between text-gray-600 mb-4">
               <span>Subtotal</span>
-              <span>₹150</span>
+              <span id="subtotal">₹0</span>
             </div>
             <div class="summary-item flex justify-between text-gray-600 mb-4">
               <span>Shipping</span>
-              <span>₹30</span>
+              <span id="shipping">₹0</span>
             </div>
             <div class="promo-code flex mb-6">
               <input type="text" placeholder="Promo code" class="flex-1 p-3 border border-gray-300 rounded-l-md" />
@@ -223,7 +210,7 @@
             </div>
             <div class="summary-total flex justify-between text-lg font-bold text-gray-800 border-t pt-4">
               <span>Total</span>
-              <span>₹180</span>
+              <span id="total">₹0</span>
             </div>
             <button class="place-order-btn w-full mt-6 p-3 bg-green-700 text-white rounded-md font-semibold">Place
               Order</button>
@@ -279,11 +266,11 @@
   <script th:inline="javascript">
     // Cart loading functionality
     document.addEventListener("DOMContentLoaded", () => {
-      // First load cart items from localStorage
+      // Load cart items from localStorage
       const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
       const cartContainer = document.querySelector(".cart-items");
 
-      // Clear any existing items (like the sample wheat seeds)
+      // Clear existing items
       cartContainer.innerHTML = '';
 
       // Render cart items
@@ -295,13 +282,31 @@
         `;
       } else {
         cartItems.forEach(item => {
+          // Determine the correct image path
+          let imgSrc = '/img/default-crop.jpg';
+
+          // Check if imageName exists (from older cart format)
+          if (item.imageName) {
+            imgSrc = `/api/crops/image/${item.imageName}`;
+          }
+          // Check if we have a direct image path
+          else if (item.image && item.image.trim() !== "" && !item.image.includes('default-crop')) {
+            imgSrc = item.image;
+          }
+          // Fallback to cropId-based image path
+          else if (item.cropId) {
+            imgSrc = `/crops/${item.cropId}/image`;
+          }
+
           const div = document.createElement("div");
           div.className = "cart-item flex items-center p-4 bg-gray-50 rounded-lg mb-4";
           div.innerHTML = `
-            <img src="/api/crops/image/${item.imageName}" class="w-20 h-20 object-cover rounded-md mr-4" />
+            <img src="${imgSrc}" alt="${item.name}" class="w-20 h-20 object-cover rounded-md mr-4" 
+                 onerror="this.onerror=null;this.src='/img/default-crop.jpg';" />
             <div class="item-details flex-1">
               <h3 class="text-lg font-semibold text-gray-800">${item.name}</h3>
-              <p class="text-sm text-gray-600">${item.description}</p>
+              <p class="text-sm text-gray-600">${item.description || 'No description available'}</p>
+              <p class="text-sm text-gray-600">Quantity: ${item.quantity || 1}</p>
               <span class="price text-green-700 font-bold">₹${item.price}</span>
             </div>
             <button class="remove-item text-red-500 hover:text-red-700" data-cropid="${item.cropId}">
@@ -336,16 +341,22 @@
 
     // Function to update order summary
     function updateOrderSummary(cartItems) {
-      const subtotal = cartItems.reduce((sum, crop) => sum + crop.price, 0);
+      // Calculate total by considering quantity
+      const subtotal = cartItems.reduce((sum, item) => {
+        const price = parseFloat(item.price) || 0;
+        const quantity = item.quantity || 1;
+        return sum + (price * quantity);
+      }, 0);
+
       const shipping = subtotal > 0 ? 30 : 0;
       const total = subtotal + shipping;
 
-      document.querySelector('.summary-item:nth-child(1) span:last-child').textContent = `₹${subtotal}`;
-      document.querySelector('.summary-item:nth-child(2) span:last-child').textContent = `₹${shipping}`;
-      document.querySelector('.summary-total span:last-child').textContent = `₹${total}`;
+      document.getElementById('subtotal').textContent = `₹${subtotal}`;
+      document.getElementById('shipping').textContent = `₹${shipping}`;
+      document.getElementById('total').textContent = `₹${total}`;
     }
 
-    // Keep your existing place-order-btn event listener
+    // Place Order button functionality
     document.querySelector(".place-order-btn").addEventListener("click", async () => {
       const token = localStorage.getItem('jwtToken');
       if (!token) {
@@ -353,102 +364,97 @@
         return;
       }
 
-      // Rest of your existing code for order placement...
-      // [Your existing code continues here...]
-    });
-  </script>
-
-
-
-
-
-  <script >
-    document.addEventListener("DOMContentLoaded", () => {
       const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-      const cartContainer = document.querySelector(".cart-items");
 
-      // Render cart
-      cartItems.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "cart-item flex items-center p-4 bg-gray-50 rounded-lg mb-4";
-        div.innerHTML = `
-                <img src="/api/crops/image/${item.imageName}" class="w-20 h-20 object-cover rounded-md mr-4" />
-                <div class="item-details flex-1">
-                    <h3 class="text-lg font-semibold text-gray-800">${item.name}</h3>
-                    <p class="text-sm text-gray-600">${item.description}</p>
-                    <span class="price text-green-700 font-bold">₹${item.price}</span>
-                </div>
-            `;
-        cartContainer.appendChild(div);
-      });
-
-      // Place order logic
-      document.querySelector(".place-order-btn").addEventListener("click", async () => {
-        const token = localStorage.getItem('jwtToken');
-        if (!token) {
-          window.location.href = '/wholesalerlogin';
-          return;
-        }
-
-        if (!cartItems.length) {
-          alert("Cart is empty");
-          return;
-        }
-
-        const name = document.querySelector("input[placeholder='Enter your name']").value;
-        const phone = document.querySelector("input[placeholder='Enter mobile number']").value;
-        const address = document.querySelector("input[placeholder='Address']").value;
-        const city = document.querySelector("input[placeholder='City']").value;
-        const paymentMethod = document.querySelector("input[name='payment']:checked").id;
-
-        const deliveryLocation = `${address}, ${city}`;
-        const pickupLocation = "Warehouse"; // You can later allow user to pick this
-
-        const totalPrice = cartItems.reduce((sum, crop) => sum + crop.price, 0);
-
-        const confirmedDeal = {
-          pickupLocation,
-          deliveryLocation,
-          crops: cartItems.map(crop => ({
-            cropId: crop.cropId,
-            name: crop.name,
-            price: crop.price,
-            farmerId: crop.farmerId,
-            quantity: crop.quantity,
-            description: crop.description
-          })),
-          totalPrice,
-          orderDate: new Date(),
-          cashOnDelivery: paymentMethod === 'cod',
-          upi: paymentMethod === 'upi'
-        };
-
-        try {
-          const response = await fetch('/Deals/save', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify([confirmedDeal])
-          });
-
-          if (!response.ok) {
-            throw new Error('Order placement failed.');
+      const selectedCrop = JSON.parse(localStorage.getItem('selectedCrop'));
+      if (selectedCrop) {
+        for (let item of cartItems) {
+          if (!item.cropId && item.name === selectedCrop.name) {
+            item.cropId = selectedCrop.cropId;
           }
-
-          const result = await response.json();
-          alert("Order placed successfully!");
-          localStorage.removeItem('cartItems');
-          window.location.href = '/order-success'; // Redirect to success page
-        } catch (err) {
-          console.error("Error placing order:", err);
-          alert("Something went wrong. Please try again.");
         }
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      }
+
+      if (!cartItems.length) {
+        alert("Cart is empty");
+        return;
+      }
+
+      // Get shipping details
+      const name = document.querySelector("input[placeholder='Enter your name']").value;
+      const phone = document.querySelector("input[placeholder='Enter mobile number']").value;
+      const address = document.querySelector("input[placeholder='Address']").value;
+      const city = document.querySelector("input[placeholder='City']").value;
+
+      // Validate form fields
+      if (!name || !phone || !address || !city) {
+        alert("Please fill in all shipping details");
+        return;
+      }
+
+      const paymentMethod = document.querySelector("input[name='payment']:checked").id;
+      const deliveryLocation = `${address}, ${city}`;
+      const pickupLocation = "Warehouse"; // Default pickup location
+
+      // Calculate total price with quantities
+      const totalPrice = cartItems.reduce((sum, item) => {
+        const price = parseFloat(item.price) || 0;
+        const quantity = item.quantity || 1;
+        return sum + (price * quantity);
+      }, 0);
+
+      // Ensure all items have quantities
+      const processedCartItems = cartItems.map(item => {
+        if (!item.cropId) {
+          throw new Error(`Cart item ${item.name} has no cropId`);
+        }
+        return {
+          cropId: item.cropId,
+          name: item.name,
+          price: parseFloat(item.price) || 0,
+          farmerId: item.farmerId,
+          quantity: item.quantity || 1,
+          description: item.description || ''
+        };
       });
+
+
+      const confirmedDeal = {
+        pickupLocation,
+        deliveryLocation,
+        crops: processedCartItems,
+        totalPrice,
+        orderDate: new Date(),
+        cashOnDelivery: paymentMethod === 'cod',
+        upi: paymentMethod === 'upi'
+      };
+
+      try {
+        const response = await fetch('/Deals/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify([confirmedDeal])
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Order placement failed');
+        }
+
+        const result = await response.json();
+        alert("Order placed successfully!");
+        localStorage.removeItem('cartItems');
+        window.location.href = '/order-success'; // Redirect to success page
+      } catch (err) {
+        console.error("Error placing order:", err);
+        alert("Error: " + (err.message || "Something went wrong. Please try again."));
+      }
     });
   </script>
-
 </body>
 
 </html>
