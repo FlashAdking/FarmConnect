@@ -1,0 +1,78 @@
+/* Success Page Styles */
+
+.success-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 40px 20px;
+}
+
+.success-card {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    padding: 60px 40px;
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.checkmark-circle {
+    width: 120px;
+    height: 120px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 40px;
+    color: white;
+    font-size: 60px;
+    box-shadow: 0 10px 20px rgba(46, 125, 50, 0.2);
+}
+
+.success-card h1 {
+    font-size: 2.5rem;
+    color: var(--text-color);
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.success-card p {
+    color: #666;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.success-card p.small {
+    font-size: 0.95rem;
+    color: #888;
+    margin-top: 20px;
+}
+
+.btn-home {
+    background: var(--primary-color);
+    color: white;
+    padding: 15px 40px;
+    border-radius: 30px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 40px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    transition: all 0.3s;
+}
+
+.btn-home:hover {
+    background: #1b5e20;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}

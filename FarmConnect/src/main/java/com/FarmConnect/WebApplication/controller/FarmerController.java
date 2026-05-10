@@ -8,6 +8,7 @@ import com.FarmConnect.WebApplication.model.Farmer;
 import com.FarmConnect.WebApplication.service.CropService;
 import com.FarmConnect.WebApplication.service.DealsService;
 import com.FarmConnect.WebApplication.service.FarmerService;
+import com.FarmConnect.WebApplication.service.ImageUploadService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,29 +39,21 @@ public class FarmerController {
     @Autowired
     DealsService dealsService;
 
+    @Autowired
+    ImageUploadService imageUploadService;
+
     // Register a new farmer
     @PostMapping("/Signupfarmer")
     public ResponseEntity<?> registerFarmer(@Valid @RequestBody Farmer farmer) {
         try {
-            if (farmer.getFarmerImage() == null || farmer.getFarmerImage().length == 0) {
-                InputStream is = getClass().getResourceAsStream("/static/img/default-farmer.jpg");
-                if (is != null) {
-                    byte[] defaultImage = IOUtils.toByteArray(is);
-                    farmer.setFarmerImage(defaultImage);
-                    farmer.setImageName("default-farmer.jpg");
-                    farmer.setImageType("image/jpeg");
-                } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body(Map.of("error", "Default image not found."));
-                }
+            // Default image URL if needed, or leave null
+            if (farmer.getImageUrl() == null) {
+                farmer.setImageUrl("https://res.cloudinary.com/dbgyjjfdw/image/upload/v1/default-farmer.jpg");
             }
             farmerService.RegisterFarmer(farmer);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", e.getMessage()));
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error loading default image."));
         }
     }
 
@@ -124,12 +117,11 @@ public class FarmerController {
                 return ResponseEntity.badRequest().body(Map.of("error", "No image uploaded"));
             }
 
-            farmer.setFarmerImage(image.getBytes());
-            farmer.setImageName(image.getOriginalFilename());
-            farmer.setImageType(image.getContentType());
+            String imageUrl = imageUploadService.uploadImage(image);
+            farmer.setImageUrl(imageUrl);
 
             farmerService.updateFarmer(farmer);
-            return ResponseEntity.ok(Map.of("message", "Image uploaded successfully"));
+            return ResponseEntity.ok(Map.of("message", "Image uploaded successfully", "imageUrl", imageUrl));
 
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -138,24 +130,13 @@ public class FarmerController {
     }
 
     // Get farmer image
+    // No longer need to serve images from the backend
+    /*
     @GetMapping("/farmers/{uniqueId}/image")
     public ResponseEntity<byte[]> getFarmerImage(@PathVariable("uniqueId") String uniqueId) {
-        Optional<Farmer> optionalFarmer = farmerService.findByUniqueId(uniqueId);
-
-        if (optionalFarmer.isPresent()) {
-            Farmer farmer = optionalFarmer.get();
-            String imageType = farmer.getImageType();
-            if (imageType == null || imageType.isEmpty()) {
-                imageType = "image/jpeg";
-            }
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(imageType))
-                    .body(farmer.getFarmerImage());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        ...
     }
+    */
 
     // Get all farmers
     @GetMapping("/farmers")

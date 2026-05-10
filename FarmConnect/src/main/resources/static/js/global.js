@@ -26,12 +26,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (payload.exp && payload.exp < currentTime) {
                 console.log("Token expired");
                 localStorage.removeItem('jwtToken');
+                document.cookie = "jwtToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
                 return false;
             }
             return true;
         } catch (error) {
             console.error("Invalid token format:", error);
             localStorage.removeItem('jwtToken');
+            document.cookie = "jwtToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
             return false;
         }
     }
@@ -229,6 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
             target.appendChild(logoutButton);
             logoutButton.addEventListener("click", () => {
                 localStorage.removeItem("jwtToken");
+                document.cookie = "jwtToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
                 window.location.href = "/";
             });
         }
@@ -250,12 +253,51 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Update navbar with user info if logged in
+    function updateNavbar() {
+        if (isTokenValid()) {
+            const token = localStorage.getItem('jwtToken');
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const username = payload.sub; // or payload.name if available
+                
+                // Update dropdown user icon/name if it exists
+                const dropdownUser = document.getElementById('dropdownUser');
+                if (dropdownUser) {
+                    const userIcon = dropdownUser.querySelector('i.fa-user');
+                    if (userIcon) {
+                        // Optionally add username next to icon
+                        // userIcon.insertAdjacentHTML('afterend', ` <span style="margin-left: 5px; font-weight: bold;">${username}</span>`);
+                    }
+                }
+                
+                // Show Logout button in dropdown
+                const logoutPlaceholder = document.getElementById('logout-placeholder');
+                if (logoutPlaceholder && !document.getElementById('logout-btn')) {
+                    injectLogoutButton();
+                }
+                
+                // Hide Login/Register buttons in hero section if they exist
+                const loginHero = document.querySelector('.hero .dropdown');
+                if (loginHero) {
+                    // loginHero.style.display = 'none'; // Optional
+                }
+            } catch (e) {
+                console.error("Error updating navbar:", e);
+            }
+        }
+    }
+
+    // Call updateNavbar on load
+    updateNavbar();
+
     // Using a MutationObserver to catch dynamically added content.
     const observer = new MutationObserver(() => {
         if (isTokenValid()) {
             addTokenToLinks();
             addTokenToForms();
             injectLogoutButton();
+            updateNavbar();
         }
     });
     observer.observe(document.body, { childList: true, subtree: true });

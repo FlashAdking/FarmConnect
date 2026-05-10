@@ -29,10 +29,7 @@ public class Farmer {
     private String state;
     private float landInAcre;
 
-    @Lob
-    private byte[] farmerImage;
-    private String imageName;
-    private String imageType;
+    private String imageUrl;
 
 
     @DBRef

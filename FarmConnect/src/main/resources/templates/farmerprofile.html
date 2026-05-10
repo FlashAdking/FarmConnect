@@ -2,190 +2,41 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <script th:src="@{/js/global.js}"></script>
-    <script th:inline="javascript">
-        document.addEventListener("DOMContentLoaded", () => {
-            // Check if token exists
-            const token = localStorage.getItem('jwtToken');
-            if (!token) {
-                // No token found, redirect to login
-                window.location.href = /*[[@{/farmerlogin}]]*/ '/farmerlogin';
-            } else {
-                // Token exists, load farmer data
-                loadFarmerData();
-                loadFarmerCrops();
-                loadConfirmedDeals();
-            }
-        });
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farmer profile</title>
+    <title>My Profile - FarmConnect</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/css/farmerprofile.css}">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .search-container {
-            background-color: white;
-            border-radius: 50px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            padding: 10px;
-            max-width: 500px;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .search-container:hover {
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
-
-        .form-control.search-input {
-            border: none;
-            background: transparent;
-            padding-left: 20px;
-            font-size: 1rem;
-            height: 50px;
-        }
-
-        .form-control.search-input:focus {
-            box-shadow: none;
-            outline: none;
-        }
-
-        .btn-search {
-            background-color: black;
-            color: white;
-            border-radius: 50px;
-            padding: 10px 20px;
-            border: none;
-            transition: all 0.3s ease;
-        }
-
-        .btn-search:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-
-        .search-icon {
-            color: #6c757d;
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-            padding-top: 60px;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-            border-radius: 10px;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-        }
-
-        .deals-section {
-            margin-top: 30px;
-        }
-
-        .deal-item {
-            background-color: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .deal-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        .profile-image img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
-        #uploadImageForm {
-            display: none;
-            margin-top: 10px;
-        }
-
-        .crop-image img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script th:src="@{/js/global.js}"></script>
+    <script th:src="@{/js/farmerprofile.js}"></script>
 </head>
 
-<body>
+<body th:data-login-url="@{/farmerlogin}">
     <header>
-        <div class="logo">
-            <i class="fa fa-home"></i>
-        </div>
-        <div class="search-container position-relative">
-            <form class="d-flex align-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="search-icon feather feather-search">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input class="form-control search-input ps-5" type="search" placeholder="Search anything..."
-                    aria-label="Search">
-                <button class="btn btn-search ms-2" type="submit">Search</button>
-            </form>
-        </div>
-        <nav>
-            <a th:href="@{/}">Home</a>
-            <a th:href="@{/farmers}">Farmers</a>
-            <a th:href="@{/crops}">Crops</a>
-            <a th:href="@{/transport}">Transport</a>
-            <a th:href="@{/about}">About</a>
-        </nav>
+        <div class="nav-container">
+            <a th:href="@{/}" class="logo">
+                <i class="fa fa-tractor"></i>
+                <span class="logo-text">FarmConnect</span>
+            </a>
+            
+            <nav>
+                <a th:href="@{/}">Home</a>
+                <a th:href="@{/farmers}">Farmers</a>
+                <a th:href="@{/crops}">Crops</a>
+                <a th:href="@{/transport}">Transport</a>
+                <a th:href="@{/about}">About</a>
+            </nav>
 
-        <div class="dropdown-user" id="dropdownUser">
-            <i class="fa fa-user"></i>
-            <div class="dropdown-user-menu">
-                <a th:href="@{/profile}">
-                    <i class="fas fa-user"></i>My Profile
-                </a>
-                <a href="#" id="logoutLink">
-                    <i class="fas fa-sign-out-alt"></i>Logout
-                </a>
+            <div class="dropdown-user" id="dropdownUser">
+                <i class="fa fa-user-circle"></i>
+                <div class="dropdown-user-menu">
+                    <a th:href="@{/profile}">
+                        <i class="fas fa-user"></i> My Profile
+                    </a>
+                    <div id="logout-placeholder"></div>
+                </div>
             </div>
         </div>
     </header>
@@ -428,44 +279,51 @@
     </div>
 
     <footer>
-        <div class="footer-section">
-            <h3>Exclusive</h3>
-            <p>Subscribe</p>
-            <input type="email" placeholder="Enter your email">
-        </div>
-        <div class="footer-section">
-            <h3>Support</h3>
-            <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
-            <p>exclusive@gmail.com</p>
-            <p>+88015-88888-9999</p>
-        </div>
-        <div class="footer-section">
-            <h3>Account</h3>
-            <p>My Account</p>
-            <p>Login / Register</p>
-            <p>Cart</p>
-            <p>Wishlist</p>
-            <p>Shop</p>
-        </div>
-        <div class="footer-section">
-            <h3>Quick Link</h3>
-            <p>Privacy Policy</p>
-            <p>Terms of Use</p>
-            <p>FAQ</p>
-            <p>Contact</p>
-        </div>
-        <div class="footer-section">
-            <h3>Download App</h3>
-            <p>Save $3 with App New User Only</p>
-            <img src="qr-code.png" alt="QR Code">
-            <div class="app-icons">
-                <i class="fab fa-google-play"></i>
-                <i class="fab fa-apple"></i>
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h3>Exclusive</h3>
+                <p>Subscribe</p>
+                <form th:action="@{/subscribe}" method="POST" class="subscribe-form">
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <button type="submit" class="subscribe-btn">Subscribe</button>
+                </form>
             </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
+                <p>exclusive@gmail.com</p>
+                <p>+88015-88888-9999</p>
+            </div>
+            <div class="footer-section">
+                <h3>Account</h3>
+                <a th:href="@{/profile}">My Account</a>
+                <a th:href="@{/farmerlogin}">Login / Register</a>
+                <a th:href="@{/cart}">Cart</a>
+                <a th:href="@{/wishlist}">Wishlist</a>
+                <a th:href="@{/crops}">Shop</a>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Link</h3>
+                <a th:href="@{/privacy}">Privacy Policy</a>
+                <a th:href="@{/terms}">Terms of Use</a>
+                <a th:href="@{/faq}">FAQ</a>
+                <a th:href="@{/contact}">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>Download App</h3>
+                <p>Save $3 with App New User Only</p>
+                <div class="app-icons">
+                    <a href="#" class="app-store"><i class="fab fa-google-play"></i></a>
+                    <a href="#" class="play-store"><i class="fab fa-apple"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © Copyright Rimel 2022. All rights reserved.
         </div>
     </footer>
 
-    <script th:src="@{/js/copy.js}"></script>
+    <!-- Footer included in global pattern -->
 </body>
 
 </html>

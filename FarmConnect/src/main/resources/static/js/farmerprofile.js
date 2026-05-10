@@ -43,9 +43,9 @@ function loadFarmerData() {
             document.getElementById('farmerEmail').textContent = data.emailOrPhone || 'N/A';
             document.getElementById('farmerLand').textContent = data.landInAcre || 'N/A';
 
-            // Load farmer image with cache-busting - fixed path
-            if (data.uniqueId) {
-                document.getElementById('farmerImage').src = `/farmers/${data.uniqueId}/image?${new Date().getTime()}`;
+            // Load farmer image from Cloudinary URL
+            if (data.imageUrl) {
+                document.getElementById('farmerImage').src = data.imageUrl;
             }
 
             // Pre-fill edit profile form
@@ -114,7 +114,7 @@ function loadFarmerCrops() {
 
             let cropListHtml = '';
             crops.forEach(crop => {
-                const imageUrl = `/crops/${crop.cropId}/image?${new Date().getTime()}`;
+                const imageUrl = crop.imageUrl || '/img/default-crop.jpg';
                 console.log("Crop ID for Edit button:", crop.cropId);
 
                 cropListHtml += `
@@ -182,39 +182,57 @@ function loadConfirmedDeals() {
             deals.forEach(deal => {
                 if (!deal.dealId) return;
 
-                const price = parseFloat(deal.price) || 0;
-                const quantity = parseInt(deal.quantity) || 0;
-                const dealTotal = price * quantity;
+                const orderDate = deal.orderDate ? new Date(deal.orderDate) : null;
+                const formattedDate = orderDate && !isNaN(orderDate.getTime())
+                    ? orderDate.toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })
+                    : 'N/A';
 
-                totalSalesAmount += dealTotal;
+                let cropsHtml = '';
+                if (deal.crops && Array.isArray(deal.crops)) {
+                    deal.crops.forEach(crop => {
+                        const cropName = crop.name || 'N/A';
+                        const cropPrice = parseFloat(crop.price) || 0;
+                        const cropQuantity = parseInt(crop.quantity) || 0;
+                        const cropTotal = cropPrice * cropQuantity;
+                        cropsHtml += `<div class="crop-item">
+                              <p><strong>Crop:</strong> ${cropName}</p>
+                              <p><strong>Price:</strong> ₹${cropPrice}</p>
+                              <p><strong>Quantity:</strong> ${cropQuantity}</p>
+                              <p><strong>Total:</strong> ₹${cropTotal}</p>
+                            </div>`;
+                    });
+                }
 
-                const orderDate = deal.orderDate ? new Date(deal.orderDate) :
-                    deal.releaseDate ? new Date(deal.releaseDate) : null;
+                totalSalesAmount += parseFloat(deal.totalPrice) || 0;
 
-                const formattedDate = orderDate && !isNaN(orderDate.getTime()) ?
-                    orderDate.toLocaleDateString('en-IN', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    }) : 'N/A';
+                let paymentMethod = '';
+                if (deal.cashOnDelivery && deal.upi) {
+                    paymentMethod = 'Cash on Delivery / UPI';
+                } else if (deal.cashOnDelivery) {
+                    paymentMethod = 'Cash on Delivery';
+                } else if (deal.upi) {
+                    paymentMethod = 'UPI';
+                } else {
+                    paymentMethod = 'N/A';
+                }
 
                 dealsListHtml += `
-                <div class="deal-item">
-                    <div class="deal-header">
-                        <h3>Deal #${deal.dealId}</h3>
-                        <p>${formattedDate}</p>
-                    </div>
-                    <p><strong>Crop:</strong> ${deal.name || 'N/A'}</p>
-                    <p><strong>Quantity:</strong> ${deal.quantity || 'N/A'}</p>
-                    <p><strong>Price:</strong> ₹${price || 'N/A'}</p>
-                    <p><strong>Total Amount:</strong> ₹${dealTotal}</p>
-                    ${deal.user ? `<p><strong>Buyer:</strong> ${deal.user.fullName || 'N/A'}</p>` : '<p><strong>Buyer:</strong> N/A</p>'}
-                    ${deal.transporter ? `<p><strong>Transporter:</strong> ${deal.transporter.fullName || 'N/A'}</p>` : ''}
-                    ${deal.pickupLocation ? `<p><strong>Pickup:</strong> ${deal.pickupLocation}</p>` : ''}
-                    ${deal.deliveryLocation ? `<p><strong>Delivery:</strong> ${deal.deliveryLocation}</p>` : ''}
-                    ${deal.paymentMethod ? `<p><strong>Payment Method:</strong> ${deal.paymentMethod}</p>` : ''}
-                </div>
-            `;
+            <div class="deal-item">
+              <div class="deal-header">
+                <h3>Deal #${deal.dealId}</h3>
+                <p>${formattedDate}</p>
+              </div>
+              <div class="deal-crops">
+                ${cropsHtml || `<p><strong>Crops:</strong> N/A</p>`}
+              </div>
+              <p><strong>Total Amount:</strong> ₹${deal.totalPrice || 'N/A'}</p>
+              <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+              ${deal.user ? `<p><strong>Buyer:</strong> ${deal.user.fullName || 'N/A'}</p>` : '<p><strong>Buyer:</strong> N/A</p>'}
+              ${deal.transporter ? `<p><strong>Transporter:</strong> ${deal.transporter.fullName || 'N/A'}</p>` : ''}
+              ${deal.pickupLocation ? `<p><strong>Pickup:</strong> ${deal.pickupLocation}</p>` : ''}
+              ${deal.deliveryLocation ? `<p><strong>Delivery:</strong> ${deal.deliveryLocation}</p>` : ''}
+            </div>
+          `;
             });
 
             dealsListElement.innerHTML = dealsListHtml;
@@ -225,6 +243,7 @@ function loadConfirmedDeals() {
             document.getElementById('dealsList').innerHTML = '<p class="text-center">Failed to load deals.</p>';
         });
 }
+
 
 // Function to update farmer profile
 function updateFarmerProfile(formData) {
@@ -282,10 +301,10 @@ function addCrop(formData) {
 // Fixed function to update a crop
 function updateCrop(cropId, formData) {
     const token = getToken();
-    
+
     // Ensure farmerId is included
     formData.append('farmerId', currentFarmerId);
-    
+
     fetch(`/api/crops/${cropId}/update`, {
         method: 'PUT',
         headers: {
@@ -293,24 +312,25 @@ function updateCrop(cropId, formData) {
         },
         body: formData
     })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`Failed to update crop: ${text}`);
-            });
-        }
-        return response.json();
-    })
-    .then(data => {
-        alert('Crop updated successfully!');
-        loadFarmerCrops();
-        document.getElementById('editCropModal').style.display = 'none';
-        // Reset the form
-        document.getElementById('editCropForm').reset();
-    })
-    .catch(error => handleApiError(error, 'Failed to update crop'));
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`Failed to update crop: ${text}`);
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Crop updated successfully!');
+            loadFarmerCrops();
+            document.getElementById('editCropModal').style.display = 'none';
+            // Reset the form
+            document.getElementById('editCropForm').reset();
+        })
+        .catch(error => handleApiError(error, 'Failed to update crop'));
 }
 
+// Function to delete a crop
 // Function to delete a crop
 function deleteCrop(cropId) {
     const token = getToken();
@@ -324,17 +344,20 @@ function deleteCrop(cropId) {
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Failed to delete crop');
+                return response.text().then(message => {
+                    throw new Error(message || 'Failed to delete crop');
+                });
             }
-            return response.json();
+            return response.text(); // Parse as plain text
         })
-        .then(data => {
-            alert('Crop deleted successfully!');
-            loadFarmerCrops();
+        .then(message => {
+            alert(message); // Will show "Crop deleted successfully"
+            loadFarmerCrops(); // Refresh crops
             document.getElementById('deleteCropModal').style.display = 'none';
         })
         .catch(error => handleApiError(error, 'Failed to delete crop'));
 }
+
 
 // Function to upload farmer profile image
 function uploadProfileImage(formData) {
@@ -358,7 +381,9 @@ function uploadProfileImage(formData) {
         })
         .then(data => {
             alert('Profile image updated successfully!');
-            document.getElementById('farmerImage').src = `/farmers/${currentFarmerId}/image?${new Date().getTime()}`;
+            if (data.imageUrl) {
+                document.getElementById('farmerImage').src = data.imageUrl;
+            }
             document.getElementById('uploadImageForm').style.display = 'none';
         })
         .catch(error => handleApiError(error, 'Failed to upload image'));
@@ -368,7 +393,7 @@ function uploadProfileImage(formData) {
 function getCropDetails(cropId) {
     const token = getToken();
     console.log("Getting crop details for ID:", cropId);
-    
+
     return fetch(`/api/crops/${cropId}`, {
         method: 'GET',
         headers: {
@@ -376,14 +401,14 @@ function getCropDetails(cropId) {
             'Authorization': token
         }
     })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`Failed to load crop details: ${text}`);
-            });
-        }
-        return response.json();
-    });
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => {
+                    throw new Error(`Failed to load crop details: ${text}`);
+                });
+            }
+            return response.json();
+        });
 }
 
 // Function to show edit crop modal
@@ -409,7 +434,7 @@ function showEditCropModal(cropId) {
 // Helper function to format date for input field
 function formatDateForInput(dateString) {
     if (!dateString) return '';
-    
+
     const parts = dateString.split('-');
     if (parts.length === 3) {
         if (parts[0].length === 4) {
@@ -419,13 +444,13 @@ function formatDateForInput(dateString) {
         // Already in DD-MM-YYYY format
         return dateString;
     }
-    
+
     // Try parsing as date object
     const date = new Date(dateString);
     if (!isNaN(date.getTime())) {
         return `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
     }
-    
+
     return dateString;
 }
 
@@ -456,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Set up event listeners for modals
     setupModalEventListeners();
-    
+
     // Set up form submissions
     setupFormEventListeners();
 });
@@ -526,7 +551,7 @@ function setupFormEventListeners() {
         // Remove any existing listeners by cloning and replacing
         const newEditProfileForm = editProfileForm.cloneNode(true);
         editProfileForm.parentNode.replaceChild(newEditProfileForm, editProfileForm);
-        
+
         newEditProfileForm.onsubmit = (event) => {
             event.preventDefault();
             const formData = {
@@ -543,17 +568,48 @@ function setupFormEventListeners() {
 
     // Add Crop Form
     const addCropForm = document.getElementById('addCropForm');
-    if (addCropForm) {
-        // Remove any existing listeners
-        const newAddCropForm = addCropForm.cloneNode(true);
-        addCropForm.parentNode.replaceChild(newAddCropForm, addCropForm);
-        
-        newAddCropForm.onsubmit = (event) => {
-            event.preventDefault();
-            const formData = new FormData(newAddCropForm);
-            addCrop(formData);
+
+    addCropForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Collect all field values
+        const name = document.getElementById('name').value;
+        const description = document.getElementById('description').value;
+        const price = parseFloat(document.getElementById('price').value);
+        const category = document.getElementById('category').value;
+        const quantity = parseInt(document.getElementById('quantity').value);
+        const releaseDateRaw = document.getElementById('releaseDate').value;
+        const productAvailable = document.getElementById('productAvailable').value === 'true';
+        const image = document.getElementById('cropImage').files[0];
+
+        // Format release date (DD-MM-YYYY)
+        let releaseDate = releaseDateRaw;
+        if (releaseDateRaw) {
+            const date = new Date(releaseDateRaw);
+            releaseDate = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
+        }
+
+        // Create crop JSON
+        const crop = {
+            name,
+            description,
+            price,
+            category,
+            quantity,
+            releaseDate,
+            productAvailable,
+            farmerId: currentFarmerId
         };
-    }
+
+        // Construct final payload
+        const payload = new FormData();
+        payload.append("crop", JSON.stringify(crop));
+        if (image) {
+            payload.append("image", image);
+        }
+
+        addCrop(payload);
+    });
 
     // Edit Crop Form
     const editCropForm = document.getElementById('editCropForm');
@@ -561,12 +617,12 @@ function setupFormEventListeners() {
         // Remove any existing listeners
         const newEditCropForm = editCropForm.cloneNode(true);
         editCropForm.parentNode.replaceChild(newEditCropForm, editCropForm);
-        
+
         newEditCropForm.onsubmit = (event) => {
             event.preventDefault();
             const cropId = document.getElementById('editCropId').value;
             const formData = new FormData(newEditCropForm);
-            
+
             // Format the release date correctly
             const releaseDate = document.getElementById('editReleaseDate').value;
             if (releaseDate) {
@@ -577,7 +633,7 @@ function setupFormEventListeners() {
                     formData.set('releaseDate', formattedDate);
                 }
             }
-            
+
             updateCrop(cropId, formData);
         };
     }
@@ -589,7 +645,7 @@ function setupFormEventListeners() {
         // Remove any existing listeners
         const newUploadInput = uploadInput.cloneNode(true);
         uploadInput.parentNode.replaceChild(newUploadInput, uploadInput);
-        
+
         newUploadInput.onchange = () => {
             if (newUploadInput.files.length > 0) {
                 const formData = new FormData(uploadImageForm);
@@ -604,7 +660,7 @@ function setupFormEventListeners() {
         // Remove any existing listeners
         const newLogoutLink = logoutLink.cloneNode(true);
         logoutLink.parentNode.replaceChild(newLogoutLink, logoutLink);
-        
+
         newLogoutLink.onclick = (event) => {
             event.preventDefault();
             localStorage.removeItem('jwtToken');

@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 
 import com.FarmConnect.WebApplication.model.Crops;
 import com.FarmConnect.WebApplication.service.CropService;
+import com.FarmConnect.WebApplication.service.ImageUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,22 +27,17 @@ public class CropsController {
     @Autowired
     CropService cropService;
 
+    @Autowired
+    ImageUploadService imageUploadService;
 
+
+    // No longer need to serve images from the backend
+    /*
     @GetMapping("/crops/{id}/image")
     public ResponseEntity<byte[]> getCropImage(@PathVariable String id) {
-        System.out.println("Attempting to fetch crop with ID: " + id);
-        Optional<Crops> optionalCrop = cropService.getById(id);
-        if (optionalCrop.isPresent()) {
-            Crops crop = optionalCrop.get();
-            System.out.println("Found crop: " + crop.getName() + ", Serving image.");
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(crop.getImageType()))
-                    .body(crop.getImageData());
-        } else {
-            System.out.println("Crop not found for ID: " + id);
-            return ResponseEntity.notFound().build();
-        }
+        ...
     }
+    */
 
     @GetMapping("/crops")
     public String getCrops(
@@ -202,9 +198,9 @@ public class CropsController {
 
         // Handle image upload
         if (image != null && !image.isEmpty()) {
-            existingCrop.setImageData(image.getBytes());
-            existingCrop.setImageType(image.getContentType());
-            System.out.println("New image uploaded for crop.");
+            String imageUrl = imageUploadService.uploadImage(image);
+            existingCrop.setImageUrl(imageUrl);
+            System.out.println("New image uploaded to Cloudinary for crop.");
         }
 
         Crops updatedCrop = cropService.addCrops(existingCrop);

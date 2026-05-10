@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connect with Farmers - FarmConnect</title>
+    <title>Order Success - FarmConnect</title>
     <link rel="stylesheet" th:href="@{/css/global.css}">
-    <link rel="stylesheet" th:href="@{/css/farmers.css}">
+    <link rel="stylesheet" th:href="@{/css/success.css}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script th:src="@{/js/global.js}"></script>
-    <script th:src="@{/js/farmers.js}"></script>
 </head>
 
 <body>
@@ -40,15 +39,17 @@
         </div>
     </header>
 
-    <main class="container animate-fade-in">
-        <h1 class="page-title">Connect with Farmers</h1>
-        <div class="farmers-grid">
-            <div class="loading">
-                <i class="fas fa-spinner fa-spin"></i>
-                <p>Loading farmers...</p>
+    <div class="success-container">
+        <div class="success-card">
+            <div class="checkmark-circle">
+                <i class="fas fa-check"></i>
             </div>
+            <h1>Order Placed Successfully!</h1>
+            <p>Thank you for your purchase. Your order has been received and is being processed.</p>
+            <p class="small">A confirmation email has been sent to your registered email address.</p>
+            <a th:href="@{/}" class="btn-home">Return to Home</a>
         </div>
-    </main>
+    </div>
 
     <footer>
         <div class="footer-grid">
@@ -94,5 +95,7 @@
             © Copyright Rimel 2022. All rights reserved.
         </div>
     </footer>
+
+    <script th:src="@{/js/global.js}"></script>
 </body>
 </html>

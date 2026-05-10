@@ -24,16 +24,15 @@ public class CropService {
     @Autowired
     CropsRepo objCrop;
 
+    @Autowired
+    ImageUploadService imageUploadService;
+
     public Optional<Crops> getById(String cropId) {
         return objCrop.findById(cropId);
     }
 
     public List<Crops> getAllCrops(){
         return objCrop.findAll();
-    }
-
-    public List<Crops> getAllCropsWithoutImageData() {
-        return objCrop.findAllWithoutImageData();
     }
 
     public Crops addCrops(Crops crop){
@@ -84,8 +83,8 @@ public class CropService {
             query.with(sort);
         }
 
-        // Exclude imageData field to optimize response size
-        query.fields().exclude("imageData");
+        // Exclude imageData field is no longer necessary as we use imageUrl
+        // query.fields().exclude("imageData");
 
         // Execute the query and return results
         return mongoTemplate.find(query, Crops.class);
@@ -102,9 +101,8 @@ public class CropService {
 
 
     public Crops addCrop(Crops crop, MultipartFile imageFile) throws IOException {
-        crop.setImageName(imageFile.getOriginalFilename());
-        crop.setImageType(imageFile.getContentType());
-        crop.setImageData(imageFile.getBytes());
+        String imageUrl = imageUploadService.uploadImage(imageFile);
+        crop.setImageUrl(imageUrl);
         crop.setCropId(new ObjectId().toString());
         return objCrop.save(crop);
     }

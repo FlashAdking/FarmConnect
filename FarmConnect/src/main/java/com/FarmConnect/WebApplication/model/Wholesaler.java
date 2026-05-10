@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.Lob;
 import java.util.List;
 
 @Data
@@ -24,10 +23,7 @@ public class Wholesaler {
     private String password;
 
 
-    private String imageType;
-    private String imageName;
-    @Lob
-    private byte[] wholesalerImage;
+    private String imageUrl;
 
     private List<ConfirmedDeals> confirmedDeals;
 }

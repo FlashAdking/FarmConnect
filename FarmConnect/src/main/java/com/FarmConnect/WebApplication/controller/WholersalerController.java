@@ -3,6 +3,7 @@ package com.FarmConnect.WebApplication.controller;
 import com.FarmConnect.WebApplication.model.ConfirmedDeals;
 import com.FarmConnect.WebApplication.model.Farmer;
 import com.FarmConnect.WebApplication.model.Wholesaler;
+import com.FarmConnect.WebApplication.service.ImageUploadService;
 import com.FarmConnect.WebApplication.service.WholesalerService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,34 +26,21 @@ public class WholersalerController {
     @Autowired
     WholesalerService wholeService;
 
+    @Autowired
+    ImageUploadService imageUploadService;
+
     @PostMapping("/Signupwholesaler")
     public ResponseEntity<?> RegisterWholesaler(@Validated @RequestBody Wholesaler wholesaler){
         try {
-            // Since there's no uploading option during signup, we assign the default image
-            if (wholesaler.getWholesalerImage() == null || wholesaler.getWholesalerImage().length == 0) {
-                InputStream is = getClass().getResourceAsStream("/static/img/WholeSaler.jpeg");
-                if (is != null) {
-                    byte[] defaultImage = IOUtils.toByteArray(is);
-                    wholesaler.setWholesalerImage(defaultImage);
-                    wholesaler.setImageName("WholeSaler.jpeg");
-                    wholesaler.setImageType("image/jpeg");
-                } else {
-                    // If the default image is not found, return an error
-                    return ResponseEntity
-                            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                            .body("Default image not found.");
-                }
+            if (wholesaler.getImageUrl() == null) {
+                wholesaler.setImageUrl("https://res.cloudinary.com/dbgyjjfdw/image/upload/v1/default-wholesaler.jpg");
             }
 
             wholeService.RegisterWholesaler(wholesaler);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error loading default image.");
         }
-
     }
 
     @PostMapping("/wholesalerlogin")
@@ -87,10 +75,8 @@ public class WholersalerController {
         response.put("farmersConnected", 88);
         response.put("pendingDeals", 55);
         // Convert image bytes to a Base64 string if an image exists
-        if (wholesaler.getWholesalerImage() != null) {
-            String base64Image = Base64.getEncoder().encodeToString(wholesaler.getWholesalerImage());
-            response.put("imageBase64", base64Image);
-            response.put("imageType", wholesaler.getImageType());
+        if (wholesaler.getImageUrl() != null) {
+            response.put("imageUrl", wholesaler.getImageUrl());
         }
         return ResponseEntity.ok(response);
     }
@@ -140,37 +126,22 @@ public class WholersalerController {
         }
 
         try {
-            wholesaler.setWholesalerImage(image.getBytes());
-            wholesaler.setImageName(image.getOriginalFilename());
-            wholesaler.setImageType(image.getContentType());
+            String imageUrl = imageUploadService.uploadImage(image);
+            wholesaler.setImageUrl(imageUrl);
             wholeService.updateWholesaler(wholesaler);
-            return ResponseEntity.ok("Wholesaler image updated successfully");
+            return ResponseEntity.ok(Map.of("message", "Wholesaler image updated successfully", "imageUrl", imageUrl));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the image file");
         }
     }
 
+    // No longer need to serve images from the backend
+    /*
     @GetMapping("/wholesaler/{_id}/image")
     public ResponseEntity<byte[]> getWholesalerImage(@PathVariable("_id") String _id) {
-        // Fetch the wholesaler using its unique identifier.
-        Optional<Wholesaler> optionalWholesaler = wholeService.getBy_id(_id);
-
-        if (optionalWholesaler.isPresent()) {
-            Wholesaler wholesaler = optionalWholesaler.get();
-            // Determine the image type, defaulting to "image/jpeg" if not set.
-            String imageType = wholesaler.getImageType();
-            if (imageType == null || imageType.trim().isEmpty()) {
-                imageType = "image/jpeg";
-            }
-            // Return the image data along with the proper Content-Type header.
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(imageType))
-                    .body(wholesaler.getWholesalerImage());
-        } else {
-            // If no wholesaler is found for the given _id, return a 404 response.
-            return ResponseEntity.notFound().build();
-        }
+        ...
     }
+    */
 
 
 }

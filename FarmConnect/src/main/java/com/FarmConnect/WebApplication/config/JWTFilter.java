@@ -67,14 +67,22 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            // For endpoints that require authentication, you might want to return an error.
-            // Alternatively, let Spring Security handle it.
+        String token = null;
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7).trim();
+        } else if (request.getCookies() != null) {
+            token = Arrays.stream(request.getCookies())
+                    .filter(cookie -> "jwtToken".equals(cookie.getName()))
+                    .map(cookie -> cookie.getValue())
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        if (token == null) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        String token = authHeader.substring(7).trim(); // Remove "Bearer " prefix.
 
         // Validate token format: should contain exactly 2 periods for a JWS
         if (token.isEmpty() || token.chars().filter(ch -> ch == '.').count() != 2) {

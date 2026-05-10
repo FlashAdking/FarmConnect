@@ -51,7 +51,6 @@ public class WholesalerService {
             String token = jwts.generateToken(wholesaler.getEmail(), role );
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
-            System.out.println(token);
             return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException e) {

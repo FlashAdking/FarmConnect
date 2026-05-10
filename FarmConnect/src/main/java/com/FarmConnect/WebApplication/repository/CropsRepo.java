@@ -13,8 +13,8 @@ import java.util.Optional;
 @Repository
 public interface CropsRepo extends MongoRepository<Crops, String>{
 
-    @Query(value = "{}", fields = "{ 'imageData' : 0 }")
-    List<Crops> findAllWithoutImageData();
+    // No longer need to exclude imageData as we use imageUrl
+    // List<Crops> findAllWithoutImageData();
 
     List<Crops> findAllByOrderByReleaseDateDesc();
     List<Crops> findAllByOrderByPriceAsc();

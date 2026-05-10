@@ -2,53 +2,42 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <script th:src="@{/js/global.js}"></script>
-    <script th:inline="javascript">
-        document.addEventListener("DOMContentLoaded", () => {
-            // Check if token exists
-            const token = localStorage.getItem('jwtToken');
-            if (!token) {
-                // No token found, redirect to login
-                window.location.href = /*[[@{/farmerlogin}]]*/ '/farmerlogin';
-            }
-        });
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transporter Sign up</title>
+    <title>Transporter Signup - FarmConnect</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
     <link rel="stylesheet" th:href="@{/css/transport.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script th:src="@{/js/global.js}"></script>
+    <script th:src="@{/js/transportsignup.js}"></script>
 </head>
 
 <body>
     <header>
         <div class="nav-container">
-            <div class="logo">
-                <i class="fa fa-home"></i>
+            <a th:href="@{/}" class="logo">
+                <i class="fa fa-tractor"></i>
                 <span class="logo-text">FarmConnect</span>
-            </div>
-
+            </a>
+            
             <nav>
                 <a th:href="@{/}">Home</a>
-<<<<<<< HEAD
                 <a th:href="@{/farmers}">Farmers</a>
-=======
-                <a th:href="@{/Farmers}">Farmers</a>
->>>>>>> e434e3e68eb07f886454d131bdbbda9e4575690a
                 <a th:href="@{/crops}">Crops</a>
                 <a th:href="@{/transport}">Transport</a>
                 <a th:href="@{/about}">About</a>
-                
-
-                <!-- Example HTML for the dropdown -->
-        <div class="dropdown-user" id="dropdownUser">
-            <i class="fa fa-user"></i>
-            <div class="dropdown-user-menu">
-                <a th:href="@{/profile}">
-                    <i class="fas fa-user"></i>My Profile</a>
-            </div>
-        </div>
-
             </nav>
+
+            <div class="dropdown-user" id="dropdownUser">
+                <i class="fa fa-user-circle"></i>
+                <div class="dropdown-user-menu">
+                    <a th:href="@{/profile}">
+                        <i class="fas fa-user"></i> My Profile
+                    </a>
+                    <div id="logout-placeholder"></div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -72,47 +61,48 @@
     </main>
 
     <footer>
-        <div class="footer-container">
-            <div class="exclusive">
+        <div class="footer-grid">
+            <div class="footer-section">
                 <h3>Exclusive</h3>
-                <p>Get 10% off your first order</p>
-                <input type="email" placeholder="Enter your email">
+                <p>Subscribe</p>
+                <form th:action="@{/subscribe}" method="POST" class="subscribe-form">
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <button type="submit" class="subscribe-btn">Subscribe</button>
+                </form>
             </div>
-            <div class="support">
+            <div class="footer-section">
                 <h3>Support</h3>
-                <p>111 Bijoy sarani, Dhaka, Bangladesh.</p>
+                <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
                 <p>exclusive@gmail.com</p>
                 <p>+88015-88888-9999</p>
             </div>
-            <div class="account">
+            <div class="footer-section">
                 <h3>Account</h3>
-                <ul>
-                    <li>My Account</li>
-                    <li>Login / Register</li>
-                    <li>Cart</li>
-                    <li>Wishlist</li>
-                    <li>Shop</li>
-                </ul>
+                <a th:href="@{/profile}">My Account</a>
+                <a th:href="@{/farmerlogin}">Login / Register</a>
+                <a th:href="@{/cart}">Cart</a>
+                <a th:href="@{/wishlist}">Wishlist</a>
+                <a th:href="@{/crops}">Shop</a>
             </div>
-            <div class="quick-links">
+            <div class="footer-section">
                 <h3>Quick Link</h3>
-                <ul>
-                    <li>Privacy Policy</li>
-                    <li>Terms Of Use</li>
-                    <li>FAQ</li>
-                    <li>Contact</li>
-                </ul>
+                <a th:href="@{/privacy}">Privacy Policy</a>
+                <a th:href="@{/terms}">Terms of Use</a>
+                <a th:href="@{/faq}">FAQ</a>
+                <a th:href="@{/contact}">Contact</a>
             </div>
-            <div class="download-app">
+            <div class="footer-section">
                 <h3>Download App</h3>
-                <p>Save 5% with App New User Only</p>
-                <div class="app-links">
-                    <img src="google-play.png" alt="Google Play">
-                    <img src="app-store.png" alt="App Store">
+                <p>Save $3 with App New User Only</p>
+                <div class="app-icons">
+                    <a href="#" class="app-store"><i class="fab fa-google-play"></i></a>
+                    <a href="#" class="play-store"><i class="fab fa-apple"></i></a>
                 </div>
             </div>
         </div>
-        <p>&copy; Copyright Rimel 2022. All rights reserved</p>
+        <div class="footer-bottom">
+            © Copyright Rimel 2022. All rights reserved.
+        </div>
     </footer>
 </body>
 

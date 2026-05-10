@@ -2,352 +2,45 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Farmer Signup</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    /* General Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      background-color: #f9f9f9;
-    }
-
-    /* Header Navigation */
-    header {
-      background-color: #fff;
-      padding: 15px 20px;
-      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .nav-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo {
-      font-size: 24px;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: black;
-      font-weight: bold;
-    }
-
-    nav i {
-      font-size: 20px;
-    }
-
-    /* Signup Section */
-    .signup-section {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 50px;
-      padding: 50px;
-      flex-wrap: wrap;
-    }
-
-    /* Image Container */
-    .image-container img {
-      width: 500px;
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Form Styling */
-    .form-container {
-      background-color: #fff;
-      padding: 30px;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      width: 350px;
-    }
-
-    .form-container input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-
-    .form-container p {
-      text-align: center;
-      margin: 10px 0;
-      color: #666;
-    }
-
-    .form-container a {
-      color: #d9534f;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .btn {
-      width: 100%;
-      background-color: #000;
-      color: white;
-      border: none;
-      padding: 12px;
-      margin: 15px 0;
-      cursor: pointer;
-      border-radius: 5px;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
-
-    .btn:hover {
-      background-color: #333;
-    }
-
-    .oauth-btn {
-      display: block;
-      text-align: center;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ddd;
-      background-color: #fff;
-      color: #333;
-      text-decoration: none;
-      transition: background-color 0.3s;
-    }
-
-    .oauth-btn:hover {
-      background-color: #f5f5f5;
-    }
-
-    .google-btn {
-      color: #4285F4;
-    }
-
-    .github-btn {
-      color: #333;
-    }
-
-    .error-message {
-      color: red;
-      font-size: 12px;
-      margin-top: 2px;
-      display: none;
-    }
-
-    /* Footer */
-    footer {
-      background-color: #222;
-      color: white;
-      padding: 40px 20px;
-      margin-top: 50px;
-    }
-
-    .footer-container {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .footer-column {
-      flex: 1;
-      min-width: 200px;
-      margin-bottom: 20px;
-    }
-
-    .footer-column h3 {
-      margin-bottom: 15px;
-      font-size: 18px;
-    }
-
-    .footer-column a {
-      display: block;
-      color: #ddd;
-      text-decoration: none;
-      margin: 8px 0;
-      transition: color 0.3s;
-    }
-
-    .footer-column a:hover {
-      color: white;
-    }
-
-    .footer-column input {
-      padding: 8px;
-      width: 100%;
-      margin-top: 8px;
-      border-radius: 4px;
-      border: none;
-    }
-
-    .footer-column img {
-      width: 120px;
-      margin-top: 10px;
-    }
-
-    .copyright {
-      text-align: center;
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 1px solid #444;
-      font-size: 14px;
-      color: #bbb;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .signup-section {
-        flex-direction: column;
-        padding: 20px;
-      }
-
-      .image-container img {
-        width: 100%;
-        max-width: 400px;
-      }
-
-      .form-container {
-        width: 100%;
-        max-width: 400px;
-      }
-
-      .footer-container {
-        flex-direction: column;
-      }
-    }
-
-    /* User Dropdown Styling */
-    .user-dropdown {
-      position: relative;
-      cursor: pointer;
-    }
-
-    .user-dropdown .fa-user {
-      font-size: 20px;
-    }
-
-    .dropdown-menu {
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background-color: white;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 5px;
-      width: 180px;
-      display: none;
-      z-index: 1000;
-      margin-top: 10px;
-    }
-
-    .dropdown-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 15px;
-      text-decoration: none;
-      color: #333;
-      transition: background-color 0.2s;
-    }
-
-    .dropdown-item:hover {
-      background-color: #f5f5f5;
-    }
-
-    .dropdown-item i {
-      margin-right: 10px;
-      color: #666;
-    }
-
-    .dropdown-divider {
-      height: 1px;
-      background-color: #eee;
-      margin: 0;
-    }
-
-    /* Show dropdown when parent is hovered or active */
-    .user-dropdown:hover .dropdown-menu,
-    .user-dropdown.active .dropdown-menu {
-      display: block;
-    }
-
-    /* Optional: Arrow pointer to dropdown */
-    .dropdown-menu::before {
-      content: '';
-      position: absolute;
-      top: -8px;
-      right: 15px;
-      width: 0;
-      height: 0;
-      border-left: 8px solid transparent;
-      border-right: 8px solid transparent;
-      border-bottom: 8px solid white;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Signup - FarmConnect</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/css/signupfarmer.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script th:src="@{/js/global.js}"></script>
+    <script th:src="@{/js/farmerSignup.js}"></script>
 </head>
 
-<body>
+<body th:data-login-url="@{/farmerlogin}">
   <!-- Header -->
-  <header>
-
-
-    <div class="nav-container">
-      <div class="logo">
-        <i class="fa fa-home"></i>
-        <span class="logo-text">FarmConnect</span>
-      </div>
-      <nav>
-        <a th:href="@{/}">Home</a>
-        <a th:href="@{/farmers}">Farmers</a>
-        <a th:href="@{/crops}">Crops</a>
-        <a th:href="@{/transport}">Transport</a>
-        <a th:href="@{/about}">About</a>
-        <div class="user-dropdown" id="dropdownUser">
-          <i class="fa fa-user"></i>
-          <div class="dropdown-menu">
-            <a th:href="@{/farmerprofile}" class="dropdown-item">
-              <i class="fas fa-user"></i> My Profile
+    <header>
+        <div class="nav-container">
+            <a th:href="@{/}" class="logo">
+                <i class="fa fa-tractor"></i>
+                <span class="logo-text">FarmConnect</span>
             </a>
-            <form action="@{/logout}" method="POST" style="margin: 0;">
-              <button type="submit" class="dropdown-item logout-btn">
-                <i class="fas fa-sign-out-alt"></i> Logout
-              </button>
-            </form>
-          </div>
+            
+            <nav>
+                <a th:href="@{/}">Home</a>
+                <a th:href="@{/farmers}">Farmers</a>
+                <a th:href="@{/crops}">Crops</a>
+                <a th:href="@{/transport}">Transport</a>
+                <a th:href="@{/about}">About</a>
+            </nav>
+
+            <div class="dropdown-user" id="dropdownUser">
+                <i class="fa fa-user-circle"></i>
+                <div class="dropdown-user-menu">
+                    <a th:href="@{/profile}">
+                        <i class="fas fa-user"></i> My Profile
+                    </a>
+                    <div id="logout-placeholder"></div>
+                </div>
+            </div>
         </div>
-      </nav>
-    </div>
-
-
-    <script>
-      document.getElementById('dropdownUser').addEventListener('click', function (event) {
-        event.stopPropagation();
-        this.classList.toggle('active');
-      });
-
-      document.addEventListener('click', function (event) {
-        var dropdown = document.getElementById('dropdownUser');
-        if (!dropdown.contains(event.target)) {
-          dropdown.classList.remove('active');
-        }
-      });
-    </script>
-  </header>
+    </header>
 
   <!-- Main Content -->
   <section class="signup-section">
@@ -373,159 +66,52 @@
     </div>
   </section>
 
-  <script>
-    // Define regular expressions for validation
-    const emailRegex = /^\S+@\S+\.\S+$/;
-    const phoneRegex = /^\d{10}$/;
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/;
-    const fullNameRegex = /^[A-Za-z ]+$/;
+    <!-- Footer included in global pattern -->
 
-    // Listen for the form submission
-    document.getElementById("signupForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      // Get form values
-      const fullName = document.getElementById("fullName").value.trim();
-      const emailOrPhone = document.getElementById("emailOrPhone").value.trim();
-      const password = document.getElementById("password").value;
-      const confirmPassword = document.getElementById("confirmPassword").value;
-
-      // Validate full name (letters and spaces only)
-      if (!fullNameRegex.test(fullName)) {
-        alert("Full name must contain only letters and spaces.");
-        return;
-      }
-
-      // Validate email or phone number
-      if (!emailRegex.test(emailOrPhone)) {
-        const cleanedPhone = emailOrPhone.replace(/\D/g, '');
-        if (cleanedPhone.length !== 10) {
-          alert("Please enter a valid email or exactly 10 digits for phone number.");
-          return;
-        }
-      }
-
-      // Validate password
-      if (!passwordRegex.test(password)) {
-        alert("Password must be at least 8 characters, include uppercase, lowercase, and one special character.");
-        return;
-      }
-
-      // Check if passwords match
-      if (password !== confirmPassword) {
-        alert("Passwords do not match!");
-        return;
-      }
-
-      // Build the JSON object
-      const farmer = {
-        fullName: fullName,
-        emailOrPhone: emailOrPhone,
-        password: password
-      };
-
-      // Send data to server
-      fetch("/Signupfarmer", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(farmer)
-      })
-        .then(response => {
-          if (response.ok) {
-            alert("Account created successfully!");
-            window.location.href = "/login";
-          } else {
-            return response.text().then(text => { throw new Error(text); });
-          }
-        })
-        .catch(error => {
-          console.error("Error creating account:", error.message);
-          alert("Error creating account: " + error.message);
-        });
-    });
-
-    // OAuth button handlers
-    document.getElementById("googleBtn").addEventListener("click", function () {
-      window.location.href = "/oauth2/authorization/google";
-    });
-
-    document.getElementById("githubBtn").addEventListener("click", function () {
-      window.location.href = "/oauth2/authorization/github";
-    });
-
-    document.getElementById('dropdownUser').addEventListener('click', function (event) {
-  event.stopPropagation(); // Prevent the event from bubbling up
-  this.classList.toggle('active'); // Toggle dropdown visibility
-});
-
-document.querySelector('.dropdown-item').addEventListener('click', function (event) {
-  event.stopPropagation(); // Prevent closing when clicking the dropdown item
-});
-
-document.addEventListener('click', function (event) {
-  var dropdown = document.getElementById('dropdownUser');
-  if (!dropdown.contains(event.target)) {
-    dropdown.classList.remove('active'); // Close dropdown if click is outside
-  }
-});
-
-const dropdownUser = document.getElementById("dropdownUser");
-
-    dropdownUser.addEventListener("click", function (e) {
-        e.stopPropagation(); // Stop click from going to document
-        this.classList.toggle("active"); // Toggle dropdown
-    });
-
-    document.addEventListener("click", function () {
-        dropdownUser.classList.remove("active"); // Hide when clicked outside
-    });
-
-  </script>
-
-
-  <!-- Footer -->
-  <footer>
-    <div class="footer-container">
-      <div class="footer-column">
-        <h3>Exclusive</h3>
-        <p>Get 10% off your first order</p>
-        <input type="email" placeholder="Enter your email">
-      </div>
-      <div class="footer-column">
-        <h3>Support</h3>
-        <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
-        <p>exclusive@gmail.com</p>
-        <p>+88015-88888-9999</p>
-      </div>
-      <div class="footer-column">
-        <h3>Account</h3>
-        <a th:href="@{/account}">My Account</a>
-        <a th:href="@{/login}">Login / Register</a>
-        <a th:href="@{/cart}">Cart</a>
-        <a th:href="@{/wishlist}">Wishlist</a>
-        <a th:href="@{/shop}">Shop</a>
-      </div>
-      <div class="footer-column">
-        <h3>Quick Link</h3>
-        <a th:href="@{/privacy}">Privacy Policy</a>
-        <a th:href="@{/terms}">Terms of Use</a>
-        <a th:href="@{/faq}">FAQ</a>
-        <a th:href="@{/contact}">Contact</a>
-      </div>
-      <div class="footer-column">
-        <h3>Download App</h3>
-        <p>Save $3 with App New User Only</p>
-        <img th:src="@{/img/qrcode.png}" alt="QR Code">
-        <div class="app-links">
-          <img th:src="@{/img/playstore.png}" alt="Google Play">
-          <img th:src="@{/img/appstore.png}" alt="App Store">
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h3>Exclusive</h3>
+                <p>Subscribe</p>
+                <form th:action="@{/subscribe}" method="POST" class="subscribe-form">
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <button type="submit" class="subscribe-btn">Subscribe</button>
+                </form>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
+                <p>exclusive@gmail.com</p>
+                <p>+88015-88888-9999</p>
+            </div>
+            <div class="footer-section">
+                <h3>Account</h3>
+                <a th:href="@{/profile}">My Account</a>
+                <a th:href="@{/farmerlogin}">Login / Register</a>
+                <a th:href="@{/cart}">Cart</a>
+                <a th:href="@{/wishlist}">Wishlist</a>
+                <a th:href="@{/crops}">Shop</a>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Link</h3>
+                <a th:href="@{/privacy}">Privacy Policy</a>
+                <a th:href="@{/terms}">Terms of Use</a>
+                <a th:href="@{/faq}">FAQ</a>
+                <a th:href="@{/contact}">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>Download App</h3>
+                <p>Save $3 with App New User Only</p>
+                <div class="app-icons">
+                    <a href="#" class="app-store"><i class="fab fa-google-play"></i></a>
+                    <a href="#" class="play-store"><i class="fab fa-apple"></i></a>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <p class="copyright">© Copyright FarmConnect 2023. All rights reserved.</p>
-  </footer>
+        <div class="footer-bottom">
+            © Copyright Rimel 2022. All rights reserved.
+        </div>
+    </footer>
 </body>
 
 </html>

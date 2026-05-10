@@ -47,16 +47,8 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
         String email = oauthUser.getAttribute("email");
 
-        // Retrieve the 'state' parameter from the request. It will include our role.
-        String state = request.getParameter("state");
-        String role = null;
-        if (state != null && state.contains(":")) {
-            // Assuming the format is "originalState:ROLE_FARMER" or "originalState:ROLE_WHOLESALER"
-            String[] parts = state.split(":");
-            if (parts.length >= 2) {
-                role = parts[1];
-            }
-        }
+        // Retrieve the 'role' parameter from the session as set by the frontend.
+        String role = (String) request.getSession().getAttribute("userRole");
 
         if (role == null || role.isEmpty()) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Role is missing. Login failed. backend");
@@ -79,14 +71,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
                 Farmer newFarmer = new Farmer();
                 newFarmer.setEmailOrPhone(email);
 
-                // Set default image for the new farmer
-                InputStream is = getClass().getResourceAsStream("/static/img/default-farmer.jpg");
-                if (is != null) {
-                    byte[] defaultImage = IOUtils.toByteArray(is);
-                    newFarmer.setFarmerImage(defaultImage);
-                    newFarmer.setImageName("default-farmer.jpg");
-                    newFarmer.setImageType("image/jpeg");
-                }
+                newFarmer.setImageUrl("https://res.cloudinary.com/dbgyjjfdw/image/upload/v1/default-farmer.jpg");
                 farmersRepo.save(newFarmer);
                 System.out.println("New farmer created for email: " + email);
             } else if ("ROLE_WHOLESALER".equals(role)) {
@@ -102,7 +87,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
         // Generate JWT using the determined role
         String token = jwtService.generateToken(email, role);
-        String targetPath = "/";
+        String targetPath = "/profile";
         String redirectUrl = "/oauth-redirect?token="
                 + URLEncoder.encode(token, StandardCharsets.UTF_8)
                 + "&redirect=" + URLEncoder.encode(targetPath, StandardCharsets.UTF_8);

@@ -90,29 +90,39 @@ public class HomeController {
 
     @GetMapping("/profile")
     public String MyProfile(Model model, HttpServletRequest request) {
+        String token = null;
+        String authHeader = request.getHeader("Authorization");
+        
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        } else if (request.getCookies() != null) {
+            token = java.util.Arrays.stream(request.getCookies())
+                    .filter(c -> "jwtToken".equals(c.getName()))
+                    .map(jakarta.servlet.http.Cookie::getValue)
+                    .findFirst()
+                    .orElse(null);
+        }
 
-        String token = request.getHeader("Authorization").substring(7);
-        // Decode and extract claims from the token
-        String username = jwtService.extractUserName(token);
-        String role = jwtService.extractRole(token);
+        if (token == null) {
+            return "redirect:/farmerlogin";
+        }
 
+        try {
+            // Decode and extract claims from the token
+            String username = jwtService.extractUserName(token);
+            String role = jwtService.extractRole(token);
 
-//        model.addAttribute("username", username);
-
-
-        if ("ROLE_FARMER".equals(role)) {
-
-            return "farmerprofile";
-
-        } else if ("ROLE_WHOLESALER".equals(role)) {
-
-            Wholesaler wholesaler = wholesalerService.getByEmailId(username);
-
-            model.addAttribute("wholesaler",wholesaler);
-            return "wholesalerProfile";
-        } else {
-            // Handle unauthorized or unknown roles
-            return "underdev";
+            if ("ROLE_FARMER".equals(role)) {
+                return "farmerprofile";
+            } else if ("ROLE_WHOLESALER".equals(role)) {
+                Wholesaler wholesaler = wholesalerService.getByEmailId(username);
+                model.addAttribute("wholesaler", wholesaler);
+                return "wholesalerProfile";
+            } else {
+                return "underdev";
+            }
+        } catch (Exception e) {
+            return "redirect:/farmerlogin";
         }
     }
 

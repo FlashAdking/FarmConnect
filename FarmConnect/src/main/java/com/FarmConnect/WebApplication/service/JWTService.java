@@ -27,19 +27,12 @@ public class JWTService {
     @Autowired
     WholeSalerRepo wholeSalerRepo;
 
-    private String secretKey = "";
+    @org.springframework.beans.factory.annotation.Value("${jwt.secret}")
+    private String secretKey;
 
     public JWTService(){
-        KeyGenerator keyGen = null;
-        try {
-
-            keyGen = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey sk = keyGen.generateKey();
-            secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-//        secretKey = Base64.getDecoder().encodeToString(sk.getEncoded());
+        // Using a static key instead of dynamically generating one so that
+        // tokens survive application restarts during development.
     }
 
 
@@ -51,7 +44,7 @@ public class JWTService {
                 .setSubject(emailOrPhone)
                 .claim("role", role)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + (5 * 60 * 1000))) // 5 minutes expiration
+                .setExpiration(new Date(System.currentTimeMillis() + (10 * 60 * 60 * 1000))) // 10 hours expiration
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

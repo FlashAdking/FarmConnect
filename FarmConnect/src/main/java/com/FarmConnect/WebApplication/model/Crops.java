@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
-import javax.persistence.Lob;
 import java.util.Date;
 
 
@@ -37,11 +36,7 @@ public class Crops {
     private int quantity;
 
 
-    private String imageName;
-    private String imageType;
-
-    @Lob
-    private byte[] imageData;
+    private String imageUrl;
 
 
 //    relationship between farmer and crops
