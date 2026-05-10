@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <script th:src="@{/js/global.js}"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>crop</title>
+    <link rel="stylesheet" th:href="@{/css/product_details.css}">
+    <!-- <link rel="stylesheet" href="../static/css/product_details.css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<style>
+    .search-container {
+        background-color: white;
+        border-radius: 50px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 10px;
+        max-width: 500px;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .search-container:hover {
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .form-control.search-input {
+        border: none;
+        background: transparent;
+        padding-left: 20px;
+        font-size: 1rem;
+        height: 50px;
+    }
+
+    .form-control.search-input:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    .btn-search {
+        background-color: black;
+        color: white;
+        border-radius: 50px;
+        padding: 10px 20px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-search:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+    .search-icon {
+        color: #6c757d;
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+
+    /* farmconnect logo */
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .logo i {
+        font-size: 24px;
+        color: black;
+        /* A green color to represent farming */
+        margin-right: 8px;
+    }
+
+    .logo-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: black;
+        /* A deeper green for contrast */
+        font-family: 'Inter', sans-serif;
+        /* Assuming you're using Inter font from previous CSS */
+        letter-spacing: -0.5px;
+    }
+</style>
+
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fa fa-home"></i>
+                <span class="logo-text">FarmConnect</span>
+            </div>
+
+            <div class="search-container">
+                <form id="searchForm" th:action="@{/search}" method="GET">
+                    <i class="fa fa-search search-icon"></i>
+                    <input type="text" name="query" class="search-input" placeholder="Search anything..."
+                        th:value="${param.query}" />
+                    <button type="submit" class="btn-search">Search</button>
+                </form>
+            </div>
+
+            <nav>
+                <div class="nav-links">
+                    <a th:href="@{/}">Home</a>
+                    <a th:href="@{/farmers}">Farmers</a>
+                    <a th:href="@{/crops}">Crops</a>
+                    <a th:href="@{/transport}">Transport</a>
+                    <a th:href="@{/about}">About</a>
+                </div>
+
+                <div class="dropdown-user">
+                    <i class="fa fa-user"></i>
+                    <div class="dropdown-user-menu">
+                        <a th:href="@{/profile}">
+                            <i class="fas fa-user"></i>My Profile
+                        </a>
+                        <div id="logout-placeholder"></div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Product Section -->
+    <main>
+        <div id="productDetails">
+            <!-- The crop details will be dynamically loaded here -->
+        </div>
+    </main>
+
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Exclusive</h3>
+                <p>Subscribe</p>
+                <form th:action="@{/subscribe}" method="POST">
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                    <button type="submit" class="subscribe-btn">Subscribe</button>
+                </form>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
+                <p>exclusive@gmail.com</p>
+                <p>+88015-88888-9999</p>
+            </div>
+            <div class="footer-section">
+                <h3>Account</h3>
+                <p><a th:href="@{/profile}">My Account</a></p>
+                <p><a th:href="@{/login}">Login / Register</a></p>
+                <p><a th:href="@{/cart}">Cart</a></p>
+                <p><a th:href="@{/wishlist}">Wishlist</a></p>
+                <p><a th:href="@{/shop}">Shop</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Link</h3>
+                <p><a th:href="@{/privacy}">Privacy Policy</a></p>
+                <p><a th:href="@{/terms}">Terms of Use</a></p>
+                <p><a th:href="@{/faq}">FAQ</a></p>
+                <p><a th:href="@{/contact}">Contact</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>Download App</h3>
+                <p>Save $3 with App New User Only</p>
+                <div class="app-icons">
+                    <a href="#" class="app-store"><i class="fab fa-google-play"></i></a>
+                    <a href="#" class="play-store"><i class="fab fa-apple"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript to toggle the dropdown menu on click
+        document.getElementById('dropdownUser').addEventListener('click', function (event) {
+            // Prevent the click from bubbling up (so that clicking’s confined to this element)
+            event.stopPropagation();
+            this.classList.toggle('active');
+        });
+
+        // Hide the dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            var dropdown = document.getElementById('dropdownUser');
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+    </script>
+
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Retrieve the crop data saved in localStorage
+            const storedCrop = localStorage.getItem('selectedCrop');
+            if (!storedCrop) {
+                console.error("No crop data found in localStorage.");
+                document.getElementById('productDetails').innerHTML = '<div class="error-message">Product not found. Please go back to the catalog.</div>';
+                return;
+            }
+
+            // Convert the JSON string back into a JavaScript object
+            const crop = JSON.parse(storedCrop);
+            console.log("Loaded crop data:", crop);
+
+            // Find the container where you want to render the crop details
+            const container = document.getElementById('productDetails');
+            if (!container) {
+                console.error("Container with id 'productDetails' not found.");
+                return;
+            }
+
+            // Ensure we have a description, even if it's a default one
+            const description = crop.description || "No description available for this product. Please contact customer support for more information.";
+
+            // Debug image information
+            console.log("Image data from stored crop:", crop.image);
+
+            // Handle image source with multiple fallback options
+            let imgSrc = '/img/default-crop.jpg'; // Default fallback
+
+            if (crop.image) {
+                if (typeof crop.image === 'string') {
+                    if (crop.image.startsWith('data:image')) {
+                        // It's a base64 image
+                        imgSrc = crop.image;
+                        console.log("Using base64 image");
+                    } else if (crop.image.startsWith('blob:')) {
+                        // It's a blob URL
+                        imgSrc = crop.image;
+                        console.log("Using blob URL");
+                    } else if (crop.image.includes('/')) {
+                        // It's a path or URL
+                        imgSrc = crop.image;
+                        console.log("Using image path:", imgSrc);
+                    }
+                }
+            }
+
+            // If we have a cropId, prepare an alternative URL as backup
+            let altImgSrc = '';
+            if (crop.cropId) {
+                altImgSrc = window.location.origin + '/crops/' + crop.cropId + '/image';
+                console.log("Alternative image URL prepared:", altImgSrc);
+            }
+
+            // Construct the HTML for displaying the crop details with improved styling and layout
+            container.innerHTML = `
+        <div class="product-detail-container">
+            <div class="product-detail-card" data-name="${crop.name}">
+                <div class="product-image-container">
+                    <img src="${imgSrc}" alt="${crop.name}" class="product-detail-image" 
+                         data-alt-src="${altImgSrc}"
+                         onload="console.log('Image loaded successfully:', this.src)" 
+                         onerror="this.onerror=null; console.error('Failed to load image:', this.src); if(this.dataset.altSrc) { console.log('Trying alternative URL:', this.dataset.altSrc); this.src = this.dataset.altSrc; } else { this.src='/img/default-crop.jpg'; }">
+                </div>
+                <div class="product-detail-info">
+                    <h2 class="product-title">${crop.name}</h2>
+                    <p class="product-category">${crop.category || 'General'}</p>
+                    
+                    <div class="price-container">
+                        <h3 class="product-price">₹${parseFloat(crop.price || 0).toFixed(2)}</h3>
+                        ${crop.label ? `<span class="product-label" style="background-color: ${crop.color || '#2a9d8f'}">${crop.label}</span>` : ''}
+                    </div>
+                    
+                    <div class="product-description">
+                        <h4>Description:</h4>
+                        <p>${description}</p>
+                    </div>
+
+                    <div class="product-actions">
+                        <div class="quantity-selector">
+                            <label for="quantity">Quantity:</label>
+                            <select id="quantity" onchange="updateTotal()">
+                                ${Array.from({ length: Math.min(crop.quantity || 10, 10) }, (_, i) =>
+                `<option value="${i + 1}">${i + 1}</option>`
+            ).join('')}
+                            </select>
+                            <p class="stock-info">In stock: ${crop.quantity || 'Limited'} units</p>
+                        </div>
+
+                        <div class="total-price">
+                            <label for="total">Total:</label>
+                            <span id="total">₹${parseFloat(crop.price || 0).toFixed(2)}</span>
+                        </div>
+
+                        <div class="button-group">
+                            <button class="add-to-cart-btn" onclick="addToCart()">
+                                Add to Cart
+                            </button>
+                            <button class="buy-now-btn" onclick="buyNow()">
+                                Buy Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+            // Add CSS to style the product detail page
+            const style = document.createElement('style');
+            style.textContent = `
+        .product-detail-container {
+            display: flex;
+            justify-content: center;
+            padding: 2rem;
+            font-family: Arial, sans-serif;
+        }
+        
+        .product-detail-card {
+            display: flex;
+            max-width: 1000px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 768px) {
+            .product-detail-card {
+                flex-direction: column;
+            }
+        }
+        
+        .product-image-container {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            background-color: #f9f9f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .product-detail-image {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            display: block;
+            max-height: 400px;
+        }
+        
+        .product-detail-info {
+            flex: 1;
+            padding: 2rem;
+        }
+        
+        .product-title {
+            font-size: 28px;
+            margin: 0 0 8px 0;
+            color: #333;
+        }
+        
+        .product-category {
+            color: #666;
+            text-transform: uppercase;
+            font-size: 14px;
+            margin: 0 0 16px 0;
+        }
+        
+        .price-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .product-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2a9d8f;
+            margin: 0;
+        }
+        
+        .product-label {
+            margin-left: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .product-description {
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+        
+        .product-description h4 {
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .product-description p {
+            color: #555;
+            margin: 0;
+        }
+        
+        .product-actions {
+            margin-top: 24px;
+        }
+        
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .quantity-selector label {
+            margin-right: 12px;
+            font-weight: bold;
+        }
+        
+        .quantity-selector select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .stock-info {
+            margin-left: 12px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .total-price {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .total-price label {
+            margin-right: 12px;
+            font-weight: bold;
+        }
+        
+        .total-price span {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2a9d8f;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .add-to-cart-btn, .buy-now-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .add-to-cart-btn {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+        
+        .add-to-cart-btn:hover {
+            background-color: #dee2e6;
+        }
+        
+        .buy-now-btn {
+            background-color: #2a9d8f;
+            color: white;
+        }
+        
+        .buy-now-btn:hover {
+            background-color: #218879;
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 2rem;
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+        }
+    `;
+            document.head.appendChild(style);
+
+            // Initialize functions
+            window.updateTotal = function () {
+                const crop = JSON.parse(localStorage.getItem('selectedCrop'));
+                const quantity = parseInt(document.getElementById('quantity').value, 10);
+                const totalElement = document.getElementById('total');
+
+                if (crop && totalElement) {
+                    const total = parseFloat(crop.price || 0) * quantity;
+                    totalElement.textContent = `₹${total.toFixed(2)}`;
+                }
+            };
+
+            window.addToCart = function () {
+                const quantity = parseInt(document.getElementById('quantity').value, 10);
+                const crop = JSON.parse(localStorage.getItem('selectedCrop'));
+
+                // Get existing cart items or initialize empty array
+                const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+                // Check if item already exists in cart
+                const existingItemIndex = cartItems.findIndex(item => item.cropId === crop.cropId);
+
+                if (existingItemIndex !== -1) {
+                    // Update existing item quantity
+                    cartItems[existingItemIndex].quantity += quantity;
+                } else {
+                    // Get the current image source from the DOM, which might be the alternative URL if the original failed
+                    const imgElement = document.querySelector('.product-detail-image');
+                    const actualImgSrc = imgElement ? imgElement.src : (crop.image || '/img/default-crop.jpg');
+
+                    // Add new item to cart
+                    cartItems.push({
+                        cropId: crop.cropId,
+                        name: crop.name,
+                        price: parseFloat(crop.price || 0),
+                        quantity: quantity,
+                        image: actualImgSrc, // Use the actual working image source
+                        category: crop.category || 'General'
+                    });
+                }
+
+                // Save updated cart
+                localStorage.setItem('cartItems', JSON.stringify(cartItems));
+                console.log("Updated cart items:", cartItems);
+
+                // Show confirmation message
+                alert(`Added ${quantity} ${quantity > 1 ? 'units' : 'unit'} of ${crop.name} to your cart`);
+            };
+
+            window.buyNow = function () {
+                // First add to cart
+                window.addToCart();
+
+                // Then redirect to cart page
+                window.location.href = '/cart';
+            };
+        });
+    </script>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

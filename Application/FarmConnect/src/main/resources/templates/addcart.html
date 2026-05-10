@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+
+    <script th:src="@{/js/global.js}"></script>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmConnect Shopping Cart</title>
+    <link rel="stylesheet" th:href="@{/css/addcart.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        .search-container {
+            background-color: white;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            max-width: 500px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .search-container:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-control.search-input {
+            border: none;
+            background: transparent;
+            padding-left: 20px;
+            font-size: 1rem;
+            height: 50px;
+        }
+
+        .form-control.search-input:focus {
+            box-shadow: none;
+            outline: none;
+        }
+
+        .btn-search {
+            background-color: black;
+            color: white;
+            border-radius: 50px;
+            padding: 10px 20px;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-search:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .search-icon {
+            color: #6c757d;
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+
+        /* farmconnect logo */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 24px;
+            color: black;
+            /* A green color to represent farming */
+            margin-right: 8px;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: black;
+            /* A deeper green for contrast */
+            font-family: 'Inter', sans-serif;
+            /* Assuming you're using Inter font from previous CSS */
+            letter-spacing: -0.5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-container">
+                <div class="logo">
+                    <i class="fa fa-home"></i>
+                    <span class="logo-text">FarmConnect</span>
+                </div>
+
+                <div class="search-container">
+                    <form id="searchForm" th:action="@{/search}" method="GET">
+                        <i class="fa fa-search search-icon"></i>
+                        <input type="text" name="query" class="search-input" placeholder="Search anything..."
+                            th:value="${param.query}" />
+                        <button type="submit" class="btn-search">Search</button>
+                    </form>
+                </div>
+
+                <nav>
+                    <div class="nav-links">
+                        <a th:href="@{/}">Home</a>
+                        <a th:href="@{/farmers}">Farmers</a>
+                        <a th:href="@{/crops}">Crops</a>
+                        <a th:href="@{/transport}">Transport</a>
+                        <a th:href="@{/about}">About</a>
+                    </div>
+
+                    <div class="dropdown-user">
+                        <i class="fa fa-user"></i>
+                        <div class="dropdown-user-menu">
+                            <a th:href="@{/profile}">
+                                <i class="fas fa-user"></i>My Profile
+                            </a>
+                            <div id="logout-placeholder"></div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <h2>Your Cart</h2>
+            <!-- This container will be populated with cart items by JavaScript -->
+            <div id="cart"></div>
+            <!-- A container to show an "empty cart" message when no items are available -->
+            <div id="emptyCartMessage" class="empty-cart" style="display: none;">
+                <p>Your cart is empty.</p>
+            </div>
+            <!-- Confirm Order button that will be shown only if there are items -->
+            <button type="button" id="confirmOrder" class="confirm-btn" style="display: none;">
+                Confirm Order
+            </button>
+        </main>
+        
+        <script th:inline="javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                function redirectOrder() {
+                    const token = localStorage.getItem('jwtToken');
+                    if (!token) {
+                        window.location.href = '/wholesalerlogin';
+                        return;
+                    }
+        
+                    fetch('/checkout', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+                        .then(res => {
+                            if (res.status === 401) {
+                                localStorage.removeItem('jwtToken');
+                                window.location.href = '/wholesalerlogin';
+                                return null;
+                            }
+                            return res.text();
+                        })
+                        .then(html => {
+                            if (html) {
+                                document.open();
+                                document.write(html);
+                                document.close();
+                                window.history.pushState({}, '', '/checkout');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Checkout redirect error:', err);
+                            window.location.href = '/';
+                        });
+                }
+        
+                const confirmOrderButton = document.getElementById('confirmOrder');
+                const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+        
+                confirmOrderButton.addEventListener('click', function () {
+                    if (!cartItems.length) {
+                        alert("Your cart is empty. Please add items before confirming your order.");
+                        return;
+                    }
+        
+                    const token = localStorage.getItem('jwtToken');
+                    if (!token) {
+                        window.location.href = '/wholesalerlogin';
+                    } else {
+                        redirectOrder(); // ✅ this sends the token and handles unauthorized cases
+                    }
+                });
+            });
+        </script>
+        
+
+
+
+
+        <footer>
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h3>Exclusive</h3>
+                    <p>Subscribe</p>
+                    <form th:action="@{/subscribe}" method="POST">
+                        <input type="email" name="email" placeholder="Enter your email" required>
+                        <button type="submit" class="subscribe-btn">Subscribe</button>
+                    </form>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <p>111 Bijoy Sarani, Dhaka, Bangladesh</p>
+                    <p>exclusive@gmail.com</p>
+                    <p>+88015-88888-9999</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Account</h3>
+                    <p><a th:href="@{/profile}">My Account</a></p>
+                    <p><a th:href="@{/login}">Login / Register</a></p>
+                    <p><a th:href="@{/cart}">Cart</a></p>
+                    <p><a th:href="@{/wishlist}">Wishlist</a></p>
+                    <p><a th:href="@{/shop}">Shop</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Link</h3>
+                    <p><a th:href="@{/privacy}">Privacy Policy</a></p>
+                    <p><a th:href="@{/terms}">Terms of Use</a></p>
+                    <p><a th:href="@{/faq}">FAQ</a></p>
+                    <p><a th:href="@{/contact}">Contact</a></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Download App</h3>
+                    <p>Save $3 with App New User Only</p>
+                    <div class="app-icons">
+                        <a href="#" class="app-store"><i class="fab fa-google-play"></i></a>
+                        <a href="#" class="play-store"><i class="fab fa-apple"></i></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
+
+
+    <!-- Add-to-Cart Event Delegation Script -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+            const cartContainer = document.getElementById('cart');
+            const emptyCartMessage = document.getElementById('emptyCartMessage');
+            const confirmOrderButton = document.getElementById('confirmOrder');
+
+            // Save the cart items into localStorage after modifications
+            function saveCartItems() {
+                localStorage.setItem("cartItems", JSON.stringify(cartItems));
+            }
+
+            // Renders the list of cart items along with the total price
+            function renderCartItems() {
+                cartContainer.innerHTML = '';
+
+                if (!cartItems.length) {
+                    emptyCartMessage.style.display = 'block';
+                    confirmOrderButton.style.display = 'none';
+                    return;
+                }
+
+                emptyCartMessage.style.display = 'none';
+                confirmOrderButton.style.display = 'block';
+
+                cartItems.forEach((item, index) => {
+                    let imgSrc = '/img/default-crop.jpg';
+                    if (item.image && item.image.trim() !== "" && !item.image.includes('default-crop')) {
+                        imgSrc = item.image;
+                    } else if (item.cropId) {
+                        imgSrc = window.location.origin + '/crops/' + item.cropId + '/image';
+                    }
+
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'cart-item';
+                    itemEl.innerHTML = `
+                        <div class="cart-item-image">
+                            <img src="${imgSrc}" alt="${item.name}" 
+                                 style="width: 100px; height: 100px; object-fit: cover;"
+                                 onerror="this.onerror=null;this.src='/img/default-crop.jpg';">
+                        </div>
+                        <div class="cart-item-details">
+                            <h3>${item.name}</h3>
+                            <p>Price: ₹${parseFloat(item.price) || 0}</p>
+                        </div>
+                        <div class="cart-item-controls">
+                            <div class="quantity-control">
+                                <button class="quantity-btn decrease-btn" data-index="${index}">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="quantity-btn increase-btn" data-index="${index}">+</button>
+                            </div>
+                            <button class="delete-btn" data-index="${index}">Delete</button>
+                        </div>
+                    `;
+                    cartContainer.appendChild(itemEl);
+                });
+
+                // Append the total price at the end
+                const total = cartItems.reduce((sum, item) =>
+                    sum + ((parseFloat(item.price) || 0) * item.quantity), 0);
+                const totalEl = document.createElement('p');
+                totalEl.className = 'cart-total';
+                totalEl.textContent = `Total Price: ₹${total}`;
+                cartContainer.appendChild(totalEl);
+
+                // Event listeners on quantity and delete buttons
+                document.querySelectorAll('.decrease-btn')
+                    .forEach(btn => btn.addEventListener('click', decreaseQuantity));
+                document.querySelectorAll('.increase-btn')
+                    .forEach(btn => btn.addEventListener('click', increaseQuantity));
+                document.querySelectorAll('.delete-btn')
+                    .forEach(btn => btn.addEventListener('click', deleteItem));
+            }
+
+            // Decrease quantity for a cart item
+            function decreaseQuantity(e) {
+                const index = +e.target.dataset.index;
+                if (cartItems[index].quantity > 1) {
+                    cartItems[index].quantity--;
+                    saveCartItems();
+                    renderCartItems();
+                }
+            }
+
+            // Increase quantity for a cart item
+            function increaseQuantity(e) {
+                const index = +e.target.dataset.index;
+                cartItems[index].quantity++;
+                saveCartItems();
+                renderCartItems();
+            }
+
+            // Delete a cart item from the list
+            function deleteItem(e) {
+                const index = +e.target.dataset.index;
+                cartItems.splice(index, 1);
+                saveCartItems();
+                renderCartItems();
+            }
+
+            // When the Confirm Order button is clicked,
+            // first check if the cart is empty, then check for a token.
+            // If token is not found, redirect to the wholesaler login page.
+            // If token exists, redirect to the checkout page.
+            confirmOrderButton.addEventListener('click', function () {
+                // Check for empty cart
+                if (!cartItems.length) {
+                    alert("Your cart is empty. Please add items before confirming your order.");
+                    return;
+                }
+
+                // Check if token exists in local storage
+                const token = localStorage.getItem('jwtToken');
+                if (!token) {
+                    // No token found, redirect to wholesaler login page
+                    window.location.href = /*[[@{/wholesalerlogin}]]*/ '/wholesalerlogin';
+                } else {
+                    // Token exists, redirect to checkout page
+                    window.location.href = /*[[@{/checkout}]]*/ '/checkout';
+                }
+            });
+
+            renderCartItems();
+        });
+    </script>
+
+
+
+
+
+
+</body>
+
+</html>

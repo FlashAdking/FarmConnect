@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting...</title>
+</head>
+<body>
+    <h2>Redirecting, please wait...</h2>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get("token");
+            const redirectPath = params.get("redirect") || "/";
+
+            if (token) {
+                console.log("Saving token to localStorage:", token);
+                localStorage.setItem("jwtToken", token);
+            } else {
+                console.error("No token found in URL");
+            }
+
+            // Slight delay to ensure token is saved before redirect
+            setTimeout(() => {
+                window.location.href = redirectPath;
+            }, 500);
+        });
+    </script>
+</body>
+</html>

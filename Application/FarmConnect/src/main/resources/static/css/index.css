@@ -1,0 +1,336 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* dropdown for*/
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 250px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    top: 100%;
+    right: 0;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown-content a i {
+    font-size: 20px;
+    width: 30px;
+    text-align: center;
+    color: #4CAF50;
+}
+
+.dropdown.active .dropdown-content {
+    display: block;
+}
+
+.dropdown-content a span {
+    flex-grow: 1;
+}
+
+/* dropdown ended */
+
+
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #fff;
+    border-bottom: 1px solid #ccc;
+}
+
+.logo {
+    font-size: 24px;
+}
+
+.search-bar {
+    display: flex;
+}
+
+.search-bar input {
+    padding: 8px;
+    width: 250px;
+}
+
+.search-bar button {
+    padding: 8px;
+    cursor: pointer;
+}
+
+nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: black;
+}
+
+.container {
+    display: flex;
+    padding: 20px;
+}
+
+.hero {
+    background: url('../img/Background Image.jpg') no-repeat center 20%/cover;
+    height: 55vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    flex-direction: column;
+}
+
+
+
+.hero h1 {
+    color: green;
+    font-size: 3em;
+    /* Increase the font size of the h1 element */
+}
+
+.hero p {
+    color: green;
+    font-size: 1.5em;
+    /* Increase the font size of the p element */
+}
+
+.btn {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+}
+
+.farmers {
+    text-align: center;
+    padding: 40px;
+}
+
+.farmer-list {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.farmer-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 10px;
+    width: 200px;
+    text-align: center;
+}
+
+.farmer-card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+footer {
+    background: black;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.footer-section {
+    width: 10%;
+}
+
+.footer-section input {
+    padding: 8px;
+    width: 100%;
+}
+
+.app-icons {
+    display: flex;
+    gap: 10px;
+    font-size: 24px;
+}
+
+
+/* Dropdown Button */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+/* Links Inside the Dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change Color of Dropdown Links on Hover */
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+
+
+/* adding cart option logo */
+.sort-options {
+    position: relative;
+    width: 100%;
+}
+
+.sort-container {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    width: 100%;
+}
+
+.sort-links {
+    display: flex;
+    gap: 15px;
+}
+
+.sort-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.sort-links a:hover {
+    color: #4CAF50;
+}
+
+.cart-icon {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.cart-link {
+    color: black;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.cart-link:hover {
+    color: #333;
+    opacity: 0.7;
+}
+
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+}
+
+/* ending  adding cart option logo */
+
+
+/* user dropdown */
+.dropdown-user {
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .dropdown-user i {
+    font-size: 20px;
+    color: #333;
+    transition: color 0.3s ease;
+  }
+  
+  .dropdown-user i:hover {
+    color: #000;
+  }
+  
+  /* Dropdown menu hidden by default */
+  .dropdown-user-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    margin-top: 10px;
+  }
+  
+  /* Show menu when parent has .active */
+  .dropdown-user.active .dropdown-user-menu {
+    display: block;
+  }
+  
+  /* Dropdown menu items, with asymmetric padding */
+  .dropdown-user-menu a,
+  .dropdown-user-menu .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    padding: 12px 15px 12px 8px; /* top, right, bottom, left */
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+    text-align: left;
+  }
+  
+  /* Logout button color */
+  .dropdown-user-menu .logout-btn {
+    color: #dc3545;
+  }
+
+/* user dropdown end */
