@@ -1,99 +1,120 @@
-# 🌾 **FarmConnect**  
+# FarmConnect
 
-*Empowering Farmers | Transparent Trade | Sustainable Future*  
-
----
-
-## 🌟 **Project Overview**  
-
-In India, intermediaries often prevent farmers from receiving fair compensation for their hard work.  
-**FarmConnect** is a web platform that directly connects **farmers**, **wholesalers**, and **transporters**, enabling transparent transactions that benefit everyone.  
-
-This system is designed to:  
-✅ Empower **farmers** to sell their produce directly.  
-✅ Provide **wholesalers** with easy access to quality crops.  
-✅ Enable **transporters** to bid competitively for delivery jobs.  
-
-Together, we simplify agriculture, promote fair trade, and build a **recommendation model for government adoption**. 🌍✨  
+A full-stack web application that connects farmers, wholesalers, and transporters for direct agricultural trade — eliminating intermediaries.
 
 ---
 
-## 🏗️ **How It Works**  
-1. **Farmers** register and upload crop details.  
-2. **Wholesalers** browse listed crops and make direct deals with farmers.  
-3. **Transporters** bid on finalized deals to provide efficient delivery services.  
- 
+## Tech Stack
 
-> A **win-win solution** for all stakeholders! 🎉  
-
----
-
-## 🛠️ **Tech Stack**   
-
-FarmConnect leverages cutting-edge technologies for scalability and performance:  
-
-- **Frontend**: `HTML`, `CSS`, `JavaScript`  
-- **Backend**: `Java Spring Boot`, `REST API`, `Thymleaf-(render HTML)`  
-- **Database**: `MongoDB`  
+| Layer | Technology |
+|---|---|
+| Backend | Java 23, Spring Boot 3.4.2, Spring Security (JWT + OAuth2) |
+| Database | MongoDB Atlas |
+| Templating | Thymeleaf |
+| Image Storage | Cloudinary |
+| Frontend | HTML, Vanilla CSS, Vanilla JavaScript |
 
 ---
 
-## ✨ **Features at a Glance**  
-🔹 Seamless registration for farmers, wholesalers, and transporters.  
-🔹 Crop listing and search functionality for efficient matching.  
-🔹 Transporter bidding system for cost-effective logistics.  
-🔹 Transparent pricing to ensure farmers get what they deserve.  
-🔹 Clean and intuitive interface for ease of use.  
+## Prerequisites
+
+- JDK 23
+- Maven 3.8+ (or use the included `./mvnw` wrapper)
+- A [MongoDB Atlas](https://www.mongodb.com/atlas) cluster or local mongodb server 
+- A [Cloudinary](https://cloudinary.com) account or any other image storage service 
 
 ---
-## 🔧 **Setup Instructions**  
 
-Follow these steps to set up and run the project locally:  
+## Setup
 
-1. **Prerequisites**  
-   - Install **Java 23** (JDK 23).  
-   - Install **Maven** (if not already available).  
-   - **Recommended IDE**: IntelliJ IDEA (comes with Maven integration, no need to install Maven separately).  
-   - **Other IDEs**: Require Maven to be installed locally.  
+**1. Clone the repository**
 
-2. **Clone the Repository**  
-   ```bash
-   git clone https://github.com/FlashAdking/FarmConnect.git
-   cd FarmConnect
-   ```
+```bash
+git clone https://github.com/FlashAdking/FarmConnect.git
+cd FarmConnect/FarmConnect
+```
 
-3. **Open in IDE**  
-   - Open the project in IntelliJ IDEA.  
-   - Navigate to and open the `pom.xml` file:  
-     ```text
-     WebApplication/pom.xml
-     ```  
-   - In the top-right corner, click the **Maven symbol**.  
-   - Select **Reload/Download all dependencies**.  
-   - Wait until all errors in `pom.xml` are resolved.  
-   - **Note**: In the future, some dependencies may be deprecated or updated. That’s fine—warnings can be ignored as long as there are no errors.  
+**2. Configure environment variables**
 
-4. **Run the Application**  
-   - **Option A: From IntelliJ IDEA**  
-     - Open the main class:  
-       ```text
-       WebApplication/src/main/java/com/FarmConnect/WebApplication/WebApplication.java
-       ```  
-     - Click **Run → Run 'WebApplication.java'**.  
+```bash
+cp .env.sample .env
+```
 
-   - **Option B: From Command Line (requires Maven installed locally)**  
-     ```bash
-     mvn spring-boot:run
-     ```
+Fill in `.env` with your credentials. All required keys are documented in `.env.sample`.
 
-5. **Access the Application**  
-   - By default, the app runs at:  
-     ```text
-     http://localhost:8080
-     ```  
-   - If the port is changed, check the application logs and replace `<PORT>` accordingly:  
-     ```text
-     http://localhost:<PORT>
-     ```
+**3. Run the application**
 
+```bash
+./mvnw spring-boot:run        # Linux / macOS
+mvnw.cmd spring-boot:run      # Windows
+```
 
+The application starts on **http://localhost:8081**
+
+---
+
+## User Roles & Workflow
+
+**Farmer**
+1. Register or log in at `/farmerlogin`
+2. Profile page (`/profile`) — edit info, upload photo, manage crops (add / edit / delete)
+3. View confirmed deals and total sales on the same page
+
+**Wholesaler**
+1. Register or log in at `/wholesalerlogin`
+2. Browse crops at `/crops` → add to cart → checkout at `/checkout`
+3. View purchase history at `/profile`
+
+**Transporter**
+- Registration available at `/Signuptransporter`
+- Deal bidding system is under development
+
+---
+
+## Project Structure
+
+```
+FarmConnect/
+├── src/main/
+│   ├── java/com/FarmConnect/WebApplication/
+│   │   ├── config/          Security, JWT, Cloudinary config
+│   │   ├── controller/      REST API + page route controllers
+│   │   ├── model/           MongoDB document models
+│   │   ├── repository/      Spring Data repositories
+│   │   └── service/         Business logic
+│   └── resources/
+│       ├── application.properties
+│       ├── templates/       Thymeleaf HTML pages
+│       └── static/
+│           ├── css/         global.css + page-specific stylesheets
+│           └── js/          global.js + page-specific scripts
+└── pom.xml
+```
+
+---
+
+## API Overview
+
+All `/api/*` endpoints return JSON. Protected endpoints require:
+```
+Authorization: Bearer <jwt_token>
+```
+
+| Resource | Endpoints |
+|---|---|
+| Farmer | `POST /api/farmer/login` `POST /api/farmer/register` `GET/PUT /api/farmer/profile` `GET /api/farmer/crops` `GET /api/farmer/deals` |
+| Wholesaler | `POST /api/wholesaler/login` `POST /api/wholesaler/register` `GET/PUT /api/wholesaler/profile` |
+| Crops | `GET /api/crops` `GET /api/crops/{id}` `POST /api/crops/add` `PUT /api/crops/{id}/update` `DELETE /api/crops/{id}/delete` |
+| Deals | `POST /api/deals/confirm` `GET /api/deals/farmer` `GET /api/deals/wholesaler` |
+
+---
+
+## Troubleshooting
+
+**MongoDB connection fails** — Check `MONGODB_URI` in `.env` and ensure your IP is whitelisted in Atlas (Network Access).
+
+**Port 8081 in use** — Kill the process or change `server.port` in `application.properties`.
+
+**Images not uploading** — Verify `CLOUDINARY_URL` format: `cloudinary://API_KEY:API_SECRET@CLOUD_NAME`.
+
+**`Unknown Template Mode 'HTML5'` warning** — Non-breaking. Fix by changing `spring.thymeleaf.mode=HTML5` to `HTML` in `application.properties`.
